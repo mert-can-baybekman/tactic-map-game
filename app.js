@@ -735,6 +735,119 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // =========================================================================
+  // SPATIAL CAMERA & VIEWPORT NAVIGATION CONTROLLER (PAN, ZOOM, LOD)
+  // =========================================================================
+  const mapSvg = document.getElementById('tactical-map-svg');
+  const worldViewport = document.getElementById('map-world-viewport');
+  
+  let cameraZoom = 1.0;
+  let cameraPanX = 0;
+  let cameraPanY = 0;
+  let isPanning = false;
+  let panStartX = 0;
+  let panStartY = 0;
+
+  function updateCameraTransform() {
+    if (worldViewport) {
+      worldViewport.setAttribute('transform', `translate(${cameraPanX.toFixed(1)}, ${cameraPanY.toFixed(1)}) scale(${cameraZoom.toFixed(3)})`);
+    }
+
+    // Dynamic Level-of-Detail (LOD) Culling Class
+    if (mapSvg) {
+      if (cameraZoom <= 1.25) {
+        mapSvg.classList.remove('lod-regional', 'lod-tactical');
+        mapSvg.classList.add('lod-macro');
+      } else if (cameraZoom <= 2.25) {
+        mapSvg.classList.remove('lod-macro', 'lod-tactical');
+        mapSvg.classList.add('lod-regional');
+      } else {
+        mapSvg.classList.remove('lod-macro', 'lod-regional');
+        mapSvg.classList.add('lod-tactical');
+      }
+    }
+  }
+
+  function setZoom(newZoom, focalX, focalY) {
+    const clampedZoom = Math.max(0.75, Math.min(4.5, newZoom));
+    if (focalX !== undefined && focalY !== undefined) {
+      const ratio = clampedZoom / cameraZoom;
+      cameraPanX = focalX - (focalX - cameraPanX) * ratio;
+      cameraPanY = focalY - (focalY - cameraPanY) * ratio;
+    }
+    cameraZoom = clampedZoom;
+    updateCameraTransform();
+  }
+
+  function focusOnCoordinates(targetX, targetY, targetZoom = 2.4) {
+    cameraZoom = targetZoom;
+    cameraPanX = (1600 / 2) - targetX * cameraZoom;
+    cameraPanY = (900 / 2) - targetY * cameraZoom;
+    updateCameraTransform();
+  }
+
+  if (mapSvg) {
+    // Mouse Drag Panning
+    mapSvg.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.location-node')) return;
+      isPanning = true;
+      panStartX = e.clientX - cameraPanX;
+      panStartY = e.clientY - cameraPanY;
+      mapSvg.classList.add('is-panning');
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      cameraPanX = e.clientX - panStartX;
+      cameraPanY = e.clientY - panStartY;
+      updateCameraTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isPanning) {
+        isPanning = false;
+        mapSvg.classList.remove('is-panning');
+      }
+    });
+
+    // Wheel Zoom
+    mapSvg.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const rect = mapSvg.getBoundingClientRect();
+      const mouseX = (e.clientX - rect.left) * (1600 / rect.width);
+      const mouseY = (e.clientY - rect.top) * (900 / rect.height);
+      const delta = e.deltaY < 0 ? 0.25 : -0.25;
+      setZoom(cameraZoom + delta, mouseX, mouseY);
+    }, { passive: false });
+  }
+
+  // Navigation HUD Buttons
+  const zoomInBtn = document.getElementById('btn-zoom-in');
+  if (zoomInBtn) zoomInBtn.addEventListener('click', () => setZoom(cameraZoom + 0.35, 800, 450));
+
+  const zoomOutBtn = document.getElementById('btn-zoom-out');
+  if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => setZoom(cameraZoom - 0.35, 800, 450));
+
+  const zoomResetBtn = document.getElementById('btn-zoom-reset');
+  if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => {
+    cameraZoom = 1.0;
+    cameraPanX = 0;
+    cameraPanY = 0;
+    updateCameraTransform();
+  });
+
+  const jumpLondonBtn = document.getElementById('btn-jump-london');
+  if (jumpLondonBtn) jumpLondonBtn.addEventListener('click', () => focusOnCoordinates(220, 210, 2.5));
+
+  const jumpParisBtn = document.getElementById('btn-jump-paris');
+  if (jumpParisBtn) jumpParisBtn.addEventListener('click', () => focusOnCoordinates(410, 360, 2.5));
+
+  const jumpVeniceBtn = document.getElementById('btn-jump-venice');
+  if (jumpVeniceBtn) jumpVeniceBtn.addEventListener('click', () => focusOnCoordinates(740, 420, 2.5));
+
+  const jumpBosphorusBtn = document.getElementById('btn-jump-bosphorus');
+  if (jumpBosphorusBtn) jumpBosphorusBtn.addEventListener('click', () => focusOnCoordinates(1240, 460, 2.6));
+
   // Sol Panel: Arrange Royal Marriage
   document.getElementById('btn-court-marriage').addEventListener('click', () => {
     if (!state.ruler.isMarried) {

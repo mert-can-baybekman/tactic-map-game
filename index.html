@@ -228,152 +228,255 @@
 
       <!-- AUTO-SCALING MAP CANVAS VIEWPORT WRAPPER -->
       <div class="map-viewport-wrapper">
-        <svg id="tactical-map-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet">
-          <!-- Tactical Ocean Background with Grid Lines -->
-          <rect x="0" y="0" width="1600" height="900" fill="#070e1b" />
+        <!-- FLOATING NAVIGATION & CAMERA HUD -->
+        <div class="map-nav-hud">
+          <button class="map-nav-btn" id="btn-zoom-in" title="Zoom In">+</button>
+          <button class="map-nav-btn" id="btn-zoom-out" title="Zoom Out">−</button>
+          <button class="map-nav-btn" id="btn-zoom-reset" title="Reset View">⟲</button>
+          <div class="nav-divider"></div>
+          <button class="map-nav-btn jump-btn" id="btn-jump-london" title="Focus London">🏴󠁧󠁢󠁥󠁮󠁧󠁿 London</button>
+          <button class="map-nav-btn jump-btn" id="btn-jump-paris" title="Focus Paris">⚜️ Paris</button>
+          <button class="map-nav-btn jump-btn" id="btn-jump-venice" title="Focus Venice">🦁 Venice</button>
+          <button class="map-nav-btn jump-btn" id="btn-jump-bosphorus" title="Focus Constantinople & Bosphorus">🌙 Bosphorus</button>
+        </div>
+
+        <svg id="tactical-map-svg" viewBox="0 0 1600 900" class="lod-macro" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <pattern id="tacticalGrid" width="50" height="50" patternUnits="userSpaceOnUse">
-              <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(56, 189, 248, 0.04)" stroke-width="1"/>
+            <!-- Ocean Bathymetry Gradient (Deep Ocean to Continental Shelf) -->
+            <radialGradient id="oceanBathymetry" cx="50%" cy="65%" r="70%">
+              <stop offset="0%" stop-color="#0a1d36" />
+              <stop offset="50%" stop-color="#061324" />
+              <stop offset="100%" stop-color="#020813" />
+            </radialGradient>
+
+            <!-- Coastal Shallows Glow -->
+            <filter id="coastGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+
+            <!-- 2.5D Mountain Shading Filters -->
+            <filter id="mountainShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="2" dy="3" stdDeviation="2" flood-color="#000" flood-opacity="0.8" />
+            </filter>
+
+            <!-- Tactical GIS Grid Pattern -->
+            <pattern id="tacticalGrid" width="60" height="60" patternUnits="userSpaceOnUse">
+              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(56, 189, 248, 0.035)" stroke-width="1"/>
             </pattern>
           </defs>
-          <rect x="0" y="0" width="1600" height="900" fill="url(#tacticalGrid)" />
 
-          <!-- REGIONAL LANDMASSES / GEOGRAPHIC CONTOURS -->
-          <!-- 1. British Isles (Northwest) -->
-          <path id="land-britain" d="M 170,120 Q 250,90 280,160 Q 320,180 310,250 Q 260,260 220,230 Q 180,240 160,180 Z" fill="#14281e" stroke="#2d523d" stroke-width="2" />
-          <!-- 2. Western & Central Europe (France, Low Countries, Germany, Alps) -->
-          <path id="land-europe" d="M 330,250 Q 420,210 520,230 Q 640,220 720,280 Q 750,340 700,390 Q 600,400 480,420 Q 380,440 330,360 Q 320,290 350,260 Z" fill="#182333" stroke="#2d4060" stroke-width="2" />
-          <!-- 3. Iberian Peninsula (Southwest) -->
-          <path id="land-iberia" d="M 180,450 Q 320,440 350,520 Q 330,650 280,720 Q 180,710 140,640 Q 130,520 180,450 Z" fill="#20221e" stroke="#3d4036" stroke-width="2" />
-          <!-- 4. Italian Peninsula (Center) -->
-          <path id="land-italy" d="M 680,390 Q 760,400 790,440 Q 820,530 840,620 Q 820,680 780,680 Q 750,620 730,550 Q 700,480 670,420 Z" fill="#1b2533" stroke="#2f435c" stroke-width="2" />
-          <!-- 5. Balkans & Greece (Southeast Europe) -->
-          <path id="land-balkans" d="M 850,330 Q 1050,320 1160,380 Q 1180,450 1140,540 Q 1080,640 1020,650 Q 940,570 910,480 Q 850,420 850,330 Z" fill="#1a2722" stroke="#2d473e" stroke-width="2" />
-          <!-- 6. Anatolia / Asia Minor (East) -->
-          <path id="land-anatolia" d="M 1260,450 Q 1420,420 1560,440 Q 1580,580 1500,650 Q 1360,670 1280,610 Q 1240,540 1260,450 Z" fill="#242118" stroke="#4a3f29" stroke-width="2" />
+          <!-- WORLD VIEWPORT ROOT GROUP (Dynamic Transform: Zoom & Pan) -->
+          <g id="map-world-viewport" transform="translate(0, 0) scale(1)">
+            
+            <!-- 1. DEEP WATER / OCEAN BASIN -->
+            <rect x="-400" y="-300" width="2400" height="1500" fill="url(#oceanBathymetry)" />
+            <rect x="-400" y="-300" width="2400" height="1500" fill="url(#tacticalGrid)" />
 
-          <!-- SEAS & WATER BASINS -->
-          <!-- English Channel -->
-          <path d="M 160,190 Q 250,220 320,240 Q 360,260 400,240 L 400,280 Q 320,270 200,250 Z" fill="#0d233e" opacity="0.6" />
-          <!-- Mediterranean Sea Basin -->
-          <path d="M 320,680 Q 600,720 900,700 Q 1200,710 1450,680 L 1450,780 Q 900,840 320,780 Z" fill="#091c36" opacity="0.5" />
-          <!-- Black Sea Water Partition -->
-          <ellipse cx="1380" cy="350" rx="150" ry="75" fill="#06192d" stroke="rgba(56, 189, 248, 0.2)" stroke-width="1.5" />
-          <text x="1380" y="355" fill="rgba(56, 189, 248, 0.3)" font-family="Cinzel" font-size="13" font-weight="bold" letter-spacing="4" text-anchor="middle">BLACK SEA</text>
-          
-          <text x="750" y="740" fill="rgba(56, 189, 248, 0.3)" font-family="Cinzel" font-size="15" font-weight="bold" letter-spacing="6" text-anchor="middle">MEDITERRANEAN SEA</text>
-          <text x="890" y="500" fill="rgba(56, 189, 248, 0.25)" font-family="Cinzel" font-size="11" font-weight="bold" letter-spacing="3" text-anchor="middle">ADRIATIC</text>
-          <text x="1140" y="600" fill="rgba(56, 189, 248, 0.25)" font-family="Cinzel" font-size="11" font-weight="bold" letter-spacing="3" text-anchor="middle">AEGEAN</text>
-          <text x="270" y="760" fill="rgba(251, 191, 36, 0.4)" font-family="Cinzel" font-size="10" font-weight="bold" letter-spacing="1" text-anchor="middle">STRAIT OF GIBRALTAR</text>
+            <!-- 2. BATHYMETRIC DEPTH LAYERS (Continental Shelf & Shallow Coastal Waters) -->
+            <!-- English Channel Shelf -->
+            <path d="M 120,80 Q 230,160 380,210 Q 420,290 320,280 Q 180,260 120,180 Z" fill="#0c2340" opacity="0.6" filter="url(#coastGlow)" />
+            <!-- Mediterranean Deep Basin -->
+            <path d="M 280,680 Q 550,710 850,670 Q 1150,680 1480,640 L 1480,820 Q 850,860 280,800 Z" fill="#05152a" opacity="0.7" />
+            <!-- Black Sea Basin -->
+            <ellipse cx="1380" cy="350" rx="165" ry="85" fill="#041224" stroke="rgba(56, 189, 248, 0.18)" stroke-width="1.5" />
+            <text x="1380" y="355" fill="rgba(56, 189, 248, 0.28)" font-family="Cinzel" font-size="13" font-weight="bold" letter-spacing="4" text-anchor="middle">BLACK SEA</text>
 
-          <!-- LOGISTICS NETWORK LINES -->
-          <!-- 1. ORANGE CAPITAL LINK (London -> Dover) -->
-          <line id="london-dover-line" class="line-capital-link" x1="220" y1="210" x2="300" y2="240" />
+            <!-- 3. REAL-WORLD VECTOR COASTLINES & LANDMASSES (GIS PROJECTION) -->
+            <!-- Ireland -->
+            <path id="land-ireland" class="gis-coastline" d="M 80,140 Q 110,120 130,150 Q 140,210 110,240 Q 70,220 80,140 Z" fill="#15281b" stroke="#2a4d35" stroke-width="2" />
+            
+            <!-- Great Britain (Scotland, England, Wales, Thames Estuary) -->
+            <path id="land-britain" class="gis-coastline" d="M 230,60 Q 260,50 280,90 Q 270,140 300,160 Q 325,190 315,245 Q 285,255 240,235 Q 190,250 190,200 Q 230,170 230,110 Z" fill="#182e1f" stroke="#31583d" stroke-width="2.2" />
 
-          <!-- 2. BLUE SEA CORRIDOR (Dover -> Calais across English Channel) -->
-          <line id="dover-calais-line" class="line-sea-corridor" x1="300" y1="240" x2="350" y2="265" />
+            <!-- Western & Central Continental Europe (France, Low Countries, Germany, Alps Basin) -->
+            <path id="land-europe" class="gis-coastline" d="M 330,240 Q 420,200 520,220 Q 640,210 740,260 Q 770,330 710,380 Q 620,390 490,410 Q 370,430 330,350 Q 315,280 330,240 Z" fill="#1a2535" stroke="#314768" stroke-width="2.2" />
 
-          <!-- 3. WHITE DOTTED LAND LINES (Calais -> Rouen -> Paris) -->
-          <line id="calais-rouen-line" class="line-land-route" x1="350" y1="265" x2="330" y2="320" />
-          <line id="rouen-paris-line" class="line-land-route" x1="330" y1="320" x2="410" y2="360" />
+            <!-- Iberian Peninsula (Spain & Portugal, Bay of Biscay, Strait of Gibraltar) -->
+            <path id="land-iberia" class="gis-coastline" d="M 170,440 Q 310,430 340,510 Q 320,640 275,715 Q 170,705 130,630 Q 120,510 170,440 Z" fill="#22231c" stroke="#424537" stroke-width="2" />
 
-          <!-- 4. THE RUMELIA LAND CORRIDOR (Dotted White Lines: Paris -> Venice -> Adrianople -> Constantinople -> Bursa/Söğüt) -->
-          <line id="rumelia-line-1" class="line-land-route line-rumelia-corridor" x1="410" y1="360" x2="740" y2="420" />
-          <line id="rumelia-line-2" class="line-land-route line-rumelia-corridor" x1="740" y1="420" x2="1120" y2="440" />
-          <line id="rumelia-line-3" class="line-land-route line-rumelia-corridor" x1="1120" y1="440" x2="1240" y2="460" />
-          <line id="rumelia-line-4" class="line-land-route line-rumelia-corridor" x1="1240" y1="460" x2="1320" y2="510" />
-          <line id="rumelia-line-5" class="line-land-route line-rumelia-corridor" x1="1320" y1="510" x2="1400" y2="530" />
+            <!-- Italian Peninsula (Alps Foothills, Po Valley, Rome/Latium, Calabria, Sicily) -->
+            <path id="land-italy" class="gis-coastline" d="M 670,380 Q 750,390 780,430 Q 810,520 835,615 Q 815,675 770,675 Q 745,615 725,545 Q 695,475 665,415 Z" fill="#1d2735" stroke="#354b68" stroke-width="2" />
+            <!-- Sicily Island -->
+            <path id="land-sicily" class="gis-coastline" d="M 740,690 Q 780,685 790,715 Q 750,735 730,710 Z" fill="#1e2938" stroke="#354b68" stroke-width="1.5" />
 
-          <!-- 5. THE GIBRALTAR MARITIME LOOP (Sea lines connecting Dover/Calais around Iberia into Mediterranean, Venice and Bursa) -->
-          <path id="gibraltar-maritime-loop" class="line-gibraltar-loop" d="M 300,240 Q 200,280 150,440 T 140,640 Q 200,720 270,725 Q 450,740 600,680 T 740,420 Q 820,560 900,670 T 1140,610 Q 1230,560 1320,510" fill="none" />
-          <line id="sea-trade-line" class="line-sea-corridor" x1="740" y1="420" x2="770" y2="560" />
+            <!-- Balkan Peninsula & Greece (Peloponnese, Thrace, Aegean Coastline) -->
+            <path id="land-balkans" class="gis-coastline" d="M 840,320 Q 1040,310 1150,370 Q 1175,440 1135,530 Q 1070,630 1010,640 Q 930,560 900,470 Q 840,410 840,320 Z" fill="#1b2a24" stroke="#314f44" stroke-width="2.2" />
+            <!-- Peloponnese & Crete -->
+            <path id="land-peloponnese" class="gis-coastline" d="M 1020,645 Q 1050,640 1060,670 Q 1020,685 1015,660 Z" fill="#1b2a24" stroke="#314f44" stroke-width="1.5" />
+            <path id="land-crete" class="gis-coastline" d="M 1070,730 Q 1140,725 1150,740 Q 1080,750 1070,730 Z" fill="#1b2a24" stroke="#314f44" stroke-width="1.5" />
 
-          <!-- 6. THE BOSPHORUS MARITIME EDGE (Flashing Blue Line, connects Bursa through Constantinople to Balkan nodes) -->
-          <path id="bosphorus-strait-line" class="line-bosphorus-strait" d="M 1120,440 L 1240,460 L 1320,510" fill="none" />
-          <line id="bosphorus-choke-indicator" class="line-bosphorus-strait" x1="1240" y1="420" x2="1240" y2="480" />
+            <!-- Anatolia / Asia Minor (Bithynia, Pontus, Taurus, Central Plateau) -->
+            <path id="land-anatolia" class="gis-coastline" d="M 1250,440 Q 1410,410 1560,430 Q 1580,570 1510,645 Q 1370,665 1270,605 Q 1230,535 1250,440 Z" fill="#262218" stroke="#4f432a" stroke-width="2.2" />
 
-          <!-- MAP LOCATION NODES -->
+            <!-- 4. REALISTIC GIS RIVER NETWORKS -->
+            <!-- River Thames (London) -->
+            <path class="gis-river" d="M 195,210 Q 215,212 240,210 Q 270,215 290,210" stroke-width="2.5" />
+            <!-- River Seine (Paris & Rouen to Channel) -->
+            <path class="gis-river" d="M 450,380 Q 420,365 370,340 Q 340,325 315,280" stroke-width="2.8" />
+            <!-- Rhine River (Central Europe) -->
+            <path class="gis-river" d="M 620,370 Q 560,320 520,270 Q 480,240 450,225" stroke-width="3" />
+            <!-- Danube River (Black Sea Conduit) -->
+            <path class="gis-river" d="M 640,350 Q 800,340 920,380 Q 1060,390 1200,375 Q 1300,370 1340,375" stroke-width="3.5" />
+            <!-- Po River (Venice Plain) -->
+            <path class="gis-river" d="M 650,415 Q 700,420 740,422" stroke-width="2.8" />
+            <!-- Maritsa (Meriç) River (Adrianople) -->
+            <path class="gis-river" d="M 1060,420 Q 1100,430 1125,445 Q 1135,490 1140,530" stroke-width="2.5" />
+            <!-- Sakarya & Nilüfer Rivers (Bursa & Söğüt) -->
+            <path class="gis-river" d="M 1410,540 Q 1370,525 1335,515 Q 1310,480 1290,470" stroke-width="2.2" />
 
-          <!-- London (1 - Capital Hub) -->
-          <g class="location-node selected" id="node-1" data-id="1" transform="translate(220, 210)">
-            <circle class="loc-pulse" r="26" fill="rgba(245, 158, 11, 0.25)" />
-            <circle class="loc-core" r="18" fill="#b91c1c" stroke="#ffd700" stroke-width="3.5" />
-            <text y="-25" text-anchor="middle" fill="#ffd700" font-family="Cinzel" font-weight="bold" font-size="13">LONDON (Capital)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="12">🏰</text>
-          </g>
+            <!-- 5. 2.5D SHADED RELIEF MOUNTAIN MESHES -->
+            <!-- The Alps (Arc North of Italy) -->
+            <g class="gis-mountain" filter="url(#mountainShadow)">
+              <polygon points="630,395 660,365 690,400 720,360 750,395 780,365 810,400 790,415 710,410 645,412" fill="#474136" stroke="#6b6252" stroke-width="1.5" />
+              <polyline points="660,365 675,385 720,360 735,385 780,365" stroke="#94a3b8" stroke-width="2" />
+            </g>
+            <!-- The Pyrenees -->
+            <g class="gis-mountain" filter="url(#mountainShadow)">
+              <polygon points="270,455 310,435 350,450 330,465 290,465" fill="#423e35" stroke="#5c5548" stroke-width="1.2" />
+            </g>
+            <!-- Balkan & Rhodope Mountains -->
+            <g class="gis-mountain" filter="url(#mountainShadow)">
+              <polygon points="960,430 1000,400 1040,425 1080,395 1120,430 1090,445 1020,445" fill="#383d32" stroke="#4f5746" stroke-width="1.2" />
+            </g>
+            <!-- Uludağ & Anatolian Plateau Mountain Ranges -->
+            <g class="gis-mountain" filter="url(#mountainShadow)">
+              <polygon points="1310,535 1340,505 1370,530 1420,495 1470,535 1430,555 1360,555" fill="#4d412d" stroke="#6e5d41" stroke-width="1.5" />
+              <polyline points="1340,505 1355,525 1420,495 1440,520" stroke="#cbd5e1" stroke-width="1.5" />
+            </g>
 
-          <!-- Dover (2 - Naval Port) -->
-          <g class="location-node" id="node-2" data-id="2" transform="translate(300, 240)">
-            <circle class="loc-core" r="14" fill="#991b1b" stroke="#38bdf8" stroke-width="2.5" />
-            <text y="-20" text-anchor="middle" fill="#e2e8f0" font-weight="600" font-size="11">Dover (Port)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="10">⚓</text>
-          </g>
+            <!-- 6. POLITICAL SOVEREIGN TERRITORY SHADER WASHES (Anti-Aliased Territorial Tint) -->
+            <g id="political-wash-layer">
+              <!-- England (Crimson Tint) -->
+              <path class="political-wash" d="M 230,60 Q 260,50 280,90 Q 270,140 300,160 Q 325,190 315,245 Q 285,255 240,235 Q 190,250 190,200 Q 230,170 230,110 Z" fill="#dc2626" fill-opacity="0.16" />
+              <!-- France (Royal Blue Tint) -->
+              <path class="political-wash" d="M 330,240 Q 420,200 520,220 Q 640,210 740,260 Q 770,330 710,380 Q 620,390 490,410 Q 370,430 330,350 Q 315,280 330,240 Z" fill="#2563eb" fill-opacity="0.16" />
+              <!-- Venice (Cyan / Azure Tint) -->
+              <circle class="political-wash" cx="740" cy="420" r="45" fill="#0284c7" fill-opacity="0.25" />
+              <!-- Papacy (Gold Tint) -->
+              <circle class="political-wash" cx="770" cy="560" r="40" fill="#eab308" fill-opacity="0.22" />
+              <!-- Byzantine Enclave (Imperial Purple Tint) -->
+              <circle class="political-wash" cx="1240" cy="460" r="38" fill="#9333ea" fill-opacity="0.28" />
+              <!-- Ottoman Beylik (Emerald Green Tint) -->
+              <path class="political-wash" d="M 1250,440 Q 1380,430 1450,470 Q 1440,560 1330,550 Q 1260,530 1250,440 Z" fill="#059669" fill-opacity="0.22" />
+            </g>
 
-          <!-- Calais (3 - Continental Enclave) -->
-          <g class="location-node" id="node-3" data-id="3" transform="translate(350, 265)">
-            <circle class="loc-core" r="15" fill="#b91c1c" stroke="#ef4444" stroke-width="2.5" />
-            <text y="-20" text-anchor="middle" fill="#fca5a5" font-weight="bold" font-size="11">Calais (Enclave)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="10">🛡️</text>
-          </g>
+            <!-- 7. SEAS & CHOKE-POINT LABELS -->
+            <text x="750" y="740" fill="rgba(56, 189, 248, 0.3)" font-family="Cinzel" font-size="15" font-weight="bold" letter-spacing="6" text-anchor="middle">MEDITERRANEAN SEA</text>
+            <text x="890" y="500" fill="rgba(56, 189, 248, 0.25)" font-family="Cinzel" font-size="11" font-weight="bold" letter-spacing="3" text-anchor="middle">ADRIATIC</text>
+            <text x="1140" y="600" fill="rgba(56, 189, 248, 0.25)" font-family="Cinzel" font-size="11" font-weight="bold" letter-spacing="3" text-anchor="middle">AEGEAN</text>
+            <text x="270" y="760" fill="rgba(251, 191, 36, 0.4)" font-family="Cinzel" font-size="10" font-weight="bold" letter-spacing="1" text-anchor="middle">STRAIT OF GIBRALTAR</text>
 
-          <!-- Rouen (4 - Manufacturing Foundry) -->
-          <g class="location-node" id="node-4" data-id="4" transform="translate(330, 320)">
-            <circle class="loc-core" r="14" fill="#1e3a8a" stroke="#a855f7" stroke-width="2.5" />
-            <text y="-20" text-anchor="middle" fill="#e2e8f0" font-weight="600" font-size="11">Rouen (Foundry)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="10">⚙️</text>
-          </g>
+            <!-- 8. LOGISTICS NETWORK LINES -->
+            <!-- 1. ORANGE CAPITAL LINK (London -> Dover) -->
+            <line id="london-dover-line" class="line-capital-link" x1="220" y1="210" x2="300" y2="240" />
 
-          <!-- Paris (5 - French Capital) -->
-          <g class="location-node" id="node-5" data-id="5" transform="translate(410, 360)">
-            <circle class="loc-core" r="18" fill="#1d4ed8" stroke="#38bdf8" stroke-width="3" />
-            <text y="-25" text-anchor="middle" fill="#93c5fd" font-family="Cinzel" font-weight="bold" font-size="13">PARIS (France)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="12">⚜️</text>
-          </g>
+            <!-- 2. BLUE SEA CORRIDOR (Dover -> Calais across English Channel) -->
+            <line id="dover-calais-line" class="line-sea-corridor" x1="300" y1="240" x2="350" y2="265" />
 
-          <!-- Venice (20 - Italian Maritime Hub) -->
-          <g class="location-node" id="node-20" data-id="20" transform="translate(740, 420)">
-            <circle class="loc-pulse" r="22" fill="rgba(2, 132, 199, 0.25)" />
-            <circle class="loc-core" r="17" fill="#0284c7" stroke="#38bdf8" stroke-width="3" />
-            <text y="-23" text-anchor="middle" fill="#bae6fd" font-family="Cinzel" font-weight="bold" font-size="12">VENICE (Republic)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="11">🦁</text>
-          </g>
+            <!-- 3. WHITE DOTTED LAND LINES (Calais -> Rouen -> Paris) -->
+            <line id="calais-rouen-line" class="line-land-route" x1="350" y1="265" x2="330" y2="320" />
+            <line id="rouen-paris-line" class="line-land-route" x1="330" y1="320" x2="410" y2="360" />
 
-          <!-- Rome (23 - Italian Maritime Hub & Holy See) -->
-          <g class="location-node" id="node-23" data-id="23" transform="translate(770, 560)">
-            <circle class="loc-core" r="16" fill="#ca8a04" stroke="#facc15" stroke-width="3" />
-            <text y="-22" text-anchor="middle" fill="#fef08a" font-family="Cinzel" font-weight="bold" font-size="12">ROME (Papacy)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="11">🗝️</text>
-          </g>
+            <!-- 4. THE RUMELIA LAND CORRIDOR (Paris -> Venice -> Adrianople -> Constantinople -> Bursa/Söğüt) -->
+            <line id="rumelia-line-1" class="line-land-route line-rumelia-corridor" x1="410" y1="360" x2="740" y2="420" />
+            <line id="rumelia-line-2" class="line-land-route line-rumelia-corridor" x1="740" y1="420" x2="1120" y2="440" />
+            <line id="rumelia-line-3" class="line-land-route line-rumelia-corridor" x1="1120" y1="440" x2="1240" y2="460" />
+            <line id="rumelia-line-4" class="line-land-route line-rumelia-corridor" x1="1240" y1="460" x2="1320" y2="510" />
+            <line id="rumelia-line-5" class="line-land-route line-rumelia-corridor" x1="1320" y1="510" x2="1400" y2="530" />
 
-          <!-- Adrianople (110 - Balkan Hub / Edirne) -->
-          <g class="location-node" id="node-110" data-id="110" transform="translate(1120, 440)">
-            <circle class="loc-core" r="16" fill="#047857" stroke="#34d399" stroke-width="3" />
-            <text y="-22" text-anchor="middle" fill="#a7f3d0" font-weight="bold" font-size="12">Adrianople (Edirne)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="11">🏹</text>
-          </g>
+            <!-- 5. THE GIBRALTAR MARITIME LOOP -->
+            <path id="gibraltar-maritime-loop" class="line-gibraltar-loop" d="M 300,240 Q 200,280 150,440 T 140,640 Q 200,720 270,725 Q 450,740 600,680 T 740,420 Q 820,560 900,670 T 1140,610 Q 1230,560 1320,510" fill="none" />
+            <line id="sea-trade-line" class="line-sea-corridor" x1="740" y1="420" x2="770" y2="560" />
 
-          <!-- Constantinople (104 - Byzantine Choke-point) -->
-          <g class="location-node" id="node-104" data-id="104" transform="translate(1240, 460)">
-            <circle class="loc-pulse" r="26" fill="rgba(168, 85, 247, 0.25)" />
-            <circle class="loc-core" r="19" fill="#7e22ce" stroke="#ffd700" stroke-width="3.5" />
-            <text y="-25" text-anchor="middle" fill="#ffd700" font-family="Cinzel" font-weight="bold" font-size="13">CONSTANTINOPLE (Choke)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="12">👑</text>
-          </g>
+            <!-- 6. THE BOSPHORUS MARITIME EDGE -->
+            <path id="bosphorus-strait-line" class="line-bosphorus-strait" d="M 1120,440 L 1240,460 L 1320,510" fill="none" />
+            <line id="bosphorus-choke-indicator" class="line-bosphorus-strait" x1="1240" y1="420" x2="1240" y2="480" />
 
-          <!-- Bursa (102 - Ottoman Capital Hub) -->
-          <g class="location-node" id="node-102" data-id="102" transform="translate(1320, 510)">
-            <circle class="loc-pulse" r="26" fill="rgba(16, 185, 129, 0.25)" />
-            <circle class="loc-core" r="19" fill="#047857" stroke="#ffd700" stroke-width="3.5" />
-            <text y="-25" text-anchor="middle" fill="#6ee7b7" font-family="Cinzel" font-weight="bold" font-size="13">BURSA (Ottoman Capital)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="12">🌙</text>
-          </g>
+            <!-- 9. MAP LOCATION NODES (LOD Reactive) -->
 
-          <!-- Söğüt (101 - Ottoman Cradle Hub) -->
-          <g class="location-node" id="node-101" data-id="101" transform="translate(1400, 530)">
-            <circle class="loc-core" r="15" fill="#065f46" stroke="#34d399" stroke-width="2.5" />
-            <text y="-20" text-anchor="middle" fill="#d1fae5" font-weight="600" font-size="11">Söğüt (Cradle)</text>
-            <text y="5" text-anchor="middle" fill="#fff" font-size="10">⚔️</text>
-          </g>
+            <!-- London (1 - Capital Hub) -->
+            <g class="location-node selected" id="node-1" data-id="1" transform="translate(220, 210)">
+              <circle class="loc-pulse" r="26" fill="rgba(245, 158, 11, 0.25)" />
+              <circle class="loc-core" r="18" fill="#b91c1c" stroke="#ffd700" stroke-width="3.5" />
+              <text y="-25" text-anchor="middle" fill="#ffd700" font-family="Cinzel" font-weight="bold" font-size="13">LONDON (Capital)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="12">🏰</text>
+            </g>
+
+            <!-- Dover (2 - Naval Port) -->
+            <g class="location-node" id="node-2" data-id="2" transform="translate(300, 240)">
+              <circle class="loc-core" r="14" fill="#991b1b" stroke="#38bdf8" stroke-width="2.5" />
+              <text y="-20" text-anchor="middle" fill="#e2e8f0" font-weight="600" font-size="11" class="lod-micro">Dover (Port)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="10" class="lod-micro">⚓</text>
+            </g>
+
+            <!-- Calais (3 - Continental Enclave) -->
+            <g class="location-node" id="node-3" data-id="3" transform="translate(350, 265)">
+              <circle class="loc-core" r="15" fill="#b91c1c" stroke="#ef4444" stroke-width="2.5" />
+              <text y="-20" text-anchor="middle" fill="#fca5a5" font-weight="bold" font-size="11" class="lod-micro">Calais (Enclave)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="10" class="lod-micro">🛡️</text>
+            </g>
+
+            <!-- Rouen (4 - Manufacturing Foundry) -->
+            <g class="location-node" id="node-4" data-id="4" transform="translate(330, 320)">
+              <circle class="loc-core" r="14" fill="#1e3a8a" stroke="#a855f7" stroke-width="2.5" />
+              <text y="-20" text-anchor="middle" fill="#e2e8f0" font-weight="600" font-size="11" class="lod-micro">Rouen (Foundry)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="10" class="lod-micro">⚙️</text>
+            </g>
+
+            <!-- Paris (5 - French Capital) -->
+            <g class="location-node" id="node-5" data-id="5" transform="translate(410, 360)">
+              <circle class="loc-core" r="18" fill="#1d4ed8" stroke="#38bdf8" stroke-width="3" />
+              <text y="-25" text-anchor="middle" fill="#93c5fd" font-family="Cinzel" font-weight="bold" font-size="13">PARIS (France)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="12">⚜️</text>
+            </g>
+
+            <!-- Venice (20 - Italian Maritime Hub) -->
+            <g class="location-node" id="node-20" data-id="20" transform="translate(740, 420)">
+              <circle class="loc-pulse" r="22" fill="rgba(2, 132, 199, 0.25)" />
+              <circle class="loc-core" r="17" fill="#0284c7" stroke="#38bdf8" stroke-width="3" />
+              <text y="-23" text-anchor="middle" fill="#bae6fd" font-family="Cinzel" font-weight="bold" font-size="12">VENICE (Republic)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="11">🦁</text>
+            </g>
+
+            <!-- Rome (23 - Italian Maritime Hub & Holy See) -->
+            <g class="location-node" id="node-23" data-id="23" transform="translate(770, 560)">
+              <circle class="loc-core" r="16" fill="#ca8a04" stroke="#facc15" stroke-width="3" />
+              <text y="-22" text-anchor="middle" fill="#fef08a" font-family="Cinzel" font-weight="bold" font-size="12">ROME (Papacy)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="11">🗝️</text>
+            </g>
+
+            <!-- Adrianople (110 - Balkan Hub / Edirne) -->
+            <g class="location-node" id="node-110" data-id="110" transform="translate(1120, 440)">
+              <circle class="loc-core" r="16" fill="#047857" stroke="#34d399" stroke-width="3" />
+              <text y="-22" text-anchor="middle" fill="#a7f3d0" font-weight="bold" font-size="12" class="lod-micro">Adrianople (Edirne)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="11" class="lod-micro">🏹</text>
+            </g>
+
+            <!-- Constantinople (104 - Byzantine Choke-point) -->
+            <g class="location-node" id="node-104" data-id="104" transform="translate(1240, 460)">
+              <circle class="loc-pulse" r="26" fill="rgba(168, 85, 247, 0.25)" />
+              <circle class="loc-core" r="19" fill="#7e22ce" stroke="#ffd700" stroke-width="3.5" />
+              <text y="-25" text-anchor="middle" fill="#ffd700" font-family="Cinzel" font-weight="bold" font-size="13">CONSTANTINOPLE (Choke)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="12">👑</text>
+            </g>
+
+            <!-- Bursa (102 - Ottoman Capital Hub) -->
+            <g class="location-node" id="node-102" data-id="102" transform="translate(1320, 510)">
+              <circle class="loc-pulse" r="26" fill="rgba(16, 185, 129, 0.25)" />
+              <circle class="loc-core" r="19" fill="#047857" stroke="#ffd700" stroke-width="3.5" />
+              <text y="-25" text-anchor="middle" fill="#6ee7b7" font-family="Cinzel" font-weight="bold" font-size="13">BURSA (Ottoman Capital)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="12">🌙</text>
+            </g>
+
+            <!-- Söğüt (101 - Ottoman Cradle Hub) -->
+            <g class="location-node" id="node-101" data-id="101" transform="translate(1400, 530)">
+              <circle class="loc-core" r="15" fill="#065f46" stroke="#34d399" stroke-width="2.5" />
+              <text y="-20" text-anchor="middle" fill="#d1fae5" font-weight="600" font-size="11" class="lod-micro">Söğüt (Cradle)</text>
+              <text y="5" text-anchor="middle" fill="#fff" font-size="10" class="lod-micro">⚔️</text>
+            </g>
+
+          </g> <!-- END #map-world-viewport -->
         </svg>
       </div>
 

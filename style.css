@@ -475,6 +475,107 @@ body {
   width: 100%;
   height: 100%;
   display: block;
+  cursor: grab;
+  user-select: none;
+}
+
+#tactical-map-svg.is-panning {
+  cursor: grabbing;
+}
+
+/* FLOATING MAP NAVIGATION & CAMERA HUD */
+.map-nav-hud {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 25;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65);
+}
+
+.map-nav-btn {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f1f5f9;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.map-nav-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  transform: translateY(-1px);
+}
+
+.map-nav-btn.jump-btn {
+  width: auto;
+  padding: 0 10px;
+  font-size: 11px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+.nav-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 2px;
+}
+
+/* REALISTIC TOPOGRAPHY & GIS SHADER STYLING */
+.gis-coastline {
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.85));
+}
+
+.gis-river {
+  fill: none;
+  stroke: #38bdf8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.5));
+}
+
+.gis-mountain {
+  filter: drop-shadow(1px 2px 4px rgba(0, 0, 0, 0.8));
+  opacity: 0.95;
+}
+
+/* LEVEL OF DETAIL (LOD) CULLING PROTOCOL */
+#tactical-map-svg.lod-macro .lod-micro {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease-out;
+}
+
+#tactical-map-svg.lod-regional .lod-micro {
+  opacity: 0.75;
+  transition: opacity 0.25s ease-in;
+}
+
+#tactical-map-svg.lod-tactical .lod-micro {
+  opacity: 1;
+  transition: opacity 0.25s ease-in;
+}
+
+#tactical-map-svg.lod-macro .high-density-contour {
+  display: none;
 }
 
 /* MAP FOOTER BAR */
