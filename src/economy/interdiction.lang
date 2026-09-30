@@ -1,0 +1,46 @@
+// =========================================================================
+// TRADE EMBARGO & NAVAL BLOCKADE INTERDICTION ENGINE SPECIFICATION
+// Subsystem: /src/economy/interdiction.lang
+// =========================================================================
+
+module GameEngine.Economy.Interdiction {
+
+    struct TradeEmbargoLink {
+        source_country_tag: string,
+        target_country_tag: string,
+        infinite_transport_cost: f32 = 999999.0,
+        is_active: bool = true
+    }
+
+    struct NavalBlockadeOperation {
+        operation_id: string,
+        blockading_country_tag: string,
+        target_country_tag: string,
+        maritime_location_id: u32,       // e.g. English Channel (ID: 35) or Bosphorus (ID: 104)
+        target_port_location_id: u32,
+        fleet_naval_power: f32,
+        port_infrastructure_level: f32,
+        blockade_efficiency: f32,        // fleet_naval_power / port_infrastructure_level (clamped 0.0 - 1.0)
+        daily_devastation_rate: f32 = 0.002 // +0.2% daily devastation
+    }
+
+    // Calculates blockade efficiency and economic penalties
+    fn EvaluateBlockadeImpact(op: ref NavalBlockadeOperation) -> (f32, f32, bool) {
+        if op.port_infrastructure_level <= 0.0 {
+            op.port_infrastructure_level = 1.0;
+        }
+
+        op.blockade_efficiency = min(1.0, op.fleet_naval_power / op.port_infrastructure_level);
+
+        // 1. Burgher Wealth Deduction (scaled by blockade %)
+        let burgher_wealth_penalty = op.blockade_efficiency;
+
+        // 2. Daily Devastation accumulation
+        let daily_devastation = op.daily_devastation_rate * op.blockade_efficiency;
+
+        // 3. Workshop Raw Goods Starvation: if efficiency >= 75%, downstream production collapses to 0
+        let workshop_starvation = (op.blockade_efficiency >= 0.75);
+
+        return (burgher_wealth_penalty, daily_devastation, workshop_starvation);
+    }
+}

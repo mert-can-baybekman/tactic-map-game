@@ -1,0 +1,70 @@
+// =========================================================================
+// MULTI-VARIABLE TRANSACTIONAL PEACE TREATY ENGINE SPECIFICATION
+// Subsystem: /src/politics/diplomacy/peace_engine.lang
+// =========================================================================
+
+module GameEngine.Politics.Diplomacy.PeaceEngine {
+
+    enum TreatyClauseType {
+        Cede_Location,
+        Revoke_Privilege,
+        War_Indemnities,
+        Dismantle_Fort,
+        Enforce_Religious_Concession
+    }
+
+    struct CedeLocationPayload {
+        location_id: u32,
+        new_sovereign_tag: string,
+        new_controller_tag: string,
+        initial_crown_control_floor: f32 = 0.20 // 20.0% floor
+    }
+
+    struct RevokePrivilegePayload {
+        target_country_tag: string,
+        target_estate_name: string,
+        privilege_id: string,
+        loyalty_drop_penalty: f32,
+        estate_power_reduction: f32
+    }
+
+    struct WarIndemnitiesPayload {
+        paying_country_tag: string,
+        receiving_country_tag: string,
+        duration_years: u32 = 5,
+        monthly_tax_skim_rate: f32 = 0.10 // 10% monthly tax revenue
+    }
+
+    struct TreatyClause {
+        clause_type: TreatyClauseType,
+        war_score_cost: f32,
+        giver_country_tag: string,
+        receiver_country_tag: string,
+        cede_payload: option<CedeLocationPayload>,
+        revoke_payload: option<RevokePrivilegePayload>,
+        indemnities_payload: option<WarIndemnitiesPayload>
+    }
+
+    struct PeaceDealTransaction {
+        initiator_country_tag: string,
+        target_country_tag: string,
+        accumulated_war_score: f32,
+        demanded_clauses: array<TreatyClause>,    // From Target to Initiator
+        concession_clauses: array<TreatyClause>,  // From Initiator to Target (Barter offset)
+        is_unconditional_surrender: bool
+    }
+
+    fn CalculateWarScoreBudget(transaction: PeaceDealTransaction) -> f32 {
+        let gross_demands = 0.0;
+        for clause in transaction.demanded_clauses {
+            gross_demands += clause.war_score_cost;
+        }
+
+        let concessions_credit = 0.0;
+        for clause in transaction.concession_clauses {
+            concessions_credit += clause.war_score_cost;
+        }
+
+        return gross_demands - concessions_credit;
+    }
+}

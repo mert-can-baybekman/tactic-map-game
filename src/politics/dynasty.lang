@@ -1,0 +1,116 @@
+// =========================================================================
+// DYNASTIC PERSONAL UNION & SUCCESSION CRISIS SIMULATOR SPECIFICATION
+// Subsystem: /src/politics/dynasty.lang
+// =========================================================================
+
+module GameEngine.Politics.Dynasty {
+
+    struct DynasticCharacter {
+        character_id: u32,
+        first_name: string,
+        dynasty_name: string,
+        country_tag: string,
+        dynastic_claim_strength: f32, // 0.0 to 100.0
+        prestige: f32,
+        is_alive: bool
+    }
+
+    struct RoyalMarriageAgreement {
+        id: string,
+        senior_tag: string,
+        junior_tag: string,
+        claim_strength: f32, // 0.0 to 100.0
+        senior_prestige: f32,
+        established_date: string
+    }
+
+    struct PersonalUnionRelation {
+        senior_partner_tag: string,
+        junior_partner_tag: string,
+        integration_progress_pct: f32 = 0.0,
+        liberty_desire_pct: f32 = 10.0,
+        joint_levies_mobilized: bool = true,
+        foreign_policy_locked: bool = true
+    }
+
+    enum SuccessionResolutionType {
+        Smooth_Heir_Ascension,
+        Peaceful_Personal_Union,
+        Succession_War_Conflict,
+        Local_Nobility_Regency
+    }
+
+    struct SuccessionEvaluationResult {
+        resolution_type: SuccessionResolutionType,
+        deceased_country_tag: string,
+        senior_claimant_tag: option<string>,
+        rival_claimant_tag: option<string>,
+        casus_belli_id: option<string>,
+        description: string
+    }
+
+    // Evaluates succession outcome upon ruler death
+    fn EvaluateDynasticSuccession(
+        deceased: DynasticCharacter,
+        has_living_heir: bool,
+        marriage_links: array<RoyalMarriageAgreement>
+    ) -> SuccessionEvaluationResult {
+        // 1. Smooth heir succession
+        if has_living_heir {
+            return SuccessionEvaluationResult {
+                resolution_type: SuccessionResolutionType.Smooth_Heir_Ascension,
+                deceased_country_tag: deceased.country_tag,
+                senior_claimant_tag: none,
+                rival_claimant_tag: none,
+                casus_belli_id: none,
+                description: "Designated heir ascends the throne smoothly."
+            };
+        }
+
+        // 2. Filter valid marriage links with claim strength >= 50.0
+        let qualifying_marriages = array<RoyalMarriageAgreement>();
+        for link in marriage_links {
+            if link.junior_tag == deceased.country_tag && link.claim_strength >= 50.0 {
+                qualifying_marriages.push(link);
+            }
+        }
+
+        // 3. Rival Succession War Trigger: two or more strong claimants exist
+        if qualifying_marriages.length() >= 2 {
+            let senior_claim = qualifying_marriages[0];
+            let rival_claim = qualifying_marriages[1];
+
+            return SuccessionEvaluationResult {
+                resolution_type: SuccessionResolutionType.Succession_War_Conflict,
+                deceased_country_tag: deceased.country_tag,
+                senior_claimant_tag: some(senior_claim.senior_tag),
+                rival_claimant_tag: some(rival_claim.senior_tag),
+                casus_belli_id: some("cb_succession_crisis"),
+                description: "Succession Crisis! Multiple dynastic claimants contest the vacant throne."
+            };
+        }
+
+        // 4. Peaceful Personal Union Trigger
+        if qualifying_marriages.length() == 1 {
+            let senior_claim = qualifying_marriages[0];
+            return SuccessionEvaluationResult {
+                resolution_type: SuccessionResolutionType.Peaceful_Personal_Union,
+                deceased_country_tag: deceased.country_tag,
+                senior_claimant_tag: some(senior_claim.senior_tag),
+                rival_claimant_tag: none,
+                casus_belli_id: none,
+                description: "Monarch died without issue. Realm enters a Personal Union."
+            };
+        }
+
+        // 5. Fallback: Local nobility council assumes regency
+        return SuccessionEvaluationResult {
+            resolution_type: SuccessionResolutionType.Local_Nobility_Regency,
+            deceased_country_tag: deceased.country_tag,
+            senior_claimant_tag: none,
+            rival_claimant_tag: none,
+            casus_belli_id: none,
+            description: "No legitimate claimants found. Local nobility crowns a domestic sovereign."
+        };
+    }
+}
