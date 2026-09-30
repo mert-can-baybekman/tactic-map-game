@@ -9,4 +9,6 @@ export * from './espionage.ts';
 export * from './diplomacy/cb.ts';
 export * from './diplomacy/peace_engine.ts';
 export * from './dynasty.ts';
+export * from './ideas.ts';
+export * from './integration.ts';
 export * from './events/collapse.ts';

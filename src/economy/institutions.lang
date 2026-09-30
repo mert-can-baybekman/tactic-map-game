@@ -1,0 +1,56 @@
+// =========================================================================
+// DYNAMIC INSTITUTION DIFFUSION & GLOBAL TECHNOLOGY ERAS SPECIFICATION
+// Subsystem: /src/economy/institutions.lang
+// =========================================================================
+
+module GameEngine.Economy.Institutions {
+
+    struct InstitutionDefinition {
+        id: string,
+        name: string,
+        era: string,
+        tech_cost_modifier: f32 = -0.15,
+        unembraced_penalty_factor: f32 = 0.50
+    }
+
+    struct LocationInstitutionState {
+        location_id: u32,
+        name: string,
+        country_tag: string,
+        is_market_hub: bool,
+        total_wealth: f32,
+        devastation: f32,
+        infrastructure_capacity: f32,
+        connected_trade_throughput: f32,
+        presence_percentage: map<string, f32> // institution_id -> 0.0 to 100.0%
+    }
+
+    // Procedural Breakthrough Check: Spawns organically based on rigid parameters
+    fn CheckRenaissanceBreakthrough(
+        loc: LocationInstitutionState,
+        burgher_pop_fraction: f32,
+        ruler_learning: u32
+    ) -> bool {
+        return loc.is_market_hub &&
+               (burgher_pop_fraction >= 0.15) &&
+               (loc.total_wealth >= 500.0) &&
+               (ruler_learning >= 75);
+    }
+
+    // Monthly Proximity Diffusion Formula
+    // Spread_Rate = Base_Constant * (1.0 - Devastation) * (Infrastructure_Capacity) * Connected_Trade_Throughput_Volume
+    fn CalculateMonthlyDiffusionRate(
+        base_constant: f32,
+        devastation: f32,
+        infrastructure: f32,
+        trade_throughput: f32,
+        presence_gradient: f32
+    ) -> f32 {
+        let devastation_mitigation = max(0.0, 1.0 - devastation);
+        let infra = max(0.1, infrastructure);
+        let trade = max(0.1, trade_throughput);
+        let gradient = max(0.0, presence_gradient);
+
+        return base_constant * devastation_mitigation * infra * trade * gradient;
+    }
+}

@@ -1,0 +1,51 @@
+// =========================================================================
+// LOCAL AUTONOMY & CORE INTEGRATION ENGINE SPECIFICATION
+// Subsystem: /src/politics/integration.lang
+// =========================================================================
+
+module GameEngine.Politics.Integration {
+
+    struct IntegrationTask {
+        task_id: string,
+        location_id: u32,
+        territory_name: string,
+        country_tag: string,
+        progress_percentage: f32 = 0.0, // 0.0 to 100.0%
+        base_speed: f32 = 0.50,
+        is_completed: bool = false
+    }
+
+    struct LocationAutonomyState {
+        location_id: u32,
+        local_autonomy_level: f32, // 0.0 to 100.0%
+        is_core_territory: bool,
+        estate_wealth_routing_share: f32
+    }
+
+    // Monthly Integration Calculation
+    // Integration_Progress_Delta = Base_Speed * (Ruler_Stewardship + Active_Idea_Modifiers) / (Local_Autonomy_Level)
+    fn CalculateMonthlyIntegrationProgress(
+        base_speed: f32,
+        ruler_stewardship: f32,
+        idea_modifiers: f32,
+        local_autonomy: f32
+    ) -> f32 {
+        let stewardship_factor = max(0.5, (ruler_stewardship / 50.0));
+        let speed_modifier = (stewardship_factor + idea_modifiers);
+        let autonomy_resistance = max(15.0, local_autonomy);
+
+        return (base_speed * speed_modifier * 100.0) / autonomy_resistance;
+    }
+
+    // High Autonomy Tax Filter: scales state extraction and routes wealth to local estates
+    fn CalculateAutonomyTaxRetention(
+        gross_potential_tax: f32,
+        local_autonomy: f32
+    ) -> (f32, f32) {
+        let autonomy_fraction = clamp(local_autonomy / 100.0, 0.0, 1.0);
+        let state_extracted_tax = gross_potential_tax * (1.0 - autonomy_fraction);
+        let local_estate_diverted_tax = gross_potential_tax * autonomy_fraction;
+
+        return (state_extracted_tax, local_estate_diverted_tax);
+    }
+}

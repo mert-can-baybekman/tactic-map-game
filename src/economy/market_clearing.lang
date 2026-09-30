@@ -1,0 +1,56 @@
+// =========================================================================
+// DYNAMIC MARKET CLEARING & SUPPLY-DEMAND PRICE FIXING SPECIFICATION
+// Subsystem: /src/economy/market_clearing.lang
+// =========================================================================
+
+module GameEngine.Economy.MarketClearing {
+
+    struct TradeGoodDefinition {
+        id: string,
+        name: string,
+        base_price: f32,
+        price_elasticity: f32 = 0.50,
+        is_strategic_military_good: bool = false
+    }
+
+    struct MarketHubBalance {
+        hub_id: u32,
+        hub_name: string,
+        good_id: string,
+        local_supply: f32,
+        local_demand: f32,
+        clearing_price: f32,
+        is_supply_starved: bool = false
+    }
+
+    // Localized Price Fixing Algorithm:
+    // Market_Price = Base_Price * (Total_Local_Demand / Total_Local_Supply)^Price_Elasticity_Factor
+    fn CalculateClearingPrice(
+        base_price: f32,
+        demand: f32,
+        supply: f32,
+        elasticity: f32
+    ) -> f32 {
+        let safe_supply = max(0.01, supply);
+        let safe_demand = max(0.01, demand);
+        let ratio = safe_demand / safe_supply;
+        let price = base_price * pow(ratio, elasticity);
+
+        // Clamp between -85% minimum and +400% maximum price ceiling
+        return clamp(price, base_price * 0.15, base_price * 5.0);
+    }
+
+    // Blockade Starvation Check
+    fn EvaluateStarvationPriceSpike(
+        is_blockaded: bool,
+        base_price: f32,
+        normal_price: f32
+    ) -> (f32, bool) {
+        if is_blockaded {
+            // Price spikes by 400% (5.0x base price)
+            let spiked_price = base_price * 5.0;
+            return (spiked_price, true);
+        }
+        return (normal_price, false);
+    }
+}

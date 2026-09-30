@@ -1,0 +1,42 @@
+// =========================================================================
+// MULTI-TIER IDEA GROUP CUSTOMIZATION NETWORK SPECIFICATION
+// Subsystem: /src/politics/ideas.lang
+// =========================================================================
+
+module GameEngine.Politics.Ideas {
+
+    enum IdeaGroupCategory {
+        Administrative,
+        Military,
+        Diplomatic_Maritime,
+        Innovative
+    }
+
+    struct IdeaNode {
+        id: string,
+        tier: u32, // 1 to 7
+        name: string,
+        cost_prestige: f32 = 15.0,
+        cost_crown_power: f32 = 0.10,
+        is_unlocked: bool = false
+    }
+
+    struct IdeaGroup {
+        id: string,
+        name: string,
+        category: IdeaGroupCategory,
+        unlock_requirement_prestige: f32 = 25.0,
+        unlock_requirement_crown_power: f32 = 0.35,
+        nodes: array<IdeaNode>,
+        bonus_completion_perk: string
+    }
+
+    // Active Engine Modifiers injected directly into subsystems
+    struct ActiveIdeaModifiers {
+        control_decay_reduction: f32 = 0.0,       // Administrative Idea 3: reduces distance control decay constant
+        levy_mobilization_bonus: f32 = 0.0,       // Quantity Idea 1: +10% pop-to-soldier extraction
+        tax_skimming_efficiency_bonus: f32 = 0.0, // Administrative Idea 1
+        blockade_efficiency_bonus: f32 = 0.0,     // Maritime Idea 2: +25% naval blockade power
+        tech_cost_reduction: f32 = 0.0            // Innovative Idea 2
+    }
+}
