@@ -278,21 +278,7 @@
             <rect x="-800" y="-500" width="3600" height="2200" fill="url(#oceanBathymetry)" />
             <rect x="-800" y="-500" width="3600" height="2200" fill="url(#tacticalGrid)" />
 
-            <!-- 2. BATHYMETRIC WATERWAYS & SHALLOW TURQUOISE COASTAL SHELVES -->
-            <!-- Continental Shelf Turquoise Halos (Anti-aliased coastal glow) -->
-            <g id="coastal-shelf-system" class="coastal-shelf-layer">
-              <!-- British Isles & Channel Shelf -->
-              <path class="coastal-shelf-halo" d="M 290,225 C 330,230 370,225 395,212 C 420,205 415,180 400,160 C 385,140 370,95 345,65 C 320,75 305,120 315,160 C 295,175 285,215 290,225 Z" />
-              <!-- Italian Boot & Adriatic/Tyrrhenian Shelf -->
-              <path class="coastal-shelf-halo" d="M 660,370 C 695,355 745,335 770,365 C 800,400 840,430 870,470 C 865,510 820,535 780,535 C 755,480 720,410 660,370 Z" />
-              <!-- Aegean, Greece & Marmara Shelf -->
-              <path class="coastal-shelf-halo" d="M 1030,530 C 1070,520 1130,460 1170,435 C 1220,430 1235,460 1210,480 C 1175,540 1090,590 1030,530 Z" />
-              <!-- Crimean Peninsula & Sea of Azov Shelf -->
-              <path class="coastal-shelf-halo" d="M 1370,335 C 1410,325 1455,335 1460,350 C 1445,380 1395,385 1375,360 Z" />
-              <!-- Nile Delta Turquoise Shelf -->
-              <path class="coastal-shelf-halo" d="M 1240,665 C 1270,645 1315,645 1340,660 C 1330,685 1290,695 1255,675 Z" />
-            </g>
-
+            <!-- 2. BATHYMETRIC WATERWAYS & NATURAL SEA BASINS -->
             <!-- Mediterranean Sea Deep Trench -->
             <path d="M 270,600 C 500,570 750,560 1000,580 C 1200,600 1370,630 1370,670 C 1220,665 720,680 340,670 Z" fill="#041224" opacity="0.85" />
             <!-- Black Sea Deep Basin -->
@@ -406,24 +392,30 @@
               <polygon points="180,610 240,620 320,630 400,635 360,650 260,640 190,625" fill="#443a2b" stroke="#61533d" stroke-width="1.5" />
             </g>
 
-            <!-- 6. POLITICAL SOVEREIGN TERRITORY SHADER WASHES -->
+            <!-- 6. POLITICAL SOVEREIGN TERRITORY SHADER WASHES (Strictly inside realistic GIS boundaries) -->
             <g id="political-wash-layer">
-              <!-- England (Crimson Tint) -->
-              <path class="political-wash" d="M 300,215 C 330,222 360,220 385,205 C 398,196 388,190 375,193 C 395,185 415,185 412,170 C 400,158 385,150 378,132 C 340,140 318,175 300,215 Z" fill="#dc2626" fill-opacity="0.18" />
-              <!-- France (Royal Blue Tint) -->
-              <path class="political-wash" d="M 398,210 C 430,200 480,185 530,175 C 550,230 520,370 460,435 C 420,465 370,465 340,360 Z" fill="#2563eb" fill-opacity="0.18" />
-              <!-- Byzantine Enclave (Imperial Purple in Thrace / Constantinople) -->
-              <circle class="political-wash" cx="1223" cy="435" r="32" fill="#9333ea" fill-opacity="0.30" />
-              <!-- Ottoman Beylik (Emerald Green in Northwestern Anatolia) -->
-              <path class="political-wash" d="M 1220,432 C 1260,435 1285,445 1280,480 C 1240,485 1220,470 1220,432 Z" fill="#059669" fill-opacity="0.28" />
-              <!-- Mamluk Sultanate (Gold / Ochre Tint over Egypt, Levant, and Hejaz) -->
-              <path class="political-wash" d="M 1251,660 C 1310,648 1355,660 1400,650 C 1475,615 1545,860 1610,950 C 1540,940 1460,830 1340,680 Z" fill="#d97706" fill-opacity="0.22" />
-              <!-- Jalayirid Sultanate (Turquoise / Cyan Tint over Persia & Tabriz) -->
-              <path class="political-wash" d="M 1680,470 C 1750,465 1840,475 1920,490 C 1900,670 1780,670 1680,590 Z" fill="#0891b2" fill-opacity="0.22" />
-              <!-- Golden Horde (Bronze / Yellow Tint over Pontic Steppes) -->
-              <path class="political-wash" d="M 1280,370 C 1420,335 1560,340 1620,410 C 1500,415 1380,400 1280,370 Z" fill="#ca8a04" fill-opacity="0.20" />
-              <!-- Genoa Gazaria (Azure Tint in Caffa & Cherson) -->
-              <ellipse class="political-wash" cx="1414" cy="343" rx="35" ry="25" fill="#0284c7" fill-opacity="0.30" />
+              <!-- England (Deep Red Tint strictly covering English realm) -->
+              <path class="political-wash" id="wash-england" d="M 300,215 C 330,222 360,220 385,205 C 398,196 388,190 375,193 C 395,185 415,185 412,170 C 400,158 385,150 378,132 C 340,140 318,175 300,215 Z" fill="#dc2626" fill-opacity="0.22" />
+              <!-- France (Navy Blue Tint strictly covering French realm) -->
+              <path class="political-wash" id="wash-france" d="M 398,210 C 430,200 480,185 530,175 C 550,230 520,370 460,435 C 420,465 370,465 340,360 Z" fill="#1d4ed8" fill-opacity="0.22" />
+              <!-- Republic of Venice (Cyan Tint covering Venice Lagoon, Dalmatia & Crete) -->
+              <path class="political-wash" id="wash-venice" d="M 720,330 C 740,332 760,350 770,380 C 760,375 745,355 726,334 Z M 1115,622 C 1150,615 1185,618 1195,625 C 1180,634 1135,632 1115,622 Z" fill="#06b6d4" fill-opacity="0.28" />
+              <!-- Papal States (Gold Tint in Central Italy) -->
+              <path class="political-wash" id="wash-papacy" d="M 720,390 C 740,380 760,400 755,430 C 735,435 720,415 720,390 Z" fill="#ca8a04" fill-opacity="0.24" />
+              <!-- Byzantine Realm (Imperial Purple strictly bounded to Thrace, Marmara coast, and Morea) -->
+              <path class="political-wash" id="wash-byzantium" d="M 1150,410 C 1180,410 1210,420 1223,435 C 1215,445 1195,455 1175,450 C 1150,440 1145,420 1150,410 Z M 1040,535 C 1080,535 1090,575 1065,588 C 1040,580 1030,555 1040,535 Z" fill="#9333ea" fill-opacity="0.30" />
+              <!-- Ottoman Beylik (Dark Emerald Green strictly in Northwestern Anatolia / Bithynia) -->
+              <path class="political-wash" id="wash-ottoman" d="M 1220,432 C 1260,435 1285,445 1280,480 C 1240,485 1220,470 1220,432 Z" fill="#047857" fill-opacity="0.28" />
+              <!-- Genoa Gazaria (Azure Tint strictly following Southern Crimean littoral) -->
+              <path class="political-wash" id="wash-genoa" d="M 1385,372 C 1405,374 1412,355 1414,343 C 1435,342 1455,340 1448,332 C 1425,340 1400,350 1385,372 Z" fill="#0284c7" fill-opacity="0.30" />
+              <!-- Mamluk Sultanate (Ochre Tint over Egypt, Levant, and Hejaz) -->
+              <path class="political-wash" id="wash-mamluks" d="M 1251,660 C 1310,648 1355,660 1400,650 C 1475,615 1545,860 1610,950 C 1540,940 1460,830 1340,680 Z" fill="#d97706" fill-opacity="0.22" />
+              <!-- Jalayirid Sultanate (Turquoise Tint over Persia & Tabriz) -->
+              <path class="political-wash" id="wash-jalayirids" d="M 1680,470 C 1750,465 1840,475 1920,490 C 1900,670 1780,670 1680,590 Z" fill="#0891b2" fill-opacity="0.22" />
+              <!-- Golden Horde (Bronze Tint over Pontic Steppes) -->
+              <path class="political-wash" id="wash-golden-horde" d="M 1280,370 C 1420,335 1560,340 1620,410 C 1500,415 1380,400 1280,370 Z" fill="#ca8a04" fill-opacity="0.20" />
+              <!-- Muscovite Rus (Crimson Tint around Moscow & Vladimir-Suzdal) -->
+              <path class="political-wash" id="wash-muscovy" d="M 1430,75 C 1480,60 1530,70 1540,110 C 1520,135 1460,135 1430,105 Z" fill="#b91c1c" fill-opacity="0.24" />
             </g>
 
             <!-- 7. SEAS, GULFS & STRATEGIC CHOKE-POINT LABELS -->

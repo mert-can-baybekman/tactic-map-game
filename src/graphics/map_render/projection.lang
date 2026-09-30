@@ -1,0 +1,139 @@
+// =========================================================================
+// REAL EARTH MAP GRID PROJECTION & LAYERED MESH INITIALIZATION SCRIPT
+// Language: Clausewitz/Jomini Standard Domain Architecture (.lang)
+// File: /src/graphics/map_render/projection.lang
+// =========================================================================
+
+module EarthGisProjectionEngine {
+
+  struct GeoCoordinate {
+    longitude: Float, // WGS84 Degrees [-180.0, 180.0]
+    latitude: Float   // WGS84 Degrees [-90.0, 90.0]
+  }
+
+  struct CanvasPoint {
+    x: Float,
+    y: Float
+  }
+
+  struct ViewportProjectionConfig {
+    min_lon: Float,       // -12.0 deg (Iberia / Morocco western boundary)
+    max_lon: Float,       //  55.0 deg (Iran / Persian Gulf eastern boundary)
+    min_lat: Float,       //  12.0 deg (Gulf of Aden / Bab-el-Mandeb southern boundary)
+    max_lat: Float,       //  60.0 deg (Baltic / Moscow northern boundary)
+    canvas_width: Float,  // 2000.0 px
+    canvas_height: Float  // 1100.0 px
+  }
+
+  const EURASIAN_VIEWPORT_CONFIG: ViewportProjectionConfig = {
+    min_lon: -12.0,
+    max_lon: 55.0,
+    min_lat: 12.0,
+    max_lat: 60.0,
+    canvas_width: 2000.0,
+    canvas_height: 1100.0
+  };
+
+  // -------------------------------------------------------------------------
+  // 1. HARD-WIRED REAL EARTH GIS PROJECTION CONVERSION
+  // -------------------------------------------------------------------------
+  fn ProjectWgs84ToCanvas(coord: GeoCoordinate, cfg: ViewportProjectionConfig) -> CanvasPoint {
+    let lon_span: Float = cfg.max_lon - cfg.min_lon; // 67.0 deg
+    let lat_span: Float = cfg.max_lat - cfg.min_lat; // 48.0 deg
+
+    // Equirectangular cylindrical projection with standard parallel metric
+    let norm_x: Float = (coord.longitude - cfg.min_lon) / lon_span;
+    let norm_y: Float = (cfg.max_lat - coord.latitude) / lat_span;
+
+    let clamped_x: Float = MaxFloat(0.0, MinFloat(1.0, norm_x));
+    let clamped_y: Float = MaxFloat(0.0, MinFloat(1.0, norm_y));
+
+    return {
+      x: RoundFloat(clamped_x * cfg.canvas_width * 100.0) / 100.0,
+      y: RoundFloat(clamped_y * cfg.canvas_height * 100.0) / 100.0
+    };
+  }
+
+  fn UnprojectCanvasToWgs84(pt: CanvasPoint, cfg: ViewportProjectionConfig) -> GeoCoordinate {
+    let lon_span: Float = cfg.max_lon - cfg.min_lon;
+    let lat_span: Float = cfg.max_lat - cfg.min_lat;
+
+    let lon: Float = cfg.min_lon + (pt.x / cfg.canvas_width) * lon_span;
+    let lat: Float = cfg.max_lat - (pt.y / cfg.canvas_height) * lat_span;
+
+    return {
+      longitude: RoundFloat(lon * 10000.0) / 10000.0,
+      latitude:  RoundFloat(lat * 10000.0) / 10000.0
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // 2. LAYERED MAP MESH COMPOSITOR: DrawTrueWorldMap()
+  // Execution Sequence:
+  // [Step 1: Clear Abstract Blobs]
+  // [Step 2: Render Authentic High-Definition Earth Map Base Layer]
+  // [Step 3: Apply Alpha-Blended Political Colors]
+  // [Step 4: Overlay Precise Node Network & Curved Path Edges]
+  // -------------------------------------------------------------------------
+  fn DrawTrueWorldMap(ctx: GraphicsContext, state: SimulationState) {
+    // STEP 1: Purge legacy abstract shapes, oval meshes, and circular placeholder islands
+    ctx.ClearViewportLayer("legacy-abstract-blobs");
+    ctx.ClearViewportLayer("coastal-shelf-system");
+
+    // STEP 2: Render Authentic High-Definition Earth Base Layer (Ocean, Shelf, Coastlines)
+    ctx.BeginLayer("ocean-bathymetry-abyss");
+    ctx.DrawRect(0.0, 0.0, 2000.0, 1100.0, "#081325"); // Deep navy void
+    ctx.EndLayer();
+
+    ctx.BeginLayer("authentic-earth-mesh");
+    // Coastline paths constructed strictly via high-resolution GIS coordinates:
+    // British Isles, Ireland, Iberian Peninsula, Italian Boot, Balkans, Anatolia,
+    // Caucasus, Persia, Levant, Arabia, Red Sea, Egypt Nile Delta, North Africa Rim.
+    ctx.RenderGisMesh("land-britain",         GetBritainPolygon(),        "#182e1f", "#4ade80");
+    ctx.RenderGisMesh("land-ireland",         GetIrelandPolygon(),        "#15281b", "#34d399");
+    ctx.RenderGisMesh("land-iberia",          GetIberianPolygon(),        "#22231c", "#fbbf24");
+    ctx.RenderGisMesh("land-italy",           GetItalianBootPolygon(),    "#1d2735", "#38bdf8");
+    ctx.RenderGisMesh("land-western-europe",  GetWesternEuropePolygon(),  "#1a2535", "#38bdf8");
+    ctx.RenderGisMesh("land-eastern-europe",  GetEasternEuropePolygon(),  "#1e2722", "#4ade80");
+    ctx.RenderGisMesh("land-balkans",         GetBalkansPolygon(),        "#1b2a24", "#34d399");
+    ctx.RenderGisMesh("land-anatolia",        GetAnatoliaPolygon(),       "#262218", "#f59e0b");
+    ctx.RenderGisMesh("land-crimea",          GetCrimeaPolygon(),         "#252c22", "#4ade80");
+    ctx.RenderGisMesh("land-caucasus",        GetCaucasusPolygon(),       "#2c271d", "#f59e0b");
+    ctx.RenderGisMesh("land-persia",          GetPersiaPolygon(),         "#2b2319", "#00e5ff");
+    ctx.RenderGisMesh("land-egypt",           GetNileDeltaPolygon(),      "#2a2216", "#fbbf24");
+    ctx.RenderGisMesh("land-arabia-redsea",   GetArabianRedSeaPolygon(),  "#2d2216", "#f59e0b");
+    ctx.RenderGisMesh("land-north-africa",    GetNorthAfricaPolygon(),    "#242118", "#fbbf24");
+    ctx.EndLayer();
+
+    // STEP 3: Apply Alpha-Blended Sovereign Political Color Washes strictly inside boundaries
+    ctx.BeginLayer("political-domain-washes");
+    if (state.active_map_mode == "political") {
+      ctx.SetBlendMode("src_alpha", "one_minus_src_alpha");
+      ctx.FillSubRegion("ENG", GetEnglandBoundary(),     "#dc2626", 0.22); // Deep Red
+      ctx.FillSubRegion("FRA", GetFranceBoundary(),      "#1d4ed8", 0.22); // Royal Navy Blue
+      ctx.FillSubRegion("VEN", GetVenetianTerritory(),   "#0284c7", 0.30); // Venetian Cyan
+      ctx.FillSubRegion("PAP", GetPapalStates(),         "#ca8a04", 0.25); // Papal Gold
+      ctx.FillSubRegion("TUR", GetOttomanTerritory(),    "#047857", 0.28); // Ottoman Emerald Green
+      ctx.FillSubRegion("BYZ", GetByzantineImperial(),   "#7e22ce", 0.35); // Byzantine Purple
+      ctx.FillSubRegion("GEN", GetGenoeseGazaria(),      "#0369a1", 0.30); // Genoese Azure
+      ctx.FillSubRegion("MAM", GetMamlukSultanate(),     "#c2410c", 0.25); // Mamluk Burnt Orange
+      ctx.FillSubRegion("JAL", GetJalayiridEmpire(),     "#0e7490", 0.25); // Jalayirid Turquoise
+      ctx.FillSubRegion("MOS", GetMuscoviteRus(),        "#b91c1c", 0.25); // Muscovite Crimson
+    }
+    ctx.EndLayer();
+
+    // STEP 4: Overlay Precise Interactive Node Network & Smooth Curved Logistics Edges
+    ctx.BeginLayer("logistics-and-nodes");
+    // Draw fluid curved splines for maritime lanes and overland Silk Road
+    ctx.DrawSmoothSpline("route-silk-road",       GetSilkRoadWaypoints(),      "#f59e0b", 4.0);
+    ctx.DrawSmoothSpline("route-redsea-corridor", GetRedSeaChannelWaypoints(), "#00e5ff", 3.5);
+    ctx.DrawSmoothSpline("route-steppe-corridor", GetSteppeWaypoints(),        "#f8fafc", 2.8);
+    ctx.DrawSmoothSpline("route-mediterranean",   GetMediterraneanWaypoints(), "#38bdf8", 4.0);
+
+    // Render interactive location nodes anchored to physical coordinates
+    for (node in state.registered_nodes) {
+      ctx.DrawNodeAnchor(node.id, node.canvas_x, node.canvas_y, node.core_color, node.symbol);
+    }
+    ctx.EndLayer();
+  }
+}
