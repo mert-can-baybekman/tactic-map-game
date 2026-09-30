@@ -26,34 +26,55 @@
   padding: 0;
 }
 
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden !important;
+  box-sizing: border-box;
+}
+
 body {
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden !important;
+  box-sizing: border-box;
+  position: relative;
 }
 
 /* TOP STATUS BAR (PROJECT CAESAR / GRAND STRATEGY STYLE) */
 .top-header {
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
   background: linear-gradient(180deg, #181c26 0%, #0d1017 100%);
   border-bottom: 2px solid var(--border-gold);
-  padding: 6px 18px;
+  padding: 6px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
   z-index: 100;
   height: 58px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .shield-crest {
@@ -78,24 +99,27 @@ body {
 .header-resources {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .res-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  padding: 4px 10px;
+  padding: 3px 8px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
-.res-item .icon { font-size: 14px; }
+.res-item .icon { font-size: 13px; }
 .res-item .value { font-weight: 700; color: #fff; }
-.res-item .delta { font-size: 11px; margin-left: 2px; }
+.res-item .delta { font-size: 10px; margin-left: 2px; }
 .res-item .delta.pos { color: var(--accent-green); }
 .res-item .delta.neg { color: var(--accent-red); }
 
@@ -104,23 +128,24 @@ body {
   background: linear-gradient(90deg, rgba(217, 119, 6, 0.25) 0%, rgba(180, 83, 9, 0.4) 50%, rgba(217, 119, 6, 0.25) 100%);
   border: 1px solid var(--border-gold);
   border-radius: 6px;
-  padding: 4px 12px;
+  padding: 3px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .age-title {
   font-family: var(--font-serif);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--accent-gold-light);
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 .age-progress {
-  width: 90px;
-  height: 4px;
+  width: 75px;
+  height: 3px;
   background: #000;
   border-radius: 2px;
   overflow: hidden;
@@ -136,19 +161,20 @@ body {
 .header-calendar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: rgba(0, 0, 0, 0.5);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 6px;
   border: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .calendar-date {
   font-family: var(--font-serif);
-  font-size: 14px;
+  font-size: 13px;
   color: #ffd700;
   font-weight: 700;
-  min-width: 95px;
+  min-width: 85px;
   text-align: center;
 }
 
@@ -156,10 +182,11 @@ body {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  padding: 5px 12px;
+  padding: 4px 10px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
+  white-space: nowrap;
   transition: all 0.2s;
 }
 
@@ -178,7 +205,10 @@ body {
 .gsg-workspace {
   flex: 1;
   display: grid;
-  grid-template-columns: 340px 1fr 320px;
+  grid-template-columns: 320px minmax(0, 1fr) 300px;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
   height: calc(100vh - 58px);
   min-height: 0;
   overflow: hidden;
@@ -410,6 +440,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
   min-height: 0;
   min-width: 0;
   overflow: hidden;
@@ -417,31 +448,35 @@ body {
 
 /* MAP HEADER BAR */
 .map-stage-header {
-  height: 48px;
+  height: 44px;
   background: rgba(18, 22, 32, 0.95);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 12px;
+  gap: 8px;
   flex-shrink: 0;
   z-index: 10;
+  overflow: hidden;
 }
 
 .map-mode-bar {
   display: flex;
-  gap: 6px;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .mode-btn {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
-  padding: 5px 12px;
+  padding: 4px 10px;
   border-radius: 5px;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s;
 }
 
@@ -580,15 +615,17 @@ body {
 
 /* MAP FOOTER BAR */
 .map-stage-footer {
-  height: 52px;
+  height: 46px;
   background: rgba(18, 22, 32, 0.98);
   border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 12px;
+  gap: 8px;
   flex-shrink: 0;
   z-index: 10;
+  overflow: hidden;
 }
 
 .location-node {
@@ -1374,5 +1411,66 @@ body {
   justify-content: space-between;
   font-size: 10px;
   margin-top: 4px;
+}
+
+/* RESPONSIVE FLUSH VIEWPORT DOCKING & OVERFLOW GUARDS */
+.theater-subtitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 380px;
+  display: inline-block;
+}
+
+.court-panel, .outliner-panel {
+  min-width: 0;
+}
+
+@media (max-width: 1536px) {
+  .gsg-workspace {
+    grid-template-columns: 290px minmax(0, 1fr) 280px;
+  }
+  .theater-subtitle {
+    max-width: 220px;
+  }
+  .res-item {
+    padding: 3px 6px;
+    font-size: 10.5px;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 1366px) {
+  .gsg-workspace {
+    grid-template-columns: 270px minmax(0, 1fr) 250px;
+  }
+  .theater-subtitle {
+    display: none;
+  }
+  .res-item .delta {
+    display: none;
+  }
+  .mode-btn {
+    padding: 3px 7px;
+    font-size: 10px;
+  }
+  .map-stage-header {
+    padding: 0 8px;
+  }
+  .map-stage-footer {
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .gsg-workspace {
+    grid-template-columns: 240px minmax(0, 1fr) 230px;
+  }
+  .age-banner {
+    display: none;
+  }
+  .header-resources {
+    gap: 4px;
+  }
 }
 

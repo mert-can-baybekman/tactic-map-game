@@ -680,6 +680,19 @@ function executeYearEndPass() {
 
 // EVENT LISTENERS INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
+  // Viewport scroll reset & lock (prevents horizontal layout drift)
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+  window.scrollTo(0, 0);
+  document.documentElement.scrollLeft = 0;
+  document.body.scrollLeft = 0;
+  window.addEventListener('scroll', () => {
+    if (window.scrollX !== 0 || window.scrollY !== 0) {
+      window.scrollTo(0, 0);
+    }
+  });
+
   recalculateControl();
   updateHUD();
 
