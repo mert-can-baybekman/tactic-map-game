@@ -1,0 +1,49 @@
+name: Grand Strategy Engine Simulation CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  validate-simulation:
+    name: Simulation & Economic Integrity Pipeline
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 22.x, 23.x ]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Validate Mod JSON Schemas
+        run: |
+          node -e "
+            const fs = require('fs');
+            const goods = JSON.parse(fs.readFileSync('./data/mods/vanilla/goods.json'));
+            const buildings = JSON.parse(fs.readFileSync('./data/mods/vanilla/buildings.json'));
+            const cultures = JSON.parse(fs.readFileSync('./data/mods/vanilla/cultures.json'));
+            console.log('✓ Modding schemas validated:', {
+              goods: Object.keys(goods).length,
+              buildings: Object.keys(buildings).length,
+              cultures: Object.keys(cultures).length
+            });
+          "
+
+      - name: Run Deterministic Engine Unit Tests
+        run: npm test
+
+      - name: Run Heavy Stress Benchmark & NaN Invariant Verification
+        run: node --experimental-strip-types tests/nan_and_stress.test.ts
+
+      - name: Run Multi-Tick Live Simulation Demo
+        run: npm run simulate

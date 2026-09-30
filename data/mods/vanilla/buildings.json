@@ -1,0 +1,101 @@
+{
+  "grain_farm": {
+    "id": "grain_farm",
+    "name": "Arable Feudal Estate",
+    "type": "extraction",
+    "inputs": {},
+    "outputs": { "grain": 50.0 },
+    "labor_estate": "commoners",
+    "labor_quantity": 2500,
+    "build_cost_gold": 50.0,
+    "maintenance_gold": 0.5
+  },
+  "iron_mine": {
+    "id": "iron_mine",
+    "name": "Subterranean Iron Mine",
+    "type": "extraction",
+    "inputs": { "timber": 5.0 },
+    "outputs": { "iron": 20.0 },
+    "labor_estate": "commoners",
+    "labor_quantity": 1800,
+    "build_cost_gold": 120.0,
+    "maintenance_gold": 2.0
+  },
+  "timber_mill": {
+    "id": "timber_mill",
+    "name": "Forestry Timber Camp",
+    "type": "extraction",
+    "inputs": {},
+    "outputs": { "timber": 30.0 },
+    "labor_estate": "commoners",
+    "labor_quantity": 1200,
+    "build_cost_gold": 60.0,
+    "maintenance_gold": 0.8
+  },
+  "sheep_pasture": {
+    "id": "sheep_pasture",
+    "name": "Highland Sheep Pasture",
+    "type": "extraction",
+    "inputs": {},
+    "outputs": { "wool": 25.0 },
+    "labor_estate": "commoners",
+    "labor_quantity": 1000,
+    "build_cost_gold": 45.0,
+    "maintenance_gold": 0.4
+  },
+  "copper_mine": {
+    "id": "copper_mine",
+    "name": "Deep Copper Adit",
+    "type": "extraction",
+    "inputs": { "timber": 6.0 },
+    "outputs": { "copper": 15.0 },
+    "labor_estate": "commoners",
+    "labor_quantity": 1500,
+    "build_cost_gold": 140.0,
+    "maintenance_gold": 2.5
+  },
+  "weaver_guild": {
+    "id": "weaver_guild",
+    "name": "Burgher Textile Guildhall",
+    "type": "manufacturing",
+    "inputs": { "wool": 15.0 },
+    "outputs": { "cloth": 12.0 },
+    "labor_estate": "burghers",
+    "labor_quantity": 800,
+    "build_cost_gold": 200.0,
+    "maintenance_gold": 4.0
+  },
+  "armory": {
+    "id": "armory",
+    "name": "Munitions Foundry & Armory",
+    "type": "manufacturing",
+    "inputs": { "iron": 12.0, "timber": 8.0 },
+    "outputs": { "weapons": 10.0 },
+    "labor_estate": "burghers",
+    "labor_quantity": 1200,
+    "build_cost_gold": 350.0,
+    "maintenance_gold": 7.0
+  },
+  "artillery_foundry": {
+    "id": "artillery_foundry",
+    "name": "Heavy Cannon Casting Pit",
+    "type": "manufacturing",
+    "inputs": { "copper": 10.0, "iron": 6.0 },
+    "outputs": { "artillery": 4.0 },
+    "labor_estate": "burghers",
+    "labor_quantity": 1400,
+    "build_cost_gold": 600.0,
+    "maintenance_gold": 12.0
+  },
+  "shipyard": {
+    "id": "shipyard",
+    "name": "Naval Drydock & Slipway",
+    "type": "manufacturing",
+    "inputs": { "timber": 25.0, "cloth": 8.0, "iron": 4.0 },
+    "outputs": { "ships": 2.0 },
+    "labor_estate": "burghers",
+    "labor_quantity": 2000,
+    "build_cost_gold": 800.0,
+    "maintenance_gold": 18.0
+  }
+}

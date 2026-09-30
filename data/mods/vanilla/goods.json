@@ -1,0 +1,102 @@
+{
+  "grain": {
+    "id": "grain",
+    "name": "Grain",
+    "category": "raw",
+    "base_price": 2.5,
+    "weight_logistics": 1.2,
+    "elasticity_factor": 0.85,
+    "needs_category": "basic",
+    "caloric_density": 1.0
+  },
+  "iron": {
+    "id": "iron",
+    "name": "Iron Ore",
+    "category": "raw",
+    "base_price": 6.0,
+    "weight_logistics": 2.5,
+    "elasticity_factor": 0.65,
+    "needs_category": "industrial",
+    "caloric_density": 0.0
+  },
+  "timber": {
+    "id": "timber",
+    "name": "Hardwood Timber",
+    "category": "raw",
+    "base_price": 4.0,
+    "weight_logistics": 3.0,
+    "elasticity_factor": 0.70,
+    "needs_category": "industrial",
+    "caloric_density": 0.0
+  },
+  "wool": {
+    "id": "wool",
+    "name": "Raw Wool",
+    "category": "raw",
+    "base_price": 3.5,
+    "weight_logistics": 0.8,
+    "elasticity_factor": 0.90,
+    "needs_category": "basic",
+    "caloric_density": 0.0
+  },
+  "copper": {
+    "id": "copper",
+    "name": "Copper Ore",
+    "category": "raw",
+    "base_price": 5.5,
+    "weight_logistics": 2.2,
+    "elasticity_factor": 0.60,
+    "needs_category": "industrial",
+    "caloric_density": 0.0
+  },
+  "cloth": {
+    "id": "cloth",
+    "name": "Finished Textiles",
+    "category": "manufactured",
+    "base_price": 9.5,
+    "weight_logistics": 0.9,
+    "elasticity_factor": 1.10,
+    "needs_category": "basic",
+    "caloric_density": 0.0
+  },
+  "weapons": {
+    "id": "weapons",
+    "name": "Military Munitions & Arms",
+    "category": "manufactured",
+    "base_price": 18.0,
+    "weight_logistics": 1.8,
+    "elasticity_factor": 0.40,
+    "needs_category": "military",
+    "caloric_density": 0.0
+  },
+  "artillery": {
+    "id": "artillery",
+    "name": "Bronze Cannonry",
+    "category": "manufactured",
+    "base_price": 45.0,
+    "weight_logistics": 5.0,
+    "elasticity_factor": 0.35,
+    "needs_category": "military",
+    "caloric_density": 0.0
+  },
+  "ships": {
+    "id": "ships",
+    "name": "Carrack Naval Hulls",
+    "category": "manufactured",
+    "base_price": 85.0,
+    "weight_logistics": 10.0,
+    "elasticity_factor": 0.30,
+    "needs_category": "military",
+    "caloric_density": 0.0
+  },
+  "fine_wine": {
+    "id": "fine_wine",
+    "name": "Vintage Wine",
+    "category": "luxury",
+    "base_price": 14.0,
+    "weight_logistics": 1.5,
+    "elasticity_factor": 1.45,
+    "needs_category": "luxury",
+    "caloric_density": 0.1
+  }
+}

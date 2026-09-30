@@ -1,0 +1,65 @@
+{
+  "cultures": {
+    "anglo_norman": {
+      "id": "anglo_norman",
+      "name": "Anglo-Norman",
+      "language_family": "oil_insular",
+      "base_assimilation_resistance": 0.35,
+      "tradition_tags": ["feudal_chivalry", "longbow_primacy"]
+    },
+    "francien": {
+      "id": "francien",
+      "name": "Francien",
+      "language_family": "oil_continental",
+      "base_assimilation_resistance": 0.40,
+      "tradition_tags": ["feudal_jurisdiction", "heavy_gendarme"]
+    },
+    "flemish": {
+      "id": "flemish",
+      "name": "Flemish",
+      "language_family": "low_franconian",
+      "base_assimilation_resistance": 0.50,
+      "tradition_tags": ["textile_guilds", "urban_autonomy"]
+    },
+    "castilian": {
+      "id": "castilian",
+      "name": "Castilian",
+      "language_family": "ibero_romance",
+      "base_assimilation_resistance": 0.45,
+      "tradition_tags": ["reconquista_zeal", "tercio_infantry"]
+    },
+    "andalusi": {
+      "id": "andalusi",
+      "name": "Andalusi",
+      "language_family": "arab_romance",
+      "base_assimilation_resistance": 0.70,
+      "tradition_tags": ["irrigated_agriculture", "scholastic_trade"]
+    }
+  },
+  "religions": {
+    "catholic": {
+      "id": "catholic",
+      "name": "Catholic",
+      "group": "christian",
+      "fervor": 0.85,
+      "conversion_resistance": 0.50,
+      "papal_influence": true
+    },
+    "sunni_maliki": {
+      "id": "sunni_maliki",
+      "name": "Sunni (Maliki)",
+      "group": "islam",
+      "fervor": 0.90,
+      "conversion_resistance": 0.65,
+      "papal_influence": false
+    },
+    "cathar": {
+      "id": "cathar",
+      "name": "Cathar Heresy",
+      "group": "christian",
+      "fervor": 0.60,
+      "conversion_resistance": 0.80,
+      "papal_influence": false
+    }
+  }
+}

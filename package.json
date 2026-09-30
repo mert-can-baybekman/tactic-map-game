@@ -1,0 +1,19 @@
+{
+  "name": "grand-strategy-engine",
+  "version": "1.0.0",
+  "description": "Production-grade Clausewitz-inspired Data-Oriented Grand Strategy Engine",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-strip-types --test",
+    "simulate": "node --experimental-strip-types src/index.ts"
+  },
+  "keywords": [
+    "grand-strategy",
+    "simulation",
+    "data-oriented-design",
+    "clausewitz",
+    "project-caesar"
+  ],
+  "author": "Antigravity Systems Architecture Team",
+  "license": "MIT"
+}
