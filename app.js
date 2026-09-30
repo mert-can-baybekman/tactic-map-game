@@ -985,11 +985,45 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCameraTransform();
   }
 
-  function focusOnCoordinates(targetX, targetY, targetZoom = 2.4) {
-    cameraZoom = targetZoom;
-    cameraPanX = (2000 / 2) - targetX * cameraZoom;
-    cameraPanY = (1100 / 2) - targetY * cameraZoom;
-    updateCameraTransform();
+  let activeCameraAnimId = null;
+
+  function focusOnCoordinates(targetX, targetY, targetZoom = 2.4, durationMs = 550) {
+    if (activeCameraAnimId) {
+      cancelAnimationFrame(activeCameraAnimId);
+      activeCameraAnimId = null;
+    }
+
+    const startZoom = cameraZoom;
+    const startPanX = cameraPanX;
+    const startPanY = cameraPanY;
+
+    const destZoom = Math.max(0.75, Math.min(4.5, targetZoom));
+    const destPanX = (2000 / 2) - targetX * destZoom;
+    const destPanY = (1100 / 2) - targetY * destZoom;
+
+    const startTime = performance.now();
+
+    function stepGlide(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(1.0, elapsed / durationMs);
+
+      // Cubic Out Easing: f(t) = 1 - (1 - t)^3
+      const ease = 1.0 - Math.pow(1.0 - progress, 3);
+
+      cameraZoom = startZoom + (destZoom - startZoom) * ease;
+      cameraPanX = startPanX + (destPanX - startPanX) * ease;
+      cameraPanY = startPanY + (destPanY - startPanY) * ease;
+
+      updateCameraTransform();
+
+      if (progress < 1.0) {
+        activeCameraAnimId = requestAnimationFrame(stepGlide);
+      } else {
+        activeCameraAnimId = null;
+      }
+    }
+
+    activeCameraAnimId = requestAnimationFrame(stepGlide);
   }
 
   if (mapSvg) {

@@ -4,6 +4,7 @@ import { GISProjectionPipeline } from '../src/graphics/map_render/gis_pipeline.t
 import { SpatialCameraController } from '../src/graphics/map_render/camera.ts';
 import { TerrainShaderPipeline } from '../src/graphics/map_render/terrain_shader.ts';
 import { UIMapNavigationCore } from '../src/ui/navigation.ts';
+import { PointsToCubicSpline, ChaikinSmooth, GenerateOrganicCoastlinePath } from '../src/graphics/map_render/spline_smoothing.ts';
 
 describe('GIS Geography & Topography Projection Pipeline', () => {
   test('Projects historical coordinates and links physical terrain variables', () => {
@@ -95,4 +96,33 @@ describe('Spatial Viewport Navigation Core & LOD Culling', () => {
     assert.strictEqual(shader.getUniforms().u_zoom_level, 2.5);
     assert.strictEqual(shader.getUniforms().u_lod_factor, 1.0);
   });
+
+  test('Organic Coastline Spline Engine smooths raw polygon vertices into C2-continuous Bezier paths', () => {
+    // Triangular control points: Italy / Anatolia proxy
+    const rawPolygon = [
+      { x: 100, y: 100 },
+      { x: 300, y: 150 },
+      { x: 250, y: 350 },
+      { x: 80, y: 280 }
+    ];
+
+    // Chaikin smoothing increases point count by 2x per iteration
+    const refinedOnce = ChaikinSmooth(rawPolygon, 1, true);
+    assert.strictEqual(refinedOnce.length, 8);
+
+    const refinedTwice = ChaikinSmooth(rawPolygon, 2, true);
+    assert.strictEqual(refinedTwice.length, 16);
+
+    // Points to cubic spline creates segments with control points
+    const splineSegments = PointsToCubicSpline(rawPolygon, 0.5, true);
+    assert.strictEqual(splineSegments.length, 4);
+    assert.ok(splineSegments[0].cp1.x !== undefined && splineSegments[0].cp2.y !== undefined);
+
+    // Full pipeline output produces valid SVG path string with C and Z commands
+    const svgPath = GenerateOrganicCoastlinePath(rawPolygon, true, 2, 0.6);
+    assert.ok(svgPath.startsWith('M 1'));
+    assert.ok(svgPath.includes(' C '));
+    assert.ok(svgPath.endsWith(' Z'));
+  });
 });
+

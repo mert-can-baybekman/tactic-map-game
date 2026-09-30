@@ -278,94 +278,107 @@
             <rect x="-800" y="-500" width="3600" height="2200" fill="url(#oceanBathymetry)" />
             <rect x="-800" y="-500" width="3600" height="2200" fill="url(#tacticalGrid)" />
 
-            <!-- 2. BATHYMETRIC WATERWAYS & MAJOR SEAS -->
-            <!-- Mediterranean Sea Deep Trench -->
-            <path d="M 280,590 Q 750,560 1150,590 Q 1380,620 1380,670 Q 1200,660 700,680 Q 350,670 280,590 Z" fill="#061830" opacity="0.8" />
-            <!-- Black Sea Deep Basin -->
-            <path d="M 1240,430 Q 1330,390 1480,385 Q 1620,410 1620,460 Q 1480,470 1330,470 Q 1250,460 1240,430 Z" fill="#05162a" stroke="rgba(56, 189, 248, 0.22)" stroke-width="1.5" />
-            <!-- Sea of Azov Basin -->
-            <path d="M 1440,335 Q 1490,320 1540,330 Q 1550,360 1480,370 Q 1450,360 1440,335 Z" fill="#07203b" stroke="rgba(56, 189, 248, 0.18)" stroke-width="1.2" />
-            <!-- Caspian Sea Basin -->
-            <path d="M 1740,340 Q 1810,320 1840,380 L 1830,510 Q 1790,550 1740,520 Q 1715,440 1740,340 Z" fill="#041225" stroke="rgba(56, 189, 248, 0.25)" stroke-width="1.8" />
-            <!-- Persian Gulf Basin -->
-            <path d="M 1730,680 Q 1830,640 1920,680 L 1950,750 Q 1890,770 1780,730 Q 1720,710 1730,680 Z" fill="#051833" stroke="rgba(56, 189, 248, 0.22)" stroke-width="1.5" />
-            <!-- Red Sea Corridor Basin -->
-            <path d="M 1340,680 Q 1440,740 1530,830 Q 1630,940 1710,1070 Q 1670,1070 1570,940 Q 1470,820 1380,730 Q 1330,700 1340,680 Z" fill="#04152e" stroke="rgba(56, 189, 248, 0.25)" stroke-width="1.8" />
-            <!-- Baltic Sea Basin -->
-            <path d="M 720,130 Q 820,90 950,90 Q 1020,140 920,160 Q 800,180 720,130 Z" fill="#071b30" stroke="rgba(56, 189, 248, 0.15)" stroke-width="1.2" />
+            <!-- 2. BATHYMETRIC WATERWAYS & SHALLOW TURQUOISE COASTAL SHELVES -->
+            <!-- Continental Shelf Turquoise Halos (Anti-aliased coastal glow) -->
+            <g id="coastal-shelf-system" class="coastal-shelf-layer">
+              <!-- British Isles & Channel Shelf -->
+              <path class="coastal-shelf-halo" d="M 290,225 C 330,230 370,225 395,212 C 420,205 415,180 400,160 C 385,140 370,95 345,65 C 320,75 305,120 315,160 C 295,175 285,215 290,225 Z" />
+              <!-- Italian Boot & Adriatic/Tyrrhenian Shelf -->
+              <path class="coastal-shelf-halo" d="M 660,370 C 695,355 745,335 770,365 C 800,400 840,430 870,470 C 865,510 820,535 780,535 C 755,480 720,410 660,370 Z" />
+              <!-- Aegean, Greece & Marmara Shelf -->
+              <path class="coastal-shelf-halo" d="M 1030,530 C 1070,520 1130,460 1170,435 C 1220,430 1235,460 1210,480 C 1175,540 1090,590 1030,530 Z" />
+              <!-- Crimean Peninsula & Sea of Azov Shelf -->
+              <path class="coastal-shelf-halo" d="M 1370,335 C 1410,325 1455,335 1460,350 C 1445,380 1395,385 1375,360 Z" />
+              <!-- Nile Delta Turquoise Shelf -->
+              <path class="coastal-shelf-halo" d="M 1240,665 C 1270,645 1315,645 1340,660 C 1330,685 1290,695 1255,675 Z" />
+            </g>
 
-            <!-- 3. AUTHENTIC CONTINENTAL LANDMASSES (WGS84 PROJECTION EQUIV: Atlantic to Iran, Baltic to Red Sea) -->
+            <!-- Mediterranean Sea Deep Trench -->
+            <path d="M 270,600 C 500,570 750,560 1000,580 C 1200,600 1370,630 1370,670 C 1220,665 720,680 340,670 Z" fill="#041224" opacity="0.85" />
+            <!-- Black Sea Deep Basin -->
+            <path d="M 1235,432 C 1320,405 1440,395 1520,410 C 1610,425 1630,460 1560,475 C 1460,480 1340,475 1245,455 Z" fill="#031020" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1.8" />
+            <!-- Sea of Azov Basin -->
+            <path d="M 1435,335 C 1470,320 1520,325 1545,340 C 1530,365 1480,370 1445,355 Z" fill="#061a33" stroke="rgba(56, 189, 248, 0.22)" stroke-width="1.2" />
+            <!-- Caspian Sea Basin -->
+            <path d="M 1735,340 C 1805,315 1845,370 1840,440 C 1835,510 1795,555 1745,530 C 1715,465 1710,385 1735,340 Z" fill="#030e1d" stroke="rgba(56, 189, 248, 0.28)" stroke-width="1.8" />
+            <!-- Persian Gulf Basin -->
+            <path d="M 1730,680 C 1810,645 1900,670 1935,710 C 1960,745 1920,770 1830,750 C 1760,730 1720,705 1730,680 Z" fill="#04142c" stroke="rgba(56, 189, 248, 0.25)" stroke-width="1.6" />
+            <!-- Red Sea Corridor Basin -->
+            <path d="M 1340,678 C 1420,735 1500,810 1560,890 C 1630,980 1700,1070 1680,1075 C 1630,1050 1540,940 1460,830 C 1400,750 1345,710 1340,678 Z" fill="#031024" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1.8" />
+            <!-- Baltic Sea Basin -->
+            <path d="M 710,135 C 800,100 930,95 1010,125 C 1030,155 940,170 820,175 C 750,175 700,155 710,135 Z" fill="#05172b" stroke="rgba(56, 189, 248, 0.2)" stroke-width="1.4" />
+
+            <!-- 3. AUTHENTIC CONTINENTAL LANDMASSES (High-Resolution Organic Cubic Bezier Splines) -->
             <!-- 3.1 Ireland -->
-            <path id="land-ireland" class="gis-coastline" d="M 220,150 L 260,135 L 290,160 L 285,210 L 250,230 L 220,210 Z" fill="#15281b" stroke="#2a4d35" stroke-width="2" />
+            <path id="land-ireland" class="gis-coastline" d="M 220,230 C 200,215 195,185 208,165 C 220,145 240,128 262,125 C 282,132 292,150 286,170 C 288,195 285,215 268,226 C 250,234 235,238 220,230 Z" fill="#15281b" stroke="#34d399" stroke-width="2" />
 
             <!-- 3.2 Great Britain (England, Scotland, Wales, Thames Estuary) -->
-            <path id="land-britain" class="gis-coastline" d="M 320,80 L 350,70 L 380,110 L 360,150 L 385,180 L 410,200 L 390,215 L 340,215 L 320,180 L 340,140 L 310,120 Z" fill="#182e1f" stroke="#31583d" stroke-width="2.2" />
+            <path id="land-britain" class="gis-coastline" d="M 300,215 C 330,222 360,220 385,205 C 398,196 388,190 375,193 C 395,185 415,185 412,170 C 400,158 385,150 378,132 C 372,112 365,95 368,82 C 362,65 348,58 335,68 C 322,82 328,105 336,120 C 326,140 318,155 310,175 C 298,190 295,205 300,215 Z" fill="#182e1f" stroke="#4ade80" stroke-width="2.2" />
 
             <!-- 3.3 Scandinavia & Baltic Rim -->
-            <path id="land-scandinavia" class="gis-coastline" d="M 680,40 L 760,20 L 840,40 L 890,90 L 860,130 L 780,160 L 710,135 L 670,100 Z" fill="#1a2720" stroke="#314f40" stroke-width="2" />
-            <path id="land-denmark" class="gis-coastline" d="M 640,145 L 665,135 L 665,175 L 635,175 Z" fill="#1b2821" stroke="#314f40" stroke-width="1.5" />
+            <path id="land-scandinavia" class="gis-coastline" d="M 660,85 C 700,50 760,25 830,20 C 885,25 905,65 870,105 C 840,135 800,155 750,150 C 695,145 660,125 660,85 Z" fill="#1a2720" stroke="#34d399" stroke-width="2" />
+            <path id="land-denmark" class="gis-coastline" d="M 635,145 C 655,135 670,140 665,165 C 655,178 640,178 635,160 Z" fill="#1b2821" stroke="#34d399" stroke-width="1.6" />
 
             <!-- 3.4 Continental Western Europe (France, Low Countries, Germany, Alps Basin) -->
-            <path id="land-western-europe" class="gis-coastline" d="M 400,210 L 480,215 L 560,230 L 640,265 L 700,305 L 680,355 L 600,370 L 520,380 L 450,420 L 410,470 L 370,465 L 340,425 L 340,355 L 380,295 L 370,245 Z" fill="#1a2535" stroke="#314768" stroke-width="2.2" />
+            <path id="land-western-europe" class="gis-coastline" d="M 398,210 C 430,200 480,185 530,175 C 580,172 625,185 640,225 C 655,270 690,305 670,345 C 630,360 560,370 510,390 C 465,430 430,465 370,465 C 345,430 335,365 315,310 C 310,270 335,250 365,240 C 385,245 405,230 398,210 Z" fill="#1a2535" stroke="#38bdf8" stroke-width="2.2" />
 
-            <!-- 3.5 Central & Eastern Europe (Poland, Lithuania, Bohemia, Hungary, Rus Plains to Moscow & Novgorod) -->
-            <path id="land-eastern-europe" class="gis-coastline" d="M 680,180 L 800,165 L 920,150 L 1050,130 L 1250,70 L 1420,40 L 1580,50 L 1650,110 L 1630,220 L 1550,280 L 1440,310 L 1320,340 L 1220,380 L 1150,385 L 1000,340 L 850,325 L 720,285 L 680,220 Z" fill="#1e2722" stroke="#384f42" stroke-width="2.2" />
+            <!-- 3.5 Central & Eastern Europe (Poland, Lithuania, Bohemia, Rus Plains to Moscow & Novgorod) -->
+            <path id="land-eastern-europe" class="gis-coastline" d="M 640,225 C 720,175 820,150 930,130 C 1050,110 1200,65 1350,45 C 1500,45 1620,80 1640,140 C 1635,220 1580,275 1460,305 C 1350,335 1250,370 1150,385 C 1020,350 880,320 750,295 C 675,275 645,245 640,225 Z" fill="#1e2722" stroke="#4ade80" stroke-width="2.2" />
 
             <!-- 3.6 Iberian Peninsula (Spain, Portugal, Strait of Gibraltar) -->
-            <path id="land-iberia" class="gis-coastline" d="M 370,465 L 410,470 L 380,535 L 340,575 L 275,615 L 195,605 L 165,585 L 145,535 L 165,475 L 230,465 L 310,470 Z" fill="#22231c" stroke="#424537" stroke-width="2" />
+            <path id="land-iberia" class="gis-coastline" d="M 370,465 C 335,455 260,450 200,450 C 155,465 140,495 140,530 C 142,565 170,585 198,547 C 225,580 270,590 315,570 C 355,545 385,510 412,468 C 398,465 385,465 370,465 Z" fill="#22231c" stroke="#fbbf24" stroke-width="2.2" />
 
-            <!-- 3.7 Italian Peninsula (Boot: Po Basin, Liguria, Tuscany, Rome, Naples, Apulia, Calabria) -->
-            <path id="land-italy" class="gis-coastline" d="M 670,355 L 730,335 L 780,365 L 760,415 L 795,445 L 835,475 L 850,515 L 810,505 L 780,475 L 740,435 L 710,405 L 680,375 Z" fill="#1d2735" stroke="#354b68" stroke-width="2" />
-            <path id="land-sicily" class="gis-coastline" d="M 780,525 L 830,525 L 810,555 L 770,545 Z" fill="#1e2938" stroke="#354b68" stroke-width="1.5" />
-            <path id="land-sardinia-corsica" class="gis-coastline" d="M 630,420 L 645,410 L 640,460 L 625,465 Z M 620,480 L 640,475 L 635,530 L 615,530 Z" fill="#1e2938" stroke="#354b68" stroke-width="1.5" />
+            <!-- 3.7 Italian Peninsula (Authentic Organic Boot: Po, Tuscany, Rome, Naples, Apulia Heel, Calabria Toe) -->
+            <path id="land-italy" class="gis-coastline" d="M 660,370 C 685,360 710,345 726,334 C 748,348 775,375 795,405 C 825,430 840,445 865,475 C 860,505 830,490 815,505 C 800,525 780,532 775,520 C 765,490 745,455 731,415 C 715,395 685,385 660,370 Z" fill="#1d2735" stroke="#38bdf8" stroke-width="2.4" />
+            <path id="land-sicily" class="gis-coastline" d="M 778,528 C 815,522 825,540 805,560 C 770,562 755,545 778,528 Z" fill="#1e2938" stroke="#38bdf8" stroke-width="1.8" />
+            <path id="land-sardinia-corsica" class="gis-coastline" d="M 635,400 C 645,420 642,442 630,445 C 625,430 626,410 635,400 Z M 630,455 C 645,480 642,525 632,530 C 618,525 618,480 630,455 Z" fill="#1e2938" stroke="#38bdf8" stroke-width="1.6" />
 
             <!-- 3.8 Balkan Peninsula, Greece, Aegean & Crete -->
-            <path id="land-balkans" class="gis-coastline" d="M 780,365 L 920,345 L 1050,365 L 1150,395 L 1210,425 L 1180,475 L 1140,525 L 1090,555 L 1050,525 L 1020,465 L 950,425 L 880,405 L 830,415 Z" fill="#1b2a24" stroke="#314f44" stroke-width="2.2" />
-            <path id="land-greece-peloponnese" class="gis-coastline" d="M 1080,555 L 1115,565 L 1095,595 L 1070,580 Z" fill="#1b2a24" stroke="#314f44" stroke-width="1.8" />
-            <path id="land-crete" class="gis-coastline" d="M 1120,615 L 1190,620 L 1180,630 L 1110,625 Z" fill="#1b2a24" stroke="#314f44" stroke-width="1.5" />
-            <path id="land-cyprus" class="gis-coastline" d="M 1320,620 L 1370,610 L 1390,625 L 1350,635 Z" fill="#24221a" stroke="#484232" stroke-width="1.5" />
+            <path id="land-balkans" class="gis-coastline" d="M 750,295 C 820,340 900,375 970,430 C 1010,480 1060,520 1080,555 C 1070,520 1110,465 1135,460 C 1170,445 1205,445 1223,435 C 1220,400 1235,365 1180,350 C 1080,325 950,305 750,295 Z" fill="#1b2a24" stroke="#34d399" stroke-width="2.2" />
+            <path id="land-greece-peloponnese" class="gis-coastline" d="M 1040,535 C 1080,535 1090,575 1065,588 C 1040,580 1030,555 1040,535 Z" fill="#1b2a24" stroke="#34d399" stroke-width="1.8" />
+            <path id="land-crete" class="gis-coastline" d="M 1115,622 C 1150,615 1185,618 1195,625 C 1180,634 1135,632 1115,622 Z" fill="#1b2a24" stroke="#34d399" stroke-width="1.6" />
+            <path id="land-cyprus" class="gis-coastline" d="M 1320,622 C 1360,610 1395,620 1375,635 C 1340,635 1325,628 1320,622 Z" fill="#24221a" stroke="#fbbf24" stroke-width="1.6" />
 
             <!-- 3.9 The Greater Black Sea & Crimean Peninsula (Authentic Diamond with Perekop, Caffa, Kerch) -->
-            <path id="land-crimea" class="gis-coastline" d="M 1375,340 L 1420,330 L 1450,345 L 1435,370 L 1395,375 L 1370,360 Z" fill="#252c22" stroke="#4b5742" stroke-width="2" />
-            <!-- Sea of Azov Spit -->
-            <path id="land-azov-spit" d="M 1445,345 L 1475,335 L 1495,345 L 1465,355 Z" fill="#252c22" stroke="#4b5742" stroke-width="1.2" />
+            <path id="land-crimea" class="gis-coastline" d="M 1380,325 C 1360,338 1368,360 1385,372 C 1405,374 1412,355 1414,343 C 1435,342 1455,340 1448,332 C 1425,326 1400,322 1380,325 Z" fill="#252c22" stroke="#4ade80" stroke-width="2.2" />
+            <path id="land-azov-spit" d="M 1430,335 C 1455,330 1475,335 1465,342 C 1445,342 1435,340 1430,335 Z" fill="#252c22" stroke="#4ade80" stroke-width="1.4" />
 
-            <!-- 3.10 Anatolia / Asia Minor (Bithynia, Pontus, Central Plateau, Taurus Mountains) -->
-            <path id="land-anatolia" class="gis-coastline" d="M 1215,425 L 1320,430 L 1420,435 L 1520,440 L 1550,465 L 1520,505 L 1420,525 L 1320,525 L 1250,515 L 1210,475 Z" fill="#262218" stroke="#4f432a" stroke-width="2.2" />
+            <!-- 3.10 Anatolia / Asia Minor (Bithynia, Pontic Alps, Central Plateau, Taurus Mountains) -->
+            <path id="land-anatolia" class="gis-coastline" d="M 1223,435 C 1240,450 1226,454 1205,480 C 1210,515 1235,540 1280,540 C 1340,545 1390,550 1440,535 C 1510,520 1545,465 1520,435 C 1450,425 1360,425 1280,432 C 1245,432 1225,433 1223,435 Z" fill="#262218" stroke="#f59e0b" stroke-width="2.4" />
 
             <!-- 3.11 The Caucasus Shield & Caspian Coast (Georgia, Shirvan, Derbent) -->
-            <path id="land-caucasus" class="gis-coastline" d="M 1520,425 L 1600,415 L 1680,420 L 1750,435 L 1720,475 L 1640,470 L 1550,465 Z" fill="#2c271d" stroke="#574c35" stroke-width="2.2" />
+            <path id="land-caucasus" class="gis-coastline" d="M 1520,435 C 1580,418 1660,418 1740,432 C 1760,455 1745,475 1680,470 C 1600,465 1545,455 1520,435 Z" fill="#2c271d" stroke="#f59e0b" stroke-width="2.2" />
 
             <!-- 3.12 The Iranian Plateau, Zagros Mountain Arc & Persian Gulf Shore -->
-            <path id="land-persia" class="gis-coastline" d="M 1640,470 L 1740,465 L 1840,475 L 1940,495 L 1970,590 L 1910,670 L 1830,690 L 1750,650 L 1680,590 L 1630,535 Z" fill="#2b2319" stroke="#54442e" stroke-width="2.2" />
+            <path id="land-persia" class="gis-coastline" d="M 1680,470 C 1750,465 1840,475 1920,490 C 1965,540 1960,620 1930,710 C 1870,720 1800,705 1740,670 C 1670,610 1640,535 1680,470 Z" fill="#2b2319" stroke="#00e5ff" stroke-width="2.4" />
 
             <!-- 3.13 Levant, Syrian Corridor & Mesopotamia -->
-            <path id="land-levant" class="gis-coastline" d="M 1320,525 L 1420,525 L 1480,555 L 1460,625 L 1400,655 L 1360,635 L 1340,575 Z" fill="#282218" stroke="#4e412d" stroke-width="2" />
+            <path id="land-levant" class="gis-coastline" d="M 1340,545 C 1400,545 1460,565 1475,615 C 1450,650 1385,655 1355,625 C 1340,585 1335,560 1340,545 Z" fill="#282218" stroke="#f59e0b" stroke-width="2" />
 
             <!-- 3.14 The Red Sea Corridor & Arabian Peninsula (Sinai, Hijaz, Mecca, Yemen, Aden) -->
-            <path id="land-arabia-redsea" class="gis-coastline" d="M 1340,650 L 1420,680 L 1480,720 L 1540,790 L 1610,880 L 1690,1000 L 1760,1060 L 1820,950 L 1800,820 L 1740,730 L 1650,670 L 1520,650 L 1400,645 Z" fill="#2d2216" stroke="#594329" stroke-width="2.2" />
+            <path id="land-arabia-redsea" class="gis-coastline" d="M 1355,680 C 1420,720 1485,785 1545,860 C 1600,940 1665,1020 1702,1082 C 1755,1070 1815,980 1800,860 C 1760,750 1670,685 1520,655 C 1420,650 1365,665 1355,680 Z" fill="#2d2216" stroke="#f59e0b" stroke-width="2.4" />
 
             <!-- 3.15 Egypt & Nile Delta (Alexandria, Damietta, Cairo, Nile Valley) -->
-            <path id="land-egypt" class="gis-coastline" d="M 1220,645 L 1260,640 L 1300,642 L 1340,655 L 1360,675 L 1340,705 L 1315,745 L 1305,825 L 1315,915 L 1285,915 L 1275,815 L 1275,725 L 1245,685 L 1215,665 Z" fill="#2a2216" stroke="#54432a" stroke-width="2.2" />
+            <path id="land-egypt" class="gis-coastline" d="M 1251,660 C 1275,648 1310,648 1335,662 C 1345,690 1315,730 1300,790 C 1295,850 1305,920 1280,920 C 1270,850 1270,750 1245,690 C 1230,670 1240,662 1251,660 Z" fill="#2a2216" stroke="#fbbf24" stroke-width="2.4" />
 
             <!-- 3.16 The North African Rim & Barbary Coastline (Morocco, Fez, Algiers, Tunis, Tripoli) -->
-            <path id="land-north-africa" class="gis-coastline" d="M 165,585 L 220,605 L 320,615 L 450,625 L 580,615 L 680,575 L 720,575 L 760,615 L 850,645 L 980,665 L 1120,665 L 1220,645 L 1200,735 L 980,755 L 800,735 L 600,715 L 400,715 L 200,715 L 120,665 L 130,615 Z" fill="#242118" stroke="#48422f" stroke-width="2.2" />
+            <path id="land-north-africa" class="gis-coastline" d="M 198,547 C 260,590 360,610 470,615 C 590,615 680,580 735,580 C 765,620 830,660 940,680 C 1050,670 1150,660 1251,660 C 1240,730 1100,750 950,750 C 750,735 500,725 300,725 C 180,680 150,620 198,547 Z" fill="#242118" stroke="#fbbf24" stroke-width="2.2" />
 
-            <!-- 4. REALISTIC GIS RIVER NETWORKS -->
+            <!-- 4. REALISTIC GIS RIVER NETWORKS (Smooth Organic Curves) -->
             <!-- Thames (London) -->
-            <path class="gis-river" d="M 330,190 L 350,195 L 375,198" stroke-width="2.5" />
+            <path class="gis-river" d="M 320,195 Q 340,193 354,195 Q 370,198 385,200" stroke-width="2.5" />
             <!-- Seine (Paris to Channel) -->
-            <path class="gis-river" d="M 450,270 L 430,260 L 400,230" stroke-width="2.5" />
+            <path class="gis-river" d="M 460,280 Q 445,268 428,255 Q 410,240 395,230" stroke-width="2.5" />
             <!-- Rhine (Central Europe) -->
-            <path class="gis-river" d="M 600,310 L 560,260 L 520,220" stroke-width="2.8" />
+            <path class="gis-river" d="M 605,310 Q 570,265 530,225" stroke-width="2.8" />
             <!-- Danube (Black Sea Delta) -->
-            <path class="gis-river" d="M 640,310 L 780,330 L 920,340 L 1050,350 L 1180,390 L 1240,420" stroke-width="3.2" />
+            <path class="gis-river" d="M 650,310 Q 750,325 880,335 Q 1020,345 1140,375 Q 1200,400 1235,365" stroke-width="3.2" />
             <!-- Nile River (Branching Delta: Alexandria & Damietta -> Cairo -> Luxor) -->
-            <path class="gis-river" d="M 1251,660 L 1280,675 L 1290,687 L 1310,650 M 1290,687 L 1290,750 L 1285,820 L 1295,890 L 1300,920" stroke-width="3.5" />
+            <path class="gis-river" d="M 1251,660 Q 1275,675 1290,687 Q 1310,660 1315,650 M 1290,687 Q 1290,750 1285,820 Q 1295,890 1300,920" stroke-width="3.5" />
             <!-- Tigris & Euphrates (Mesopotamia -> Persian Gulf) -->
-            <path class="gis-river" d="M 1440,510 L 1520,550 L 1620,600 L 1720,670 L 1750,700 M 1460,490 L 1550,530 L 1650,580 L 1730,650" stroke-width="2.8" />
+            <path class="gis-river" d="M 1460,500 Q 1530,540 1620,590 Q 1700,650 1735,675 M 1480,480 Q 1560,520 1650,570 Q 1720,630 1740,660" stroke-width="2.8" />
             <!-- Volga & Don (Steppes into Caspian & Azov) -->
-            <path class="gis-river" d="M 1520,120 L 1550,200 L 1520,290 L 1480,335 M 1650,80 L 1680,180 L 1720,280 L 1750,350" stroke-width="3.0" />
+            <path class="gis-river" d="M 1510,110 Q 1545,180 1520,270 Q 1480,315 1445,335 M 1640,80 Q 1675,170 1715,270 Q 1745,330 1750,370" stroke-width="3.0" />
 
             <!-- 5. 2.5D SHADED RELIEF MOUNTAIN MESHES -->
             <!-- The Alps -->
@@ -396,19 +409,19 @@
             <!-- 6. POLITICAL SOVEREIGN TERRITORY SHADER WASHES -->
             <g id="political-wash-layer">
               <!-- England (Crimson Tint) -->
-              <path class="political-wash" d="M 320,80 L 350,70 L 380,110 L 360,150 L 385,180 L 410,200 L 390,215 L 340,215 L 320,180 L 340,140 Z" fill="#dc2626" fill-opacity="0.18" />
+              <path class="political-wash" d="M 300,215 C 330,222 360,220 385,205 C 398,196 388,190 375,193 C 395,185 415,185 412,170 C 400,158 385,150 378,132 C 340,140 318,175 300,215 Z" fill="#dc2626" fill-opacity="0.18" />
               <!-- France (Royal Blue Tint) -->
-              <path class="political-wash" d="M 400,210 L 480,215 L 560,230 L 520,380 L 450,420 L 410,470 L 370,465 L 340,355 Z" fill="#2563eb" fill-opacity="0.18" />
+              <path class="political-wash" d="M 398,210 C 430,200 480,185 530,175 C 550,230 520,370 460,435 C 420,465 370,465 340,360 Z" fill="#2563eb" fill-opacity="0.18" />
               <!-- Byzantine Enclave (Imperial Purple in Thrace / Constantinople) -->
               <circle class="political-wash" cx="1223" cy="435" r="32" fill="#9333ea" fill-opacity="0.30" />
               <!-- Ottoman Beylik (Emerald Green in Northwestern Anatolia) -->
-              <polygon class="political-wash" points="1220,430 1280,435 1290,480 1230,475" fill="#059669" fill-opacity="0.28" />
+              <path class="political-wash" d="M 1220,432 C 1260,435 1285,445 1280,480 C 1240,485 1220,470 1220,432 Z" fill="#059669" fill-opacity="0.28" />
               <!-- Mamluk Sultanate (Gold / Ochre Tint over Egypt, Levant, and Hejaz) -->
-              <path class="political-wash" d="M 1220,645 L 1360,675 L 1400,655 L 1480,555 L 1540,790 L 1610,880 L 1520,950 L 1380,730 L 1315,915 L 1285,915 Z" fill="#d97706" fill-opacity="0.22" />
+              <path class="political-wash" d="M 1251,660 C 1310,648 1355,660 1400,650 C 1475,615 1545,860 1610,950 C 1540,940 1460,830 1340,680 Z" fill="#d97706" fill-opacity="0.22" />
               <!-- Jalayirid Sultanate (Turquoise / Cyan Tint over Persia & Tabriz) -->
-              <path class="political-wash" d="M 1640,470 L 1840,475 L 1940,495 L 1900,670 L 1750,650 L 1680,590 Z" fill="#0891b2" fill-opacity="0.22" />
+              <path class="political-wash" d="M 1680,470 C 1750,465 1840,475 1920,490 C 1900,670 1780,670 1680,590 Z" fill="#0891b2" fill-opacity="0.22" />
               <!-- Golden Horde (Bronze / Yellow Tint over Pontic Steppes) -->
-              <path class="political-wash" d="M 1280,370 L 1480,330 L 1650,340 L 1620,410 L 1460,400 L 1380,400 Z" fill="#ca8a04" fill-opacity="0.20" />
+              <path class="political-wash" d="M 1280,370 C 1420,335 1560,340 1620,410 C 1500,415 1380,400 1280,370 Z" fill="#ca8a04" fill-opacity="0.20" />
               <!-- Genoa Gazaria (Azure Tint in Caffa & Cherson) -->
               <ellipse class="political-wash" cx="1414" cy="343" rx="35" ry="25" fill="#0284c7" fill-opacity="0.30" />
             </g>
@@ -429,23 +442,23 @@
             <text x="1920" y="740" fill="#38bdf8" font-family="Cinzel" font-size="10" font-weight="bold" letter-spacing="1" text-anchor="middle">STRAIT OF HORMUZ</text>
             <text x="1690" y="1050" fill="#00e5ff" font-family="Cinzel" font-size="10" font-weight="bold" letter-spacing="1" text-anchor="middle">BAB-EL-MANDEB</text>
 
-            <!-- 8. MACRO INTERCONTINENTAL TRADE & LOGISTICS EDGES -->
-            <!-- 8.1 THE OVERLAND SILK ROAD (Bold Orange Line: Tabriz -> Erzurum -> Sivas -> Ankara -> Bursa -> Constantinople) -->
-            <path id="route-silk-road" class="line-silk-road" d="M 1740,502 L 1580,480 L 1450,465 L 1330,455 L 1226,454 L 1223,435" fill="none" />
+            <!-- 8. MACRO INTERCONTINENTAL TRADE & LOGISTICS EDGES (Smooth Organic Bezier Curves) -->
+            <!-- 8.1 THE OVERLAND SILK ROAD (Curved Orange Line: Tabriz -> Erzurum -> Sivas -> Ankara -> Bursa -> Constantinople) -->
+            <path id="route-silk-road" class="line-silk-road" d="M 1740,502 C 1680,488 1590,478 1520,472 C 1440,465 1360,458 1280,456 C 1250,455 1235,455 1226,454 C 1224,446 1223,439 1223,435" fill="none" />
 
-            <!-- 8.2 THE RED SEA MARITIME GATE (Bold Blue Line: Aden -> Bab-el-Mandeb -> Massawa -> Jeddah -> Suez -> Cairo -> Alexandria) -->
-            <path id="route-redsea-corridor" class="line-redsea-corridor" d="M 1702,1082 L 1650,1020 L 1580,940 L 1547,884 L 1520,810 L 1420,740 L 1340,690 L 1290,687 L 1251,660" fill="none" />
+            <!-- 8.2 THE RED SEA MARITIME GATE (Curved Blue Line: Aden -> Bab-el-Mandeb -> Massawa -> Jeddah -> Suez -> Cairo -> Alexandria) -->
+            <path id="route-redsea-corridor" class="line-redsea-corridor" d="M 1702,1082 C 1675,1050 1640,1020 1605,975 C 1570,925 1555,895 1547,884 C 1510,830 1465,775 1400,730 C 1355,700 1315,690 1290,687 C 1275,684 1262,672 1251,660" fill="none" />
 
-            <!-- 8.3 THE STEPPE SUPPLY CORRIDOR (Dotted White Line: Moscow -> Ryazan -> Don/Azov -> Caffa -> Constantinople) -->
-            <path id="route-steppe-corridor" class="line-steppe-corridor" d="M 1481,97 L 1530,180 L 1520,290 L 1414,343 L 1320,385 L 1223,435" fill="none" />
+            <!-- 8.3 THE STEPPE SUPPLY CORRIDOR (Curved Dotted White Line: Moscow -> Ryazan -> Don/Azov -> Caffa -> Constantinople) -->
+            <path id="route-steppe-corridor" class="line-steppe-corridor" d="M 1481,97 C 1515,145 1530,215 1518,275 C 1505,310 1460,330 1414,343 C 1355,365 1285,400 1223,435" fill="none" />
 
             <!-- 8.4 THE MEDITERRANEAN MARITIME CORRIDOR (Constantinople -> Aegean -> Ionian -> Venice -> Balearic -> Gibraltar) -->
-            <path id="route-mediterranean-lane" class="line-sea-corridor" d="M 1223,435 L 1100,530 L 900,480 L 726,334 L 550,520 L 320,590 L 198,547" fill="none" />
-            <path id="sea-trade-line" class="line-sea-route" d="M 1223,435 L 1100,530 L 900,480 L 726,334" fill="none" />
+            <path id="route-mediterranean-lane" class="line-sea-corridor" d="M 1223,435 C 1130,510 990,480 870,440 C 780,410 740,360 726,334 C 670,420 540,540 400,580 C 310,600 240,580 198,547" fill="none" />
+            <path id="sea-trade-line" class="line-sea-route" d="M 1223,435 C 1130,510 990,480 870,440 C 780,410 740,360 726,334" fill="none" />
 
             <!-- 8.5 THE ATLANTIC SHIPPING RUN (Gibraltar -> Lisbon -> Channel -> London) -->
-            <path id="route-atlantic-lane" class="line-gibraltar-loop" d="M 198,547 L 150,520 L 145,430 L 250,380 L 370,245 L 385,205 L 354,195" fill="none" />
-            <path id="gibraltar-maritime-loop" class="line-gibraltar-loop" d="M 198,547 L 150,520 L 145,430 L 250,380 L 370,245 L 385,205 L 354,195" fill="none" />
+            <path id="route-atlantic-lane" class="line-gibraltar-loop" d="M 198,547 C 145,520 135,460 170,420 C 240,370 330,270 354,195" fill="none" />
+            <path id="gibraltar-maritime-loop" class="line-gibraltar-loop" d="M 198,547 C 145,520 135,460 170,420 C 240,370 330,270 354,195" fill="none" />
 
             <!-- 8.6 Strategic Strait & Corridor Connectors -->
             <line id="channel-ferry-line" class="line-sea-corridor" x1="385" y1="205" x2="398" y2="210" />
