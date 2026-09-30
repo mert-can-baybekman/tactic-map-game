@@ -200,4 +200,50 @@ describe('HUD Telemetry & Outliner Registry Engine', () => {
     assert.strictEqual(snapshot.militaryForces[0].commander_name, 'King Edward III');
     assert.ok(snapshot.governmentTasks.length > 0);
   });
+
+  test('Ruler traits pipeline correctly computes combat shock and stewardship modifiers', () => {
+    const court = new CourtAndDynastyEngine();
+    const ruler = court.createCharacter({
+      dynasty_id: 1,
+      dynasty_name: 'Plantagenet',
+      first_name: 'Edward III',
+      country_id: 1,
+      age: 38,
+      sex: CharacterSex.Male,
+      portrait_asset_ref: 'edward.png',
+      current_role: CharacterRole.Ruler,
+      attributes: { martial: 85, diplomacy: 79, stewardship: 65, learning: 50, intrigue: 68 },
+      traits: [
+        {
+          id: 'valiant_warrior',
+          name: 'Valiant Warrior',
+          category: 'personality',
+          modifiers: { combat_shock_bonus: 0.15 }
+        },
+        {
+          id: 'feudal_sovereign',
+          name: 'Feudal Sovereign',
+          category: 'lifestyle',
+          modifiers: { estate_loyalty_impact: { Nobility: 10.0 } }
+        },
+        {
+          id: 'gout_afflicted',
+          name: 'Gout Afflicted',
+          category: 'personality',
+          modifiers: { health_degradation_penalty: 1.8 }
+        }
+      ],
+      culture_id: 'anglo_norman',
+      sub_culture_variant: 'english_gothic',
+      religion_id: 'catholic',
+      is_alive: true,
+      children_ids: [],
+      dynastic_prestige: 50.0
+    });
+
+    assert.strictEqual(ruler.active_modifiers.combat_shock_multiplier, 1.15, 'Valiant warrior must add +15% shock');
+    assert.strictEqual(ruler.active_modifiers.nobility_loyalty_delta, 10.0, 'Feudal sovereign must add +10 nobility loyalty');
+    assert.strictEqual(ruler.active_modifiers.stewardship_construction_discount, (65 / 100.0) * 0.25);
+  });
 });
+

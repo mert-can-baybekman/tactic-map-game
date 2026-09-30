@@ -39,10 +39,11 @@ export interface CharacterTrait {
     stability_cost?: number;
     combat_shock_bonus?: number;
     tax_efficiency_bonus?: number;
+    health_degradation_penalty?: number;
   };
 }
 
-export interface CharacterEntity {
+export interface RulerCharacter {
   id: number;
   dynasty_id: number;
   dynasty_name: string;
@@ -52,18 +53,25 @@ export interface CharacterEntity {
   sex: CharacterSex;
   portrait_asset_ref: string;
   current_role: CharacterRole;
-  assigned_assignment_id?: string; // Regiment ID, Fleet ID, or Province ID
+  assigned_assignment_id?: string; // e.g. "army_vanguard_1"
   attributes: CharacterAttributes;
   traits: CharacterTrait[];
   culture_id: string;
   sub_culture_variant: string;
   religion_id: string;
+  health: number; // 0.0 to 100.0 (Health pool)
   is_alive: boolean;
   spouse_character_id?: number;
   father_id?: number;
   mother_id?: number;
   children_ids: number[];
   dynastic_prestige: number;
+  active_modifiers: {
+    combat_shock_multiplier: number;
+    nobility_loyalty_delta: number;
+    stewardship_construction_discount: number;
+    monthly_tax_multiplier: number;
+  };
 }
 
 export interface RoyalMarriageLink {
@@ -76,14 +84,15 @@ export interface RoyalMarriageLink {
 }
 
 export class CourtAndDynastyEngine {
-  private characters: Map<number, CharacterEntity> = new Map();
+  private characters: Map<number, RulerCharacter> = new Map();
   private marriages: RoyalMarriageLink[] = [];
   private nextCharId: number = 100;
 
-  public createCharacter(params: Omit<CharacterEntity, 'id'>): CharacterEntity {
-    const character: CharacterEntity = {
+  public createCharacter(params: Omit<RulerCharacter, 'id' | 'active_modifiers' | 'health'> & { health?: number }): RulerCharacter {
+    const character: RulerCharacter = {
       id: this.nextCharId++,
       ...params,
+      health: params.health ?? 85.0,
       attributes: {
         martial: Math.max(0, Math.min(100, params.attributes.martial)),
         diplomacy: Math.max(0, Math.min(100, params.attributes.diplomacy)),
@@ -92,35 +101,67 @@ export class CourtAndDynastyEngine {
         intrigue: Math.max(0, Math.min(100, params.attributes.intrigue))
       },
       traits: [...params.traits],
-      children_ids: [...params.children_ids]
+      children_ids: [...params.children_ids],
+      active_modifiers: {
+        combat_shock_multiplier: 1.0,
+        nobility_loyalty_delta: 0.0,
+        stewardship_construction_discount: 0.0,
+        monthly_tax_multiplier: 1.0
+      }
     };
+
+    this.applyTraitModifiers(character);
     this.characters.set(character.id, character);
     return character;
   }
 
-  public getCharacter(id: number): CharacterEntity | undefined {
+  /**
+   * Evaluates character attributes and active trait pipeline
+   * - Valiant Warrior: +15% Shock Damage
+   * - Feudal Sovereign: +10 Nobility Loyalty
+   * - Gout Afflicted: -15 Health Degradation Penalty
+   * - Stewardship scaling: construction speed & integration speed factor
+   */
+  public applyTraitModifiers(character: RulerCharacter): void {
+    character.active_modifiers.combat_shock_multiplier = 1.0;
+    character.active_modifiers.nobility_loyalty_delta = 0.0;
+    character.active_modifiers.monthly_tax_multiplier = 1.0 + (character.attributes.stewardship * 0.002);
+    // Stewardship reduction factor: 65 stewardship -> 16.25% speedup
+    character.active_modifiers.stewardship_construction_discount = (character.attributes.stewardship / 100.0) * 0.25;
+
+    for (const trait of character.traits) {
+      if (trait.modifiers.combat_shock_bonus) {
+        character.active_modifiers.combat_shock_multiplier += trait.modifiers.combat_shock_bonus;
+      }
+      if (trait.modifiers.estate_loyalty_impact?.Nobility) {
+        character.active_modifiers.nobility_loyalty_delta += trait.modifiers.estate_loyalty_impact.Nobility;
+      }
+      if (trait.modifiers.tax_efficiency_bonus) {
+        character.active_modifiers.monthly_tax_multiplier += trait.modifiers.tax_efficiency_bonus;
+      }
+    }
+  }
+
+  public getCharacter(id: number): RulerCharacter | undefined {
     return this.characters.get(id);
   }
 
-  public getCountryCourt(countryId: number): CharacterEntity[] {
+  public getCountryCourt(countryId: number): RulerCharacter[] {
     return Array.from(this.characters.values()).filter(c => c.country_id === countryId && c.is_alive);
   }
 
-  public getCountryRuler(countryId: number): CharacterEntity | undefined {
+  public getCountryRuler(countryId: number): RulerCharacter | undefined {
     return Array.from(this.characters.values()).find(
       c => c.country_id === countryId && c.current_role === CharacterRole.Ruler && c.is_alive
     );
   }
 
-  public getCountryHeir(countryId: number): CharacterEntity | undefined {
+  public getCountryHeir(countryId: number): RulerCharacter | undefined {
     return Array.from(this.characters.values()).find(
       c => c.country_id === countryId && c.current_role === CharacterRole.Heir && c.is_alive
     );
   }
 
-  /**
-   * Royal Marriage Matrix & Dynastic Tie Evaluation
-   */
   public arrangeRoyalMarriage(
     charAId: number,
     charBId: number
@@ -140,7 +181,6 @@ export class CourtAndDynastyEngine {
       return { success: false, personalUnionPotential: false, reason: 'Internal marriage does not form international treaty.' };
     }
 
-    // Bind spouse IDs
     charA.spouse_character_id = charB.id;
     charB.spouse_character_id = charA.id;
 
@@ -164,13 +204,55 @@ export class CourtAndDynastyEngine {
     };
   }
 
+  public appointAsGeneral(charId: number, armyId?: string): boolean {
+    const char = this.characters.get(charId);
+    if (!char || !char.is_alive) return false;
+    char.current_role = CharacterRole.General;
+    if (armyId) char.assigned_assignment_id = armyId;
+    return true;
+  }
+
+  public appointAsCabinetAdvisor(charId: number, portfolio: string): boolean {
+    const char = this.characters.get(charId);
+    if (!char || !char.is_alive) return false;
+    char.current_role = CharacterRole.CabinetAdvisor;
+    char.assigned_assignment_id = portfolio;
+    return true;
+  }
+
   /**
-   * Succession & Personal Union Resolution
-   * Triggers dynamically when a sovereign dies
+   * Health Degradation & Gout Afflicted Tick
+   * Annual / monthly pass checking natural mortality and sudden succession
    */
-  public handleRulerDeath(
-    deceasedRulerId: number
-  ): {
+  public executeHealthAndMortalityTick(): { rulerDied: boolean; newRuler?: RulerCharacter; reason?: string } {
+    for (const char of this.characters.values()) {
+      if (!char.is_alive) continue;
+
+      let healthDegradation = 0.2; // Base aging wear
+      const goutTrait = char.traits.find(t => t.id === 'gout_afflicted');
+      if (goutTrait) {
+        healthDegradation += 1.8; // Gout wears down ruler health rapidly
+      }
+
+      if (char.age > 50) {
+        healthDegradation += (char.age - 50) * 0.15;
+      }
+
+      char.health = Math.max(0, char.health - healthDegradation);
+
+      if (char.health <= 0 || (char.health < 25 && Math.random() < 0.05)) {
+        char.is_alive = false;
+        if (char.current_role === CharacterRole.Ruler) {
+          const succession = this.handleRulerDeath(char.id);
+          const newRuler = succession.successorId ? this.getCharacter(succession.successorId) : undefined;
+          return { rulerDied: true, newRuler, reason: succession.reason };
+        }
+      }
+    }
+    return { rulerDied: false };
+  }
+
+  public handleRulerDeath(deceasedRulerId: number): {
     successorId?: number;
     personalUnionSeniorId?: number;
     dynasticWarRisk: boolean;
@@ -182,10 +264,10 @@ export class CourtAndDynastyEngine {
     deceased.is_alive = false;
     deceased.current_role = CharacterRole.Courtier;
 
-    // Check for direct legitimate heir
     const heir = this.getCountryHeir(deceased.country_id);
     if (heir && heir.is_alive) {
       heir.current_role = CharacterRole.Ruler;
+      this.applyTraitModifiers(heir);
       return {
         successorId: heir.id,
         dynasticWarRisk: false,
@@ -193,7 +275,6 @@ export class CourtAndDynastyEngine {
       };
     }
 
-    // No heir: Check royal marriages for Personal Union eligibility
     const validMarriage = this.marriages.find(
       m => (m.country_a_id === deceased.country_id || m.country_b_id === deceased.country_id) && m.dynastic_claim_strength >= 0.50
     );
@@ -211,7 +292,6 @@ export class CourtAndDynastyEngine {
       }
     }
 
-    // Local noble elected
     const newRuler = this.createCharacter({
       dynasty_id: deceased.dynasty_id + 1,
       dynasty_name: 'de Beaufort',
@@ -236,57 +316,5 @@ export class CourtAndDynastyEngine {
       dynasticWarRisk: false,
       reason: `Dynasty collapsed! Local nobility elevated Arthur de Beaufort to the throne.`
     };
-  }
-
-  /**
-   * Action: Appoint As General
-   */
-  public appointAsGeneral(charId: number, armyId?: string): boolean {
-    const char = this.characters.get(charId);
-    if (!char || !char.is_alive) return false;
-    char.current_role = CharacterRole.General;
-    if (armyId) char.assigned_assignment_id = armyId;
-    return true;
-  }
-
-  /**
-   * Action: Appoint As Cabinet Advisor
-   */
-  public appointAsCabinetAdvisor(charId: number, portfolio: string): boolean {
-    const char = this.characters.get(charId);
-    if (!char || !char.is_alive) return false;
-    char.current_role = CharacterRole.CabinetAdvisor;
-    char.assigned_assignment_id = portfolio;
-    return true;
-  }
-
-  /**
-   * Action: Appoint As Admiral
-   */
-  public appointAsAdmiral(charId: number, fleetId?: string): boolean {
-    const char = this.characters.get(charId);
-    if (!char || !char.is_alive) return false;
-    char.current_role = CharacterRole.Admiral;
-    if (fleetId) char.assigned_assignment_id = fleetId;
-    return true;
-  }
-
-  /**
-   * Monthly aging and natural mortality tick
-   */
-  public executeCourtMonthlyTick(): void {
-    for (const char of this.characters.values()) {
-      if (!char.is_alive) continue;
-
-      // 1/12th of a year
-      // Natural mortality calculation if age > 50
-      if (char.age > 50) {
-        const annualDeathChance = 0.02 + ((char.age - 50) * 0.008);
-        const monthlyDeathChance = annualDeathChance / 12.0;
-        if (Math.random() < monthlyDeathChance) {
-          char.is_alive = false;
-        }
-      }
-    }
   }
 }

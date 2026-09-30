@@ -379,6 +379,28 @@
 
   </main>
 
+  <!-- CHOICE MODAL FOR BURGHER GUILD PETITION -->
+  <div class="modal-backdrop" id="modal-petition" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <span>📜 Royal Concession: Burgher Guild Petition</span>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 12px; color: var(--text-primary); font-size: 13px;">
+          The merchant guilds of Calais formally petition the Crown for an exclusive export monopoly charter on wool.
+        </p>
+        <div class="modal-impacts">
+          <div style="color: #34d399;">✓ <strong>Accept Petition:</strong> +10.0% Burgher Loyalty state-wide • +25.0 Ducats gift</div>
+          <div style="color: #ef4444;">✗ <strong>Sovereign Cost:</strong> -15.0% Crown Control in Calais • Diverts tax revenue to Burgher vaults</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="ctrl-btn" id="btn-modal-accept" style="background: #10b981; color: #000; font-weight: bold;">Accept Concession</button>
+        <button class="ctrl-btn" id="btn-modal-decline" style="border-color: #ef4444; color: #f87171;">Decline & Suppress</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast-msg" id="toast-notification">Notification</div>
 
   <script type="module" src="app.js"></script>
