@@ -1,0 +1,57 @@
+// =========================================================================
+// DYNAMIC RELIGIOUS REFORMATION, HERESY & HOLY WAR SPECIFICATION
+// Subsystem: /src/politics/religion/reformation.lang
+// =========================================================================
+
+module GameEngine.Politics.Religion.Reformation {
+
+    struct ReligiousFaction {
+        faction_id: string,
+        faith_tag: string, // e.g. "Catholic", "Protestant", "Hussite", "Orthodox", "Sunni"
+        zeal_float: f32,   // 0.0 to 100.0
+        discontent_index: f32,
+        is_heretical: bool
+    }
+
+    struct LocationReligiousState {
+        location_id: u32,
+        name: string,
+        country_tag: string,
+        primary_faith: string,
+        burgher_wealth: f32,
+        printing_press_presence: f32, // 0.0 to 100.0%
+        has_heretic_rebellion: bool
+    }
+
+    struct HolyWarCasusBelli {
+        cb_id: string = "cb_religious_cleansing",
+        attacker_tag: string,
+        defender_tag: string,
+        war_score_weight_bonus: f32 = 0.50, // +50% warscore for holy hubs
+        requires_claims: bool = false
+    }
+
+    // Evaluates Reformation Breakthrough Trigger
+    fn EvaluateReformationTrigger(
+        loc: LocationReligiousState,
+        papal_authority: f32
+    ) -> bool {
+        return (loc.printing_press_presence >= 40.0) &&
+               (loc.burgher_wealth >= 600.0) &&
+               (papal_authority <= 35.0);
+    }
+
+    // Reformation Wave Diffusion: converts adjacent nodes along trade edges
+    fn PropagateReformationWave(
+        origin_loc: LocationReligiousState,
+        new_faith_tag: string,
+        connected_edge_ids: array<u32>
+    ) -> array<u32> {
+        let converted_nodes = array<u32>();
+        converted_nodes.push(origin_loc.location_id);
+        for edge_node_id in connected_edge_ids {
+            converted_nodes.push(edge_node_id);
+        }
+        return converted_nodes;
+    }
+}

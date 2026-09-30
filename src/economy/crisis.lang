@@ -1,0 +1,55 @@
+// =========================================================================
+// TRADE WAR, FAMINE & MONETARY INFLATION SIMULATOR SPECIFICATION
+// Subsystem: /src/economy/crisis.lang
+// =========================================================================
+
+module GameEngine.Economy.Crisis {
+
+    struct FamineLocationState {
+        location_id: u32,
+        name: string,
+        devastation: f32, // 0.0 to 1.0
+        army_garrison_stay_ticks: u32,
+        is_severe_winter: bool,
+        is_famine_active: bool = false,
+        raw_material_extraction_output: f32 = 1.0 // Drops to 0.0 during famine
+    }
+
+    struct NationalInflationState {
+        country_tag: string,
+        treasury_gold: f32,
+        global_goods_supply_index: f32,
+        inflation_multiplier: f32 = 1.0,
+        outliner_construction_cost_scale: f32 = 1.0,
+        army_maintenance_cost_scale: f32 = 1.0
+    }
+
+    // Famine Evaluation: Triggered when Devastation > 0.60
+    fn EvaluateFamineTrigger(loc: ref FamineLocationState) -> bool {
+        if loc.devastation > 0.60 {
+            loc.is_famine_active = true;
+            loc.raw_material_extraction_output = 0.0; // Raw materials drop to absolute zero
+            return true;
+        }
+        loc.is_famine_active = false;
+        loc.raw_material_extraction_output = 1.0;
+        return false;
+    }
+
+    // Monetary Inflation Formula:
+    // Inflation_Multiplier = Total_Gold_Reserves / Global_Goods_Supply_Index
+    fn CalculateMonetaryInflation(
+        treasury_gold: f32,
+        global_goods_supply: f32
+    ) -> (f32, f32, f32) {
+        let safe_goods = max(100.0, global_goods_supply);
+        let ratio = treasury_gold / safe_goods;
+        
+        // Base inflation multiplier (1.0 baseline)
+        let multiplier = max(1.0, 1.0 + (ratio - 1.0) * 0.40);
+        let construction_scale = multiplier;
+        let maintenance_scale = 1.0 + (multiplier - 1.0) * 0.75;
+
+        return (multiplier, construction_scale, maintenance_scale);
+    }
+}

@@ -1,0 +1,64 @@
+// =========================================================================
+// MACRO-STRATEGIC AI AGGRESSION, CONQUEST & DEFENSE MATRIX SPECIFICATION
+// Subsystem: /src/ai/strategic_decision.lang
+// =========================================================================
+
+module GameEngine.AI.StrategicDecision {
+
+    enum AIStrategicStance {
+        Passive_Defense,
+        Armed_Neutrality,
+        Opportunistic_Pressure,
+        Aggressive_Conquest
+    }
+
+    struct NeighborThreatProfile {
+        neighbor_country_tag: string,
+        neighbor_army_size: u32,
+        my_army_size: u32,
+        bilateral_opinion: f32, // -100.0 to +100.0 (normalized -1.0 to +1.0)
+        has_casus_belli: bool,
+        target_crown_control: f32, // 0.0 to 1.0
+        is_in_civil_war: bool,
+        threat_score: f32
+    }
+
+    struct StrategicConquestPlan {
+        target_country_tag: string,
+        target_location_id: u32,
+        stance: AIStrategicStance,
+        assigned_army_size: u32,
+        invasion_vector_path: array<u32>,
+        prioritize_market_vertex: bool
+    }
+
+    // Threat Vector Calculation:
+    // Threat_Score = (Neighbor_Army_Size / My_Army_Size) * (1.0 - Bilateral_Opinion)
+    fn CalculateNeighborThreat(
+        neighbor_army: u32,
+        my_army: u32,
+        opinion_normalized: f32
+    ) -> f32 {
+        let safe_my_army = max(100.0, my_army as f32);
+        let ratio = (neighbor_army as f32) / safe_my_army;
+        let hostility = clamp(1.0 - opinion_normalized, 0.0, 2.0);
+
+        return ratio * hostility;
+    }
+
+    // Opportunity Evaluator:
+    // If Crown Control < 40% or in Civil War -> Set stance to Aggressive_Conquest
+    fn EvaluateConquestOpportunity(
+        threat_score: f32,
+        target_control: f32,
+        in_civil_war: bool
+    ) -> (AIStrategicStance, bool) {
+        if target_control < 0.40 || in_civil_war {
+            return (AIStrategicStance.Aggressive_Conquest, true);
+        }
+        if threat_score > 1.25 {
+            return (AIStrategicStance.Opportunistic_Pressure, false);
+        }
+        return (AIStrategicStance.Passive_Defense, false);
+    }
+}
