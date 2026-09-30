@@ -102,4 +102,33 @@ describe('Geopolitical Choke-Points & Strait Navigation Engine', () => {
     assert.ok(macroRoute.pathNodes.includes(104));
     assert.ok(macroRoute.pathNodes.includes(101));
   });
+
+  test('UI Map Nodes & Lower HUD Telemetry conditional switch parity for London and Bursa', () => {
+    const htmlContent = fs.readFileSync(path.resolve('index.html'), 'utf8');
+    
+    // Verify Viewport was scaled from local 900x550 to multi-regional 1600x900
+    assert.ok(htmlContent.includes('viewBox="0 0 1600 900"'), 'Viewport must scale to 1600x900');
+
+    // Verify all nodes are instantiated in SVG DOM
+    assert.ok(htmlContent.includes('id="node-1"'), 'Node 1 (London) must exist');
+    assert.ok(htmlContent.includes('id="node-20"'), 'Node 20 (Venice) must exist');
+    assert.ok(htmlContent.includes('id="node-23"'), 'Node 23 (Rome) must exist');
+    assert.ok(htmlContent.includes('id="node-110"'), 'Node 110 (Adrianople) must exist');
+    assert.ok(htmlContent.includes('id="node-104"'), 'Node 104 (Constantinople) must exist');
+    assert.ok(htmlContent.includes('id="node-102"'), 'Node 102 (Bursa) must exist');
+    assert.ok(htmlContent.includes('id="node-101"'), 'Node 101 (Söğüt) must exist');
+
+    // Verify Visual Lines: Bosphorus, Rumelia Corridor, Gibraltar Loop
+    assert.ok(htmlContent.includes('id="bosphorus-strait-line"'), 'Bosphorus line must exist');
+    assert.ok(htmlContent.includes('class="line-bosphorus-strait"'), 'Bosphorus line must have proper class');
+    assert.ok(htmlContent.includes('class="line-land-route line-rumelia-corridor"'), 'Rumelia corridor must exist');
+    assert.ok(htmlContent.includes('id="gibraltar-maritime-loop"'), 'Gibraltar loop must exist');
+
+    // Verify app.js footer formatting logic
+    const appJsContent = fs.readFileSync(path.resolve('app.js'), 'utf8');
+    assert.ok(appJsContent.includes('Bursa (Hills)'), 'Must format Bursa (Hills)');
+    assert.ok(appJsContent.includes('Control: 95.0% • Devastation: 0.0% • Pops: 24,000 • Dominance: Nobility/Sipahis'), 'Must format exact Bursa stats');
+    assert.ok(appJsContent.includes('London (Farmland)'), 'Must format London (Farmland)');
+  });
 });
+

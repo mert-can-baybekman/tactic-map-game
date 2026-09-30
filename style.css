@@ -535,6 +535,60 @@ body {
   opacity: 0.9;
 }
 
+/* BOSPHORUS STRAIT FLASHING BLUE LINE */
+.line-bosphorus-strait {
+  stroke: #00e5ff;
+  stroke-width: 4.5px;
+  stroke-dasharray: 8, 4;
+  animation: bosphorusPulse 1.8s ease-in-out infinite, bosphorusFlow 10s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.8));
+}
+
+.line-bosphorus-strait.blockaded {
+  stroke: #ff1744 !important;
+  stroke-dasharray: 8, 4;
+  animation: bosphorusBlockadePulse 0.8s ease-in-out infinite !important;
+  filter: drop-shadow(0 0 14px rgba(255, 23, 68, 1)) !important;
+}
+
+@keyframes bosphorusPulse {
+  0%, 100% { stroke-opacity: 1; stroke-width: 4.5px; }
+  50% { stroke-opacity: 0.5; stroke-width: 3px; }
+}
+
+@keyframes bosphorusFlow {
+  to { stroke-dashoffset: -400; }
+}
+
+@keyframes bosphorusBlockadePulse {
+  0%, 100% { stroke-opacity: 1; stroke-width: 5.5px; }
+  50% { stroke-opacity: 0.2; stroke-width: 2.5px; }
+}
+
+/* RUMELIA LAND CORRIDOR DOTTED WHITE LINE */
+.line-rumelia-corridor {
+  stroke: #ffffff;
+  stroke-width: 3.5px;
+  stroke-dasharray: 6, 6;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
+}
+
+/* GIBRALTAR MARITIME LOOP */
+.line-gibraltar-loop {
+  stroke: #38bdf8;
+  stroke-width: 3.5px;
+  stroke-dasharray: 10, 6;
+  animation: tradeDash 25s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+}
+
+.line-gibraltar-loop.blockaded {
+  stroke: #ef4444 !important;
+  animation: pulseBlockade 1.5s ease-in-out infinite !important;
+  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.85)) !important;
+}
+
 @keyframes tradeDash {
   to {
     stroke-dashoffset: -1000;

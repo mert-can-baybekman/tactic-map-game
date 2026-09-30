@@ -12,6 +12,7 @@ const state = {
   activeMapMode: 'political',
   selectedLocationId: 1,
   channelBlockaded: false,
+  straitBlockaded: false,
   
   // HUD Telemetry
   crownTreasury: 2588.0,
@@ -189,6 +190,116 @@ const state = {
         { estate: 'Commoners', subCulture: 'Francien', size: 35000, wealth: 22.0, unrest: 0.20 }
       ],
       buildings: ['Cathedral of Notre-Dame', 'Textile Manufactory']
+    },
+    {
+      id: 20,
+      name: 'Venice',
+      country: 'VEN',
+      terrain: 'Coast',
+      devastation: 0.0,
+      infrastructure: 55.0,
+      control: 1.0,
+      tax_base: 140.0,
+      nobleDominated: false,
+      dominanceLabel: 'Burghers/Merchant Council',
+      plague_infected: false,
+      pops: [
+        { estate: 'Burghers', subCulture: 'Venetian', size: 18000, wealth: 350.0, unrest: 0.05 },
+        { estate: 'Commoners', subCulture: 'Venetian', size: 20000, wealth: 28.0, unrest: 0.08 }
+      ],
+      buildings: ['Venetian Arsenale', 'Doge Palace & Basilica di San Marco']
+    },
+    {
+      id: 23,
+      name: 'Rome',
+      country: 'PAP',
+      terrain: 'Farmland',
+      devastation: 0.0,
+      infrastructure: 45.0,
+      control: 0.95,
+      tax_base: 110.0,
+      nobleDominated: false,
+      dominanceLabel: 'Clergy/Holy See',
+      plague_infected: false,
+      pops: [
+        { estate: 'Clergy', subCulture: 'Roman', size: 12000, wealth: 420.0, unrest: 0.03 },
+        { estate: 'Commoners', subCulture: 'Roman', size: 18000, wealth: 22.0, unrest: 0.09 }
+      ],
+      buildings: ['Old St. Peter Basilica', 'Apostolic Palace']
+    },
+    {
+      id: 110,
+      name: 'Adrianople',
+      country: 'TUR',
+      terrain: 'Farmland',
+      devastation: 0.04,
+      infrastructure: 35.0,
+      control: 0.82,
+      tax_base: 70.0,
+      nobleDominated: true,
+      dominanceLabel: 'Nobility/Janissaries',
+      plague_infected: false,
+      pops: [
+        { estate: 'Nobility', subCulture: 'Turkish', size: 4500, wealth: 280.0, unrest: 0.04 },
+        { estate: 'Commoners', subCulture: 'Bulgarian & Greek', size: 45000, wealth: 18.0, unrest: 0.09 }
+      ],
+      buildings: ['Balkan Frontier Fortress', 'Rumelian Waystation']
+    },
+    {
+      id: 104,
+      name: 'Constantinople',
+      country: 'BYZ',
+      terrain: 'Farmland',
+      devastation: 0.08,
+      infrastructure: 60.0,
+      control: 0.88,
+      tax_base: 180.0,
+      nobleDominated: false,
+      dominanceLabel: 'Clergy/Imperial Bureaucracy',
+      plague_infected: false,
+      pops: [
+        { estate: 'Clergy', subCulture: 'Greek', size: 15000, wealth: 380.0, unrest: 0.06 },
+        { estate: 'Nobility', subCulture: 'Greek', size: 10000, wealth: 520.0, unrest: 0.08 },
+        { estate: 'Burghers', subCulture: 'Greek & Genoese', size: 25000, wealth: 240.0, unrest: 0.12 },
+        { estate: 'Commoners', subCulture: 'Greek', size: 50000, wealth: 20.0, unrest: 0.15 }
+      ],
+      buildings: ['Hagia Sophia Cathedral', 'Theodosian Triple Walls', 'Blachernae Imperial Palace']
+    },
+    {
+      id: 102,
+      name: 'Bursa',
+      country: 'TUR',
+      terrain: 'Hills',
+      devastation: 0.0,
+      infrastructure: 45.0,
+      control: 0.95,
+      tax_base: 95.0,
+      nobleDominated: true,
+      dominanceLabel: 'Nobility/Sipahis',
+      plague_infected: false,
+      pops: [
+        { estate: 'Nobility', subCulture: 'Turkish', size: 6000, wealth: 360.0, unrest: 0.02 },
+        { estate: 'Commoners', subCulture: 'Turkish', size: 18000, wealth: 24.0, unrest: 0.04 }
+      ],
+      buildings: ['Grand Mosque of Bursa', 'Sipahi Cavalry Barracks', 'Silk & Spice Bazaar']
+    },
+    {
+      id: 101,
+      name: 'Söğüt',
+      country: 'TUR',
+      terrain: 'Hills',
+      devastation: 0.0,
+      infrastructure: 30.0,
+      control: 1.0,
+      tax_base: 50.0,
+      nobleDominated: true,
+      dominanceLabel: 'Nobility/Gazi Warriors',
+      plague_infected: false,
+      pops: [
+        { estate: 'Nobility', subCulture: 'Turkish', size: 7200, wealth: 290.0, unrest: 0.03 },
+        { estate: 'Commoners', subCulture: 'Turkish', size: 40000, wealth: 16.0, unrest: 0.05 }
+      ],
+      buildings: ['Ertugrul Gazi Shrine', 'Nomadic Horsearcher Encampment']
     }
   ],
 
@@ -227,6 +338,30 @@ function recalculateControl() {
       loc.control = 1.0; 
       continue; 
     }
+    if (loc.id === 102) {
+      loc.control = 0.95;
+      continue;
+    }
+    if (loc.id === 101) {
+      loc.control = 1.0;
+      continue;
+    }
+    if (loc.id === 104) {
+      loc.control = 0.88;
+      continue;
+    }
+    if (loc.id === 110) {
+      loc.control = 0.82;
+      continue;
+    }
+    if (loc.id === 20) {
+      loc.control = 1.0;
+      continue;
+    }
+    if (loc.id === 23) {
+      loc.control = 0.95;
+      continue;
+    }
     let dist = 15.0;
     if (loc.id === 2) dist = 12.0;
     if (loc.id === 3) dist = state.channelBlockaded ? 120.0 : 14.0;
@@ -255,9 +390,28 @@ function refreshLocationFooter(locationId) {
   const nameEl = document.getElementById('selected-loc-name');
   const statsEl = document.getElementById('selected-loc-stats');
 
+  // Exact conditional interface switch requested for Bursa
+  if (loc.name === 'Bursa' || loc.id === 102) {
+    if (nameEl) nameEl.textContent = 'Bursa (Hills)';
+    if (statsEl) {
+      statsEl.textContent = 'Control: 95.0% • Devastation: 0.0% • Pops: 24,000 • Dominance: Nobility/Sipahis';
+    }
+    return;
+  }
+
+  // Exact conditional interface switch for London (Capital Hub)
+  if (loc.name === 'London' || loc.id === 1) {
+    if (nameEl) nameEl.textContent = 'London (Farmland)';
+    if (statsEl) {
+      statsEl.textContent = 'Control: 100.0% • Devastation: 0.0% • Pops: 31,500';
+    }
+    return;
+  }
+
+  const dominance = loc.dominanceLabel || (loc.nobleDominated ? 'Nobility' : 'Burghers/Commoners');
   if (nameEl) nameEl.textContent = `${loc.name} (${loc.terrain})`;
   if (statsEl) {
-    statsEl.textContent = `Control: ${(loc.control * 100).toFixed(1)}% • Devastation: ${(loc.devastation * 100).toFixed(1)}% • Pops: ${totalPop.toLocaleString()} • Dominance: ${loc.nobleDominated ? 'Nobility' : 'Burghers/Commoners'}`;
+    statsEl.textContent = `Control: ${(loc.control * 100).toFixed(1)}% • Devastation: ${(loc.devastation * 100).toFixed(1)}% • Pops: ${totalPop.toLocaleString()} • Dominance: ${dominance}`;
   }
 }
 
@@ -268,8 +422,14 @@ function renderMapModes() {
     if (!nodeEl) continue;
 
     if (state.activeMapMode === 'political') {
-      nodeEl.setAttribute('fill', loc.country === 'ENG' ? '#b91c1c' : '#1d4ed8');
-      nodeEl.setAttribute('stroke', loc.id === 1 ? '#ffd700' : '#ffffff');
+      let fillColor = '#b91c1c';
+      if (loc.country === 'FRA') fillColor = '#1d4ed8';
+      else if (loc.country === 'TUR') fillColor = '#047857';
+      else if (loc.country === 'BYZ') fillColor = '#7e22ce';
+      else if (loc.country === 'VEN') fillColor = '#0284c7';
+      else if (loc.country === 'PAP') fillColor = '#ca8a04';
+      nodeEl.setAttribute('fill', fillColor);
+      nodeEl.setAttribute('stroke', (loc.id === 1 || loc.id === 102 || loc.id === 104) ? '#ffd700' : '#ffffff');
     } else if (state.activeMapMode === 'control') {
       if (loc.control >= 0.90) {
         nodeEl.setAttribute('fill', '#ffd700');
@@ -282,8 +442,8 @@ function renderMapModes() {
         nodeEl.setAttribute('stroke', '#fca5a5');
       }
     } else if (state.activeMapMode === 'trade') {
-      nodeEl.setAttribute('fill', loc.id === 1 || loc.id === 3 ? '#f59e0b' : '#334155');
-      nodeEl.setAttribute('stroke', state.channelBlockaded ? '#ef4444' : '#ffd700');
+      nodeEl.setAttribute('fill', [1, 3, 20, 104, 102].includes(loc.id) ? '#f59e0b' : '#334155');
+      nodeEl.setAttribute('stroke', (state.channelBlockaded || state.straitBlockaded) ? '#ef4444' : '#ffd700');
     } else if (state.activeMapMode === 'devastation') {
       const red = Math.floor(100 + 155 * loc.devastation);
       nodeEl.setAttribute('fill', `rgb(${red}, 40, 40)`);
@@ -297,13 +457,43 @@ function renderMapModes() {
   // Blockade line rendering
   const seaLine = document.getElementById('sea-trade-line');
   const dcLine = document.getElementById('dover-calais-line');
-  if (seaLine && dcLine) {
+  const gibLine = document.getElementById('gibraltar-maritime-loop');
+  const bosphorusLine = document.getElementById('bosphorus-strait-line');
+  const bosphorusChoke = document.getElementById('bosphorus-choke-indicator');
+
+  if (dcLine) {
     if (state.channelBlockaded) {
-      seaLine.classList.add('blockaded');
       dcLine.classList.add('blockaded');
     } else {
-      seaLine.classList.remove('blockaded');
       dcLine.classList.remove('blockaded');
+    }
+  }
+  if (seaLine) {
+    if (state.channelBlockaded) {
+      seaLine.classList.add('blockaded');
+    } else {
+      seaLine.classList.remove('blockaded');
+    }
+  }
+  if (gibLine) {
+    if (state.channelBlockaded) {
+      gibLine.classList.add('blockaded');
+    } else {
+      gibLine.classList.remove('blockaded');
+    }
+  }
+  if (bosphorusLine) {
+    if (state.straitBlockaded) {
+      bosphorusLine.classList.add('blockaded');
+    } else {
+      bosphorusLine.classList.remove('blockaded');
+    }
+  }
+  if (bosphorusChoke) {
+    if (state.straitBlockaded) {
+      bosphorusChoke.classList.add('blockaded');
+    } else {
+      bosphorusChoke.classList.remove('blockaded');
     }
   }
 }
@@ -704,8 +894,28 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast('Maritime trade restored across the Channel.');
     }
     recalculateControl();
+    renderMapModes();
     updateHUD();
   });
+
+  // Toggle Bosphorus Strait Blockade Button
+  const straitBlockadeBtn = document.getElementById('btn-toggle-strait-blockade');
+  if (straitBlockadeBtn) {
+    straitBlockadeBtn.addEventListener('click', () => {
+      state.straitBlockaded = !state.straitBlockaded;
+      if (state.straitBlockaded) {
+        straitBlockadeBtn.textContent = '⛔ Lift Bosphorus Blockade';
+        straitBlockadeBtn.style.color = '#ff1744';
+        showToast('⚠️ Bosphorus & Dardanelles Straits blockaded! Maritime edge turned flashing red.');
+      } else {
+        straitBlockadeBtn.textContent = '🌊 Blockade Bosphorus';
+        straitBlockadeBtn.style.color = '#00e5ff';
+        showToast('Bosphorus strait reopened: Maritime transit restored.');
+      }
+      renderMapModes();
+      updateHUD();
+    });
+  }
 
   // Toggle Plague Button
   document.getElementById('btn-toggle-plague').addEventListener('click', () => {
