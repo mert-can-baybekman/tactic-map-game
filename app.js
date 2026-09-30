@@ -311,25 +311,43 @@ function renderMapModes() {
 // UPDATE TOPBAR HUD
 function updateHUD() {
   const netMonthly = state.monthlyTaxIncome - state.monthlyMaintenance;
-  document.getElementById('hud-treasury').textContent = state.crownTreasury.toFixed(1);
-  const deltaEl = document.getElementById('hud-treasury-delta');
-  deltaEl.textContent = `(${netMonthly >= 0 ? '+' : ''}${netMonthly.toFixed(1)})`;
-  deltaEl.className = netMonthly >= 0 ? 'delta pos' : 'delta neg';
+  const treasuryEl = document.getElementById('hud-treasury');
+  if (treasuryEl) treasuryEl.textContent = state.crownTreasury.toFixed(1);
 
-  document.getElementById('hud-manpower').textContent = state.manpower.toLocaleString();
-  document.getElementById('hud-crown-power').textContent = `${(state.crownPower * 100).toFixed(1)}%`;
-  document.getElementById('date-display').textContent = 
-    `${state.calendar.year}-${String(state.calendar.month).padStart(2, '0')}-${String(state.calendar.day).padStart(2, '0')}`;
+  const deltaEl = document.getElementById('hud-treasury-delta');
+  if (deltaEl) {
+    deltaEl.textContent = `(${netMonthly >= 0 ? '+' : ''}${netMonthly.toFixed(1)})`;
+    deltaEl.className = netMonthly >= 0 ? 'delta pos' : 'delta neg';
+  }
+
+  const manpowerEl = document.getElementById('hud-manpower');
+  if (manpowerEl) manpowerEl.textContent = state.manpower.toLocaleString();
+
+  const crownPowerEl = document.getElementById('hud-crown-power');
+  if (crownPowerEl) crownPowerEl.textContent = `${(state.crownPower * 100).toFixed(1)}%`;
+
+  const dateEl = document.getElementById('date-display');
+  if (dateEl) {
+    dateEl.textContent = 
+      `${state.calendar.year}-${String(state.calendar.month).padStart(2, '0')}-${String(state.calendar.day).padStart(2, '0')}`;
+  }
 
   // Outliner Updates
-  document.getElementById('task-normandy-val').textContent = `${state.outliner.normandyIntegration.toFixed(1)}%`;
-  document.getElementById('task-normandy-bar').style.width = `${state.outliner.normandyIntegration}%`;
-  document.getElementById('task-calais-val').textContent = `${state.outliner.calaisBastion.toFixed(1)}%`;
-  document.getElementById('task-calais-bar').style.width = `${state.outliner.calaisBastion}%`;
+  const normandyVal = document.getElementById('task-normandy-val');
+  if (normandyVal) normandyVal.textContent = `${state.outliner.normandyIntegration.toFixed(1)}%`;
+  const normandyBar = document.getElementById('task-normandy-bar');
+  if (normandyBar) normandyBar.style.width = `${state.outliner.normandyIntegration}%`;
+
+  const calaisVal = document.getElementById('task-calais-val');
+  if (calaisVal) calaisVal.textContent = `${state.outliner.calaisBastion.toFixed(1)}%`;
+  const calaisBar = document.getElementById('task-calais-bar');
+  if (calaisBar) calaisBar.style.width = `${state.outliner.calaisBastion}%`;
 
   // Outliner Estates
-  document.getElementById('out-nobility-loyalty').textContent = `Loyalty: ${state.estates[0].loyalty.toFixed(1)}%`;
-  document.getElementById('out-nobility-wealth').textContent = `Wealth: ${state.estates[0].wealth.toFixed(1)} D • Power: ${state.estates[0].power.toFixed(1)}%`;
+  const nobilityLoyalty = document.getElementById('out-nobility-loyalty');
+  if (nobilityLoyalty) nobilityLoyalty.textContent = `Loyalty: ${state.estates[0].loyalty.toFixed(1)}%`;
+  const nobilityWealth = document.getElementById('out-nobility-wealth');
+  if (nobilityWealth) nobilityWealth.textContent = `Wealth: ${state.estates[0].wealth.toFixed(1)} D • Power: ${state.estates[0].power.toFixed(1)}%`;
 
   // Refresh Footer
   refreshLocationFooter(state.selectedLocationId);
@@ -721,32 +739,45 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeModularWindow = null;
   let activeWindowTab = 'overview';
 
-  const modalBackdrop = document.getElementById('gsg-floating-modal');
-  const modalTitle = document.getElementById('floating-window-title');
-  const modalIcon = document.getElementById('floating-window-icon');
-  const modalBody = document.getElementById('floating-window-body');
-  const modalCloseBtn = document.getElementById('btn-floating-window-close');
-
   function openModularWindow(type, tab = 'overview') {
     activeModularWindow = type;
     activeWindowTab = tab;
-    modalBackdrop.style.display = 'flex';
+    const modalBackdrop = document.getElementById('gsg-floating-modal');
+    if (modalBackdrop) modalBackdrop.style.display = 'flex';
     renderActiveModularWindow();
   }
 
   function closeModularWindow() {
     activeModularWindow = null;
-    modalBackdrop.style.display = 'none';
+    const modalBackdrop = document.getElementById('gsg-floating-modal');
+    if (modalBackdrop) modalBackdrop.style.display = 'none';
     document.querySelectorAll('.nav-dock-btn').forEach(b => b.classList.remove('active'));
   }
 
-  modalCloseBtn.addEventListener('click', closeModularWindow);
-  modalBackdrop.addEventListener('click', (e) => {
-    if (e.target === modalBackdrop) closeModularWindow();
-  });
+  window.openModularWindow = openModularWindow;
+  window.closeModularWindow = closeModularWindow;
+
+  const modalCloseBtn = document.getElementById('btn-floating-window-close');
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener('click', closeModularWindow);
+  }
+  const modalBackdropEl = document.getElementById('gsg-floating-modal');
+  if (modalBackdropEl) {
+    modalBackdropEl.addEventListener('click', (e) => {
+      if (e.target === modalBackdropEl) closeModularWindow();
+    });
+  }
 
   function renderActiveModularWindow() {
     if (!activeModularWindow) return;
+
+    const modalBackdrop = document.getElementById('gsg-floating-modal');
+    const modalTitle = document.getElementById('floating-window-title');
+    const modalIcon = document.getElementById('floating-window-icon');
+    const modalBody = document.getElementById('floating-window-body');
+
+    if (!modalBackdrop || !modalTitle || !modalIcon || !modalBody) return;
+    modalBackdrop.style.display = 'flex';
 
     // Highlight dock button
     document.querySelectorAll('.nav-dock-btn').forEach(b => b.classList.remove('active'));
@@ -1197,14 +1228,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Bind Dock Buttons
-  document.getElementById('btn-dock-gov').addEventListener('click', () => openModularWindow('government'));
-  document.getElementById('btn-dock-estates').addEventListener('click', () => openModularWindow('estates'));
-  document.getElementById('btn-dock-demo').addEventListener('click', () => openModularWindow('demographics'));
-  document.getElementById('btn-dock-economy').addEventListener('click', () => openModularWindow('economy'));
-  document.getElementById('btn-dock-trade').addEventListener('click', () => openModularWindow('trade'));
-  document.getElementById('btn-dock-diplo').addEventListener('click', () => openModularWindow('diplomacy'));
-  document.getElementById('btn-dock-military').addEventListener('click', () => openModularWindow('military'));
+  // Bind Dock Buttons Safely
+  const dockMap = [
+    ['btn-dock-gov', 'government'],
+    ['btn-dock-estates', 'estates'],
+    ['btn-dock-demo', 'demographics'],
+    ['btn-dock-economy', 'economy'],
+    ['btn-dock-trade', 'trade'],
+    ['btn-dock-diplo', 'diplomacy'],
+    ['btn-dock-military', 'military']
+  ];
+
+  dockMap.forEach(([btnId, winType]) => {
+    const btn = document.getElementById(btnId);
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModularWindow(winType);
+      });
+    }
+  });
 
   // Global Keyboard Shortcuts
   window.addEventListener('keydown', (e) => {

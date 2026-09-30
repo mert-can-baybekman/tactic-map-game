@@ -63,13 +63,13 @@
 
     <!-- CORE SYSTEM WINDOW DOCK -->
     <div class="window-nav-dock">
-      <button class="nav-dock-btn" id="btn-dock-gov" title="Government & Cabinet (G)">👑</button>
-      <button class="nav-dock-btn" id="btn-dock-estates" title="Estates & Parliament (E)">⚖️</button>
-      <button class="nav-dock-btn" id="btn-dock-demo" title="Demographics & Pops (P)">👥</button>
-      <button class="nav-dock-btn" id="btn-dock-economy" title="Exchequer & Budget (B)">🪙</button>
-      <button class="nav-dock-btn" id="btn-dock-trade" title="Trade Hub & Graph (T)">📦</button>
-      <button class="nav-dock-btn" id="btn-dock-diplo" title="Foreign Affairs & Treaties (D)">🕊️</button>
-      <button class="nav-dock-btn" id="btn-dock-military" title="Army Logistics & Combat (M)">⚔️</button>
+      <button class="nav-dock-btn" id="btn-dock-gov" title="Government & Cabinet (G)" onclick="window.openModularWindow('government')">👑</button>
+      <button class="nav-dock-btn" id="btn-dock-estates" title="Estates & Parliament (E)" onclick="window.openModularWindow('estates')">⚖️</button>
+      <button class="nav-dock-btn" id="btn-dock-demo" title="Demographics & Pops (P)" onclick="window.openModularWindow('demographics')">👥</button>
+      <button class="nav-dock-btn" id="btn-dock-economy" title="Exchequer & Budget (B)" onclick="window.openModularWindow('economy')">🪙</button>
+      <button class="nav-dock-btn" id="btn-dock-trade" title="Trade Hub & Graph (T)" onclick="window.openModularWindow('trade')">📦</button>
+      <button class="nav-dock-btn" id="btn-dock-diplo" title="Foreign Affairs & Treaties (D)" onclick="window.openModularWindow('diplomacy')">🕊️</button>
+      <button class="nav-dock-btn" id="btn-dock-military" title="Army Logistics & Combat (M)" onclick="window.openModularWindow('military')">⚔️</button>
     </div>
 
     <!-- DYNAMIC AGE OF RENAISSANCE BANNER -->
@@ -381,10 +381,10 @@
         <div class="outliner-row">
           <div class="outliner-row-main">
             <span>Bastion of Calais</span>
-            <strong style="color: #60a5fa;">68.2%</strong>
+            <strong style="color: #60a5fa;" id="task-calais-val">68.2%</strong>
           </div>
           <div class="outliner-progress">
-            <div class="outliner-progress-fill" style="width: 68.2%; background: #a855f7;"></div>
+            <div class="outliner-progress-fill" id="task-calais-bar" style="width: 68.2%; background: #a855f7;"></div>
           </div>
           <span style="font-size: 10px; color: var(--text-muted);">Fortification Upgrade • Est. Completion: 1352</span>
         </div>
@@ -462,6 +462,6 @@
 
   <div class="toast-msg" id="toast-notification">Notification</div>
 
-  <script type="module" src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
