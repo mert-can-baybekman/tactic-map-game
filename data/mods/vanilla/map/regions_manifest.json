@@ -1,0 +1,20 @@
+{
+  "manifest_version": "1.0.0",
+  "active_world_grid": "europe_mediterranean_near_east",
+  "region_files": [
+    "data/mods/vanilla/map/near_east.json",
+    "data/mods/vanilla/map/europe.json"
+  ],
+  "chokepoints_file": "data/mods/vanilla/map/strait_chokepoints.json",
+  "total_indexed_locations": 45,
+  "major_theaters": [
+    "Anatolia",
+    "Rumelia & Balkans",
+    "Levant & Egypt",
+    "Western Europe & Low Countries",
+    "Italian Peninsula",
+    "Iberian Peninsula",
+    "Eastern Europe & Rus",
+    "Mediterranean Maritime Corridors"
+  ]
+}

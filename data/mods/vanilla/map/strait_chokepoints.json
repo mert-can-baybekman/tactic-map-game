@@ -1,0 +1,43 @@
+{
+  "chokepoints": [
+    {
+      "id": "bosphorus_strait",
+      "name": "Bosphorus & Dardanelles Straits",
+      "sea_zone_name": "Marmara Sea Basin",
+      "connected_land_pairs": [
+        { "node_a": 104, "node_b": 103, "name_a": "Constantinople", "name_b": "Iznik" },
+        { "node_a": 104, "node_b": 102, "name_a": "Constantinople", "name_b": "Bursa" },
+        { "node_a": 105, "node_b": 102, "name_a": "Gallipoli", "name_b": "Bursa" }
+      ],
+      "blockading_fleets": [],
+      "is_blockaded": false,
+      "blockade_manpower_connectivity_factor": 0.0,
+      "alternative_land_detour_nodes": [104, 110, 113, 116, 44, 108, 109, 101],
+      "detour_travel_time_days": 120
+    },
+    {
+      "id": "gibraltar_strait",
+      "name": "Pillars of Hercules (Straits of Gibraltar)",
+      "sea_zone_name": "Alboran Sea & Atlantic Approach",
+      "connected_land_pairs": [
+        { "node_a": 34, "node_b": 32, "name_a": "Gibraltar", "name_b": "Lisbon" }
+      ],
+      "blockading_fleets": [],
+      "is_blockaded": false,
+      "blockade_manpower_connectivity_factor": 0.0,
+      "alternative_land_detour_nodes": [],
+      "detour_travel_time_days": 60
+    },
+    {
+      "id": "sound_of_denmark",
+      "name": "The Danish Sound (Øresund)",
+      "sea_zone_name": "Kattegat & Baltic Transition",
+      "connected_land_pairs": [],
+      "blockading_fleets": [],
+      "is_blockaded": false,
+      "blockade_manpower_connectivity_factor": 0.0,
+      "alternative_land_detour_nodes": [],
+      "detour_travel_time_days": 45
+    }
+  ]
+}
