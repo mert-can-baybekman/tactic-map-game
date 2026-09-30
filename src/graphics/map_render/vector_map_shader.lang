@@ -1,0 +1,132 @@
+// =========================================================================
+// VECTOR MAP RENDERER SHADER & GEOMETRIC GIS PIPELINE
+// Paradox Interactive / Project Caesar Parity Map Mesh Specification
+// File: /src/graphics/map_render/vector_map_shader.lang
+// =========================================================================
+
+module VectorMapRendererShader {
+
+  struct Vec2 {
+    x: Float,
+    y: Float
+  }
+
+  struct ColorRgba {
+    r: Float,
+    g: Float,
+    b: Float,
+    a: Float
+  }
+
+  struct LandPolygon {
+    id: String,
+    vertices: Array<Vec2>,
+    fillColor: ColorRgba,
+    strokeColor: ColorRgba,
+    strokeWidth: Float
+  }
+
+  struct PoliticalWashRegion {
+    countryTag: String,
+    boundary: Array<Vec2>,
+    washColor: ColorRgba,
+    alphaMultiplier: Float
+  }
+
+  // -------------------------------------------------------------------------
+  // 1. HARDWARE VECTOR RASTERIZATION (DEVICES SHARP EDGES INSTEAD OF BLOBS)
+  // -------------------------------------------------------------------------
+  fn RasterizeSharpVectorPolygon(ctx: GraphicsContext, poly: LandPolygon) {
+    if (poly.vertices.length < 3) {
+      return;
+    }
+
+    ctx.BeginPath();
+    let first: Vec2 = poly.vertices[0];
+    ctx.MoveTo(first.x, first.y);
+
+    // Enforce crisp linear segments: eliminate deformed rounded bezier bloat
+    for (i in 1..poly.vertices.length - 1) {
+      let pt: Vec2 = poly.vertices[i];
+      ctx.LineTo(pt.x, pt.y);
+    }
+    ctx.ClosePath();
+
+    // Alpha-blended base terrain pass
+    ctx.SetFillColor(poly.fillColor.r, poly.fillColor.g, poly.fillColor.b, poly.fillColor.a);
+    ctx.Fill();
+
+    // Sharp anti-aliased coastline vector stroke
+    if (poly.strokeWidth > 0.0) {
+      ctx.SetStrokeColor(poly.strokeColor.r, poly.strokeColor.g, poly.strokeColor.b, poly.strokeColor.a);
+      ctx.SetLineWidth(poly.strokeWidth);
+      ctx.SetLineJoin("round");
+      ctx.Stroke();
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // 2. SOVEREIGN DOMAIN WASH SHADER (CONFINED EXACTLY TO TERRESTRIAL BOUNDS)
+  // -------------------------------------------------------------------------
+  fn ApplySovereignDomainWash(ctx: GraphicsContext, wash: PoliticalWashRegion) {
+    if (wash.boundary.length < 3) {
+      return;
+    }
+
+    ctx.SaveState();
+    ctx.SetBlendMode("src_alpha", "one_minus_src_alpha");
+
+    ctx.BeginPath();
+    let start: Vec2 = wash.boundary[0];
+    ctx.MoveTo(start.x, start.y);
+
+    for (i in 1..wash.boundary.length - 1) {
+      let v: Vec2 = wash.boundary[i];
+      ctx.LineTo(v.x, v.y);
+    }
+    ctx.ClosePath();
+
+    // Pure alpha color wash: zero bleeding into deep ocean grid
+    let finalAlpha: Float = wash.washColor.a * wash.alphaMultiplier;
+    ctx.SetFillColor(wash.washColor.r, wash.washColor.g, wash.washColor.b, finalAlpha);
+    ctx.Fill();
+
+    ctx.RestoreState();
+  }
+
+  // -------------------------------------------------------------------------
+  // 3. CURVED LOGISTICS SPLINE SHADER
+  // -------------------------------------------------------------------------
+  fn DrawLogisticsSpline(ctx: GraphicsContext, waypoints: Array<Vec2>, strokeHex: String, lineWidth: Float, dashed: Boolean) {
+    if (waypoints.length < 2) {
+      return;
+    }
+
+    ctx.BeginPath();
+    ctx.MoveTo(waypoints[0].x, waypoints[0].y);
+
+    // Elegant cubic spline progression through genuine geographic straits
+    for (i in 0..waypoints.length - 2) {
+      let p0: Vec2 = if (i > 0) waypoints[i - 1] else waypoints[i];
+      let p1: Vec2 = waypoints[i];
+      let p2: Vec2 = waypoints[i + 1];
+      let p3: Vec2 = if (i + 2 < waypoints.length) waypoints[i + 2] else p2;
+
+      let cp1x: Float = p1.x + (p2.x - p0.x) / 6.0;
+      let cp1y: Float = p1.y + (p2.y - p0.y) / 6.0;
+      let cp2x: Float = p2.x - (p3.x - p1.x) / 6.0;
+      let cp2y: Float = p2.y - (p3.y - p1.y) / 6.0;
+
+      ctx.BezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
+    }
+
+    ctx.SetStrokeColorHex(strokeHex);
+    ctx.SetLineWidth(lineWidth);
+    if (dashed) {
+      ctx.SetLineDash([6.0, 4.0]);
+    } else {
+      ctx.ClearLineDash();
+    }
+    ctx.Stroke();
+  }
+}

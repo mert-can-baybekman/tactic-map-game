@@ -1082,6 +1082,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const jumpParisBtn = document.getElementById('btn-jump-paris');
   if (jumpParisBtn) jumpParisBtn.addEventListener('click', () => focusOnCoordinates(428, 255, 2.4));
 
+  const jumpVeniceBtn = document.getElementById('btn-jump-venice');
+  if (jumpVeniceBtn) jumpVeniceBtn.addEventListener('click', () => focusOnCoordinates(726, 334, 2.4));
+
   const jumpRomeBtn = document.getElementById('btn-jump-rome');
   if (jumpRomeBtn) jumpRomeBtn.addEventListener('click', () => focusOnCoordinates(731, 415, 2.4));
 
