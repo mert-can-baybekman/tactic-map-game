@@ -6,3 +6,4 @@ export * from './treaty.ts';
 export * from './rebellion.ts';
 export * from './missions.ts';
 export * from './espionage.ts';
+export * from './diplomacy/cb.ts';
