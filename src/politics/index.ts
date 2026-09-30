@@ -13,3 +13,4 @@ export * from './ideas.ts';
 export * from './integration.ts';
 export * from './events/collapse.ts';
 export * from './religion/reformation.ts';
+export * from './dynasty_core.ts';

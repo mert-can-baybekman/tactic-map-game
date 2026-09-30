@@ -1,0 +1,44 @@
+// =========================================================================
+// OVERSEAS COLONY CHARTERS & GLOBAL RESOURCE INJECTION SPECIFICATION
+// Subsystem: /src/economy/colonization.lang
+// =========================================================================
+
+module GameEngine.Economy.Colonization {
+
+    enum LuxuryGoodType {
+        Tobacco,
+        Sugar,
+        Gold_Ore
+    }
+
+    struct ColonyCharterOutpost {
+        charter_id: string,
+        country_tag: string,
+        location_id: u32,
+        location_name: string,
+        monthly_gold_maintenance: f32, // Deducted from topbar Treasury
+        current_population: u32,
+        native_pop_size: u32,
+        native_aggression: f32,         // 0.0 to 100.0
+        state_burgher_satisfaction: f32,// 0.0 to 100.0
+        is_core_location: bool,
+        luxury_resource: LuxuryGoodType
+    }
+
+    // Monthly Population Growth Calculation:
+    // Colony_Growth_Rate = Base_Immigration_Rate + (State_Burgher_Satisfaction * 0.1) - (Native_Aggression * 0.05)
+    fn CalculateColonyGrowth(
+        base_immigration: f32,
+        burgher_satisfaction: f32,
+        native_aggression: f32
+    ) -> u32 {
+        let net_growth = base_immigration + (burgher_satisfaction * 0.10) - (native_aggression * 0.05);
+        return max(5, net_growth as u32);
+    }
+
+    // Core Location Conversion:
+    // When population >= 5000, convert into full Location node and inject resource into trade graph
+    fn CheckCoreConversion(current_population: u32) -> bool {
+        return current_population >= 5000;
+    }
+}

@@ -1,0 +1,66 @@
+// =========================================================================
+// DYNASTIC FAMILY TREE, PRETENDER CLAIMS & SUCCESSION CRISES SPECIFICATION
+// Subsystem: /src/politics/dynasty_core.lang
+// =========================================================================
+
+module GameEngine.Politics.DynastyCore {
+
+    struct DynasticCharacterNode {
+        id: string,
+        name: string,
+        dynasty_name: string,
+        birth_year: u32,
+        is_monarch: bool,
+        is_heir: bool,
+        is_legitimate: bool,
+        father_id: string,
+        mother_id: string,
+        spouse_id: string,
+        sibling_ids: array<string>,
+        child_ids: array<string>,
+        claim_legitimacy_float: f32, // 0.0 to 100.0
+        ambition: f32,                // 0.0 to 100.0
+        loyalty: f32                  // 0.0 to 100.0
+    }
+
+    struct MilitaryGeneral {
+        id: string,
+        name: string,
+        army_stack_id: u32,
+        location_id: u32,
+        ambition: f32,
+        loyalty: f32,
+        has_defected: bool
+    }
+
+    struct PretenderRebelFaction {
+        faction_id: string,
+        country_tag: string,
+        pretender_character_id: string,
+        pretender_name: string,
+        rebel_troop_count: u32,
+        rebellion_location_ids: array<u32>,
+        is_succession_crisis_active: bool
+    }
+
+    // Succession Crisis Protocol:
+    // Triggers if heir legitimacy < 50.0 or Nobility Estate wealth share > 30%
+    fn EvaluateSuccessionCrisis(
+        heir_legitimacy: f32,
+        nobility_wealth_share: f32,
+        pretender: DynasticCharacterNode
+    ) -> (bool, u32) {
+        if heir_legitimacy < 50.0 || nobility_wealth_share > 0.30 {
+            let base_rebel_army: u32 = 8000;
+            let pretender_scaling: u32 = (pretender.ambition * 100.0) as u32;
+            return (true, base_rebel_army + pretender_scaling);
+        }
+        return (false, 0);
+    }
+
+    // Military Array Splinter:
+    // Generals defect if ambition > 60.0 and loyalty < 40.0
+    fn EvaluateGeneralDefection(general: MilitaryGeneral) -> bool {
+        return general.ambition > 60.0 && general.loyalty < 40.0;
+    }
+}

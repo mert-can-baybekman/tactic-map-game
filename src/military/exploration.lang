@@ -1,0 +1,51 @@
+// =========================================================================
+// TERRA INCOGNITA EXPLORATION & NAVAL CHARTING MATRIX SPECIFICATION
+// Subsystem: /src/military/exploration.lang
+// =========================================================================
+
+module GameEngine.Military.Exploration {
+
+    struct ExplorerCharacter {
+        id: string,
+        name: string,
+        intrigue: f32, // 1.0 to 10.0
+        fleet_speed: f32 // 1.0 to 5.0
+    }
+
+    struct ExplorationExpedition {
+        expedition_id: string,
+        country_tag: string,
+        fleet_id: u32,
+        current_location_id: u32,
+        target_terra_incognita_node_id: u32,
+        distance_from_nearest_port: f32,
+        charting_progress: f32, // 0.0 to 100.0
+        is_completed: bool,
+        prestige_generated: f32
+    }
+
+    // Daily Chart Progression Function:
+    // Exploration_Progress_Delta = Base_Speed * (Explorer_Intrigue + Fleet_Speed) * e^(-Distance_From_Nearest_Port / 100)
+    fn CalculateDailyProgress(
+        base_speed: f32,
+        explorer_intrigue: f32,
+        fleet_speed: f32,
+        distance_from_port: f32
+    ) -> f32 {
+        let decay = exp(-distance_from_port / 100.0);
+        let delta = base_speed * (explorer_intrigue + fleet_speed) * decay;
+        return max(0.1, delta);
+    }
+
+    // Uncover Terra Incognita Node:
+    // Removes fog mask and awards prestige
+    fn UncoverTerraIncognitaNode(
+        target_node_id: u32,
+        adjacent_ocean_ids: array<u32>
+    ) -> (array<u32>, f32) {
+        let mut revealed_nodes = adjacent_ocean_ids;
+        revealed_nodes.push(target_node_id);
+        let prestige_reward: f32 = 20.0;
+        return (revealed_nodes, prestige_reward);
+    }
+}

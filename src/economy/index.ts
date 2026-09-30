@@ -5,3 +5,4 @@ export * from './trade_nodes.ts';
 export * from './interdiction.ts';
 export * from './market_clearing.ts';
 export * from './crisis.ts';
+export * from './colonization.ts';
