@@ -1,0 +1,64 @@
+// =========================================================================
+// DYNAMIC AI COALITION & BALANCE OF POWER MATRIX SPECIFICATION
+// Subsystem: /src/ai/coalition_engine.lang
+// =========================================================================
+
+module GameEngine.AI.CoalitionEngine {
+
+    enum CoalitionStance {
+        Normal_Diplomacy,
+        Heightened_Vigilance,
+        Contain_Hegemon_Aggression
+    }
+
+    struct SovereignThreatRecord {
+        country_tag: string,
+        acquired_nodes_60m: u32,
+        base_threat_score: f32,
+        global_threat_index: f32,
+        culture_group: string,
+        is_hegemon: bool
+    }
+
+    struct DefensiveCoalitionPact {
+        pact_id: string,
+        target_hegemon_tag: string,
+        member_tags: array<string>,
+        formation_date_tick: u64,
+        is_active: bool,
+        collective_army_size: u32
+    }
+
+    // Threat Hub Aggregator:
+    // If country acquires > 15 locations in 60 months, scale threat index exponentially
+    fn CalculateGlobalThreatIndex(
+        base_threat: f32,
+        acquired_nodes_60m: u32
+    ) -> f32 {
+        if acquired_nodes_60m <= 15 {
+            return clamp(base_threat, 0.0, 1.0);
+        }
+
+        let excess = (acquired_nodes_60m - 15) as f32;
+        let exponential_scaling = pow(1.15, excess);
+        let final_threat = base_threat * exponential_scaling;
+
+        return clamp(final_threat, 0.0, 5.0);
+    }
+
+    // The Containment Coalition Protocol:
+    // If threat index > 0.75 -> Form Defensive Coalition Pact and trigger Contain_Hegemon_Aggression
+    fn EvaluateCoalitionFormation(
+        hegemon_tag: string,
+        threat_index: f32,
+        adjacent_neighbors: array<string>
+    ) -> (bool, CoalitionStance) {
+        if threat_index >= 0.75 && adjacent_neighbors.len() >= 2 {
+            return (true, CoalitionStance.Contain_Hegemon_Aggression);
+        }
+        if threat_index >= 0.50 {
+            return (false, CoalitionStance.Heightened_Vigilance);
+        }
+        return (false, CoalitionStance.Normal_Diplomacy);
+    }
+}

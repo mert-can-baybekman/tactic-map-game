@@ -1,0 +1,52 @@
+// =========================================================================
+// GLOBAL GOLDEN AGE & HISTORICAL ERAS STATE MACHINE SPECIFICATION
+// Subsystem: /src/core/eras_manager.lang
+// =========================================================================
+
+module GameEngine.Core.ErasManager {
+
+    enum HistoricalEra {
+        Age_Of_Feudalism,
+        Age_Of_Renaissance,
+        Age_Of_Discovery,
+        Age_Of_Reformation
+    }
+
+    struct GoldenAgePayload {
+        is_active: bool,
+        remaining_daily_ticks: u32, // Exactly 3650 days (10 years)
+        has_already_used_golden_age: bool,
+        control_decay_modifier: f32, // -25% (0.75)
+        burgher_wealth_modifier: f32, // +30% (1.30)
+        siege_supply_cost_modifier: f32 // -15% (0.85)
+    }
+
+    struct WorldEraState {
+        current_era: HistoricalEra,
+        transition_date_tick: u64,
+        renaissance_market_hubs_completed: u32,
+        global_era_name: string
+    }
+
+    // Structural Era Transition Trigger:
+    // Transitions to Age_Of_Renaissance once >= 3 major market hubs reach 100% Renaissance institution
+    fn EvaluateEraProgression(
+        current_era: HistoricalEra,
+        completed_renaissance_hubs: u32
+    ) -> (HistoricalEra, bool) {
+        if current_era == HistoricalEra.Age_Of_Feudalism && completed_renaissance_hubs >= 3 {
+            return (HistoricalEra.Age_Of_Renaissance, true);
+        }
+        return (current_era, false);
+    }
+
+    // Sovereign Golden Age Activation:
+    // Requires Prestige > 80 and Legitimacy > 90. Lasts 3650 ticks. Once per campaign.
+    fn CanActivateGoldenAge(
+        prestige: f32,
+        legitimacy: f32,
+        has_used: bool
+    ) -> bool {
+        return !has_used && prestige > 80.0 && legitimacy > 90.0;
+    }
+}

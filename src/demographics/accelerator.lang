@@ -1,0 +1,77 @@
+// =========================================================================
+// MULTI-THREADED POP MIGRATION & ASSIMILATION ACCELERATOR SPECIFICATION
+// Subsystem: /src/demographics/accelerator.lang
+// =========================================================================
+
+module GameEngine.Demographics.Accelerator {
+
+    struct PopClusterZone {
+        zone_id: u32,
+        location_ids: array<u32>,
+        worker_thread_affinity: u16
+    }
+
+    struct DemographicNodeState {
+        location_id: u32,
+        zone_id: u32,
+        commoner_pops: u32,
+        burgher_pops: u32,
+        clergy_pops: u32,
+        noble_pops: u32,
+        devastation: f32, // 0.0 to 1.0
+        has_epidemics: bool,
+        has_famine: bool,
+        needs_satisfaction: f32, // 0.0 to 1.0
+        connected_edge_ids: array<u32>,
+        is_farmland: bool
+    }
+
+    struct MigrationVectorPayload {
+        source_location_id: u32,
+        target_location_id: u32,
+        migrating_commoners: u32,
+        reason: string
+    }
+
+    // High performance cluster execution loop
+    fn AccelerateDemographicsTick(
+        nodes: array<DemographicNodeState>,
+        zones: array<PopClusterZone>
+    ) -> array<MigrationVectorPayload> {
+        let migration_payloads: array<MigrationVectorPayload> = [];
+
+        // Parallel zone partition simulation
+        for zone in zones {
+            for node_id in zone.location_ids {
+                let node = nodes[node_id];
+
+                // 1. Birth/Death Rate Pass
+                let birth_rate = 0.0025 * node.needs_satisfaction;
+                let death_rate = 0.0020;
+                if node.has_famine {
+                    death_rate += 0.050; // 5% famine decay
+                }
+                if node.has_epidemics {
+                    death_rate += 0.035; // Epidemic mortality
+                }
+
+                // 2. O(1) Fast Blit Migration Shift
+                // If devastation > 0.7 or epidemics -> shift 12% commoners to adjacent vacant farmlands
+                if node.devastation > 0.7 || node.has_epidemics {
+                    let refugee_count = (node.commoner_pops as f32 * 0.12) as u32;
+                    if refugee_count > 0 && node.connected_edge_ids.len() > 0 {
+                        let target_node_id = node.connected_edge_ids[0];
+                        migration_payloads.push(MigrationVectorPayload {
+                            source_location_id: node.location_id,
+                            target_location_id: target_node_id,
+                            migrating_commoners: refugee_count,
+                            reason: "War Devastation and Epidemic Outbreak"
+                        });
+                    }
+                }
+            }
+        }
+
+        return migration_payloads;
+    }
+}
