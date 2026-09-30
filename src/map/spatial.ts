@@ -174,11 +174,14 @@ export class GlobalSpatialMapEngine {
   /**
    * Hierarchical A* Pathfinding (HPA*)
    * High performance macroscopic path finding across cross-continental graphs
+   * Enforces infinite-weight avoidance on Impassable Mountain Wastelands
    */
   public findHierarchicalPath(
     startLocId: number,
     targetLocId: number,
-    locationNeighbors: (id: number) => number[]
+    locationNeighbors: (id: number) => number[],
+    isPassable?: (id: number) => boolean,
+    stepCostModifier?: (fromId: number, toId: number) => number
   ): number[] {
     if (startLocId === targetLocId) return [startLocId];
 
@@ -220,10 +223,19 @@ export class GlobalSpatialMapEngine {
       for (const nId of neighbors) {
         if (closedSet.has(nId)) continue;
 
+        // Impassable Mountain Wasteland constraint (infinite weight bypass)
+        if (isPassable && !isPassable(nId) && nId !== targetLocId) {
+          continue;
+        }
+
         const neighborNode = this.rendererNodes.get(nId);
         if (!neighborNode) continue;
 
-        const stepCost = heuristic(this.rendererNodes.get(current.locId)!, neighborNode);
+        let stepCost = heuristic(this.rendererNodes.get(current.locId)!, neighborNode);
+        if (stepCostModifier) {
+          stepCost *= stepCostModifier(current.locId, nId);
+        }
+
         const gCost = current.gCost + stepCost;
         const fCost = gCost + heuristic(neighborNode, targetNode);
 

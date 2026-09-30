@@ -1,0 +1,133 @@
+// =========================================================================
+// MICRO-PROVINCE DYNAMIC BOUNDARY SHADER SPECIFICATION
+// Language: OpenGL Shading Language (GLSL 450) / WGSL Hybrid
+// Subsystem: /src/graphics/map_render/borders.lang
+// =========================================================================
+
+#version 450 core
+
+// UNIFORM BUFFER OBJECT: Geographic Map Metrics & Viewport State
+layout(std140, binding = 0) uniform MapViewportBlock {
+    mat4 u_ViewProjectionMatrix;
+    vec4 u_GeoBoundingBox;       // [minLon: -11.0, maxLon: 42.0, minLat: 34.0, maxLat: 58.0]
+    vec2 u_CanvasResolution;      // [1600.0, 900.0]
+    float u_ZoomFactor;
+    float u_BorderSoftness;      // Sub-pixel anti-aliasing width
+};
+
+// STRUCTURED BUFFER: Dynamic Sovereign Province Metadata
+// O(1) direct index lookup per sub-province ID
+struct SubProvinceData {
+    uint sovereignTagId;         // Country Tag ID (e.g. 1=ENG, 2=FRA, 3=TUR, 4=BYZ, 5=VEN)
+    uint controllerTagId;        // Occupier / Rebel Faction ID
+    vec4 politicalColorWash;     // RGBA sovereign territorial tint
+    vec4 borderLineColor;        // RGBA border contour tint
+    float controlIndex;          // 0.0 to 1.0 (Devastation/Control level)
+    uint isWasteland;            // 1 if impassable wasteland, 0 otherwise
+};
+
+layout(std430, binding = 1) readonly buffer ProvinceBuffer {
+    SubProvinceData u_Provinces[];
+};
+
+// SAMPLERS & TEXTURES
+layout(binding = 2) uniform usampler2D u_SubProvinceIdTexture; // 16-bit integer texture storing province ID per pixel
+layout(binding = 3) uniform sampler2D u_PhysicalSatelliteTexture; // Authentic GIS satellite surface
+layout(binding = 4) uniform sampler2D u_FoWMaskTexture;         // GPU Fog-of-War texture
+
+// VERTEX SHADER PAYLOAD
+layout(location = 0) in vec3 in_Position;      // [X, Y, Elevation]
+layout(location = 1) in vec2 in_TexCoord;      // Normalized UV
+layout(location = 2) in vec2 in_GeoLatLon;     // WGS-84 Coordinates
+
+layout(location = 0) out vec2 v_TexCoord;
+layout(location = 1) out vec2 v_GeoLatLon;
+layout(location = 2) out float v_Elevation;
+
+#ifdef VERTEX_SHADER
+void main() {
+    v_TexCoord = in_TexCoord;
+    v_GeoLatLon = in_GeoLatLon;
+    v_Elevation = in_Position.z;
+
+    gl_Position = u_ViewProjectionMatrix * vec4(in_Position.xy, 0.0, 1.0);
+}
+#endif
+
+// FRAGMENT SHADER PAYLOAD: O(1) EDGE DETECTION & BOUNDARY COMPOSITING
+#ifdef FRAGMENT_SHADER
+layout(location = 0) out vec4 out_FragColor;
+
+// Sobel kernel offsets for single-pass O(1) border extraction
+const vec2 KERNEL_OFFSETS[4] = vec2[](
+    vec2(-1.0,  0.0),
+    vec2( 1.0,  0.0),
+    vec2( 0.0, -1.0),
+    vec2( 0.0,  1.0)
+);
+
+void main() {
+    vec2 texelSize = 1.0 / u_CanvasResolution;
+
+    // 1. Fetch current sub-province ID from 16-bit raster index
+    uint currentProvId = texture(u_SubProvinceIdTexture, v_TexCoord).r;
+    SubProvinceData currentProv = u_Provinces[currentProvId];
+
+    // 2. Multi-sample 4-neighbor boundary test for O(1) dynamic contour interpolation
+    float borderFactor = 0.0;
+    bool isSovereignBoundary = false;
+
+    for (int i = 0; i < 4; i++) {
+        vec2 sampleUV = v_TexCoord + KERNEL_OFFSETS[i] * texelSize * (1.5 / max(1.0, u_ZoomFactor * 0.5));
+        uint neighborProvId = texture(u_SubProvinceIdTexture, sampleUV).r;
+
+        if (neighborProvId != currentProvId) {
+            SubProvinceData neighborProv = u_Provinces[neighborProvId];
+            
+            // True international or rebel frontier border
+            if (neighborProv.sovereignTagId != currentProv.sovereignTagId ||
+                neighborProv.controllerTagId != currentProv.controllerTagId) {
+                isSovereignBoundary = true;
+                borderFactor += 1.0;
+            } else {
+                // Internal provincial county divider (subtle alpha)
+                borderFactor += 0.35;
+            }
+        }
+    }
+
+    borderFactor = clamp(borderFactor / 4.0, 0.0, 1.0);
+
+    // 3. Base Topography Sampling
+    vec4 satelliteAlbedo = texture(u_PhysicalSatelliteTexture, v_TexCoord);
+
+    // 4. Territorial Alpha Wash (Soft semi-transparent overlay inside sovereign bounds)
+    vec4 washColor = currentProv.politicalColorWash;
+    if (currentProv.controllerTagId != currentProv.sovereignTagId) {
+        // Rebel / Occupied Striping Effect
+        float stripe = step(0.5, fract((gl_FragCoord.x + gl_FragCoord.y) * 0.04));
+        washColor = mix(washColor, vec4(0.85, 0.15, 0.15, 0.35), stripe * 0.6);
+    }
+
+    // Blend physical land albedo with sovereign color tint
+    vec3 compositeColor = mix(satelliteAlbedo.rgb, washColor.rgb, washColor.a);
+
+    // 5. Dynamic Border Contour Rendering
+    if (borderFactor > 0.01) {
+        vec4 edgeColor = isSovereignBoundary ? currentProv.borderLineColor : vec4(0.1, 0.1, 0.1, 0.4);
+        compositeColor = mix(compositeColor, edgeColor.rgb, borderFactor * edgeColor.a);
+    }
+
+    // 6. Impassable Mountain Wasteland Desaturation Mask
+    if (currentProv.isWasteland == 1u) {
+        float luminance = dot(compositeColor, vec3(0.299, 0.587, 0.114));
+        compositeColor = mix(compositeColor, vec3(luminance * 0.6), 0.75);
+    }
+
+    // 7. Fog of War Visibility Mask Multiplication
+    vec4 fowSample = texture(u_FoWMaskTexture, v_TexCoord);
+    compositeColor *= fowSample.rgb;
+
+    out_FragColor = vec4(compositeColor, 1.0);
+}
+#endif

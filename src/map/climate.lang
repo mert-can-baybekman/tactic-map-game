@@ -1,0 +1,74 @@
+// =========================================================================
+// SEASONAL CLIMATE VECTORS & IMPASSABLE WASTELANDS MODULE
+// Subsystem: /src/map/climate.lang
+// =========================================================================
+
+module GameEngine.Map.Climate {
+
+    enum WeatherState {
+        Mild,
+        Severe_Winter,
+        Arid_Summer,
+        Monsoon_Heavy_Rain
+    }
+
+    struct ClimateZone {
+        zone_id: u32,
+        name: string,
+        base_weather: WeatherState,
+        min_latitude: f64,
+        max_latitude: f64,
+        elevation_meters: f64,
+        is_mountainous: bool,
+        is_wasteland: bool,
+        logistics_cost_multiplier: f32,
+        monthly_attrition_rate: f32
+    }
+
+    struct WastelandPolygon {
+        id: u32,
+        name: string,
+        boundary_vertices: array<vec2>, // Geo [lon, lat]
+        infinite_cost: f32 = 999999.0
+    }
+
+    // Daily Seasonal Climate Update Logic
+    fn EvaluateLocationClimate(
+        zone: ref ClimateZone, 
+        current_month: u32, 
+        current_day: u32
+    ) -> WeatherState {
+        // Wastelands are permanently non-navigable
+        if zone.is_wasteland {
+            zone.logistics_cost_multiplier = 999999.0;
+            zone.monthly_attrition_rate = 1.0;
+            return WeatherState.Severe_Winter;
+        }
+
+        // Winter Window: November (11), December (12), January (1), February (2)
+        let is_winter_month = (current_month == 11 || current_month == 12 || current_month == 1 || current_month == 2);
+
+        if is_winter_month && (zone.elevation_meters >= 750.0 || zone.min_latitude >= 44.0 || zone.is_mountainous) {
+            zone.base_weather = WeatherState.Severe_Winter;
+            // 3x Logistical Maintenance Cost & +2.5% Monthly Attrition
+            zone.logistics_cost_multiplier = 3.0;
+            zone.monthly_attrition_rate = 0.025; // +2.5% monthly attrition
+            return WeatherState.Severe_Winter;
+        }
+
+        // Arid Summer Window: July (7), August (8) in southern latitudes
+        let is_summer_month = (current_month == 7 || current_month == 8);
+        if is_summer_month && zone.min_latitude <= 38.0 {
+            zone.base_weather = WeatherState.Arid_Summer;
+            zone.logistics_cost_multiplier = 1.35;
+            zone.monthly_attrition_rate = 0.008;
+            return WeatherState.Arid_Summer;
+        }
+
+        // Default Autumn / Spring / Lowland
+        zone.base_weather = WeatherState.Mild;
+        zone.logistics_cost_multiplier = 1.0;
+        zone.monthly_attrition_rate = 0.0;
+        return WeatherState.Mild;
+    }
+}
