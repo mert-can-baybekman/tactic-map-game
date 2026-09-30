@@ -1,0 +1,44 @@
+// =========================================================================
+// HARDWARE-ACCELERATED ENTITY ARRAY OPTIMIZATION (ECS) SPECIFICATION
+// Subsystem: /src/core/optimization/entity_ecs.lang
+// =========================================================================
+
+module GameEngine.Core.Optimization.EntityECS {
+
+    struct FlatEntityBuffers {
+        tag_ids: array<u16>,             // Flat continuous array
+        location_counts: array<u16>,
+        threat_indices: array<f32>,
+        tax_skimming_rates: array<f32>,
+        army_manpower_pools: array<u32>,
+        culled_flags: array<u8>          // 1 = Culled from heavy loops, 0 = Active
+    }
+
+    // Active Query Culling pass:
+    // If location_count == 1 and local_threat_index == 0.0 -> cull entity from heavy AI ticks
+    fn ProcessEntityQueryCulling(
+        location_count: u16,
+        threat_index: f32
+    ) -> u8 {
+        if location_count <= 1 && threat_index <= 0.0 {
+            return 1; // Culled
+        }
+        return 0; // Active
+    }
+
+    // High performance contiguous buffer scan
+    fn CountActiveEntities(culled_flags: array<u8>) -> (u32, u32) {
+        let mut active: u32 = 0;
+        let mut culled: u32 = 0;
+
+        for flag in culled_flags {
+            if flag == 0 {
+                active += 1;
+            } else {
+                culled += 1;
+            }
+        }
+
+        return (active, culled);
+    }
+}

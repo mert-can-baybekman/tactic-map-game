@@ -1,0 +1,52 @@
+// =========================================================================
+// ULTRA-DENSE MULTI-REGIONAL COUNTRY TAG REGISTRY SPECIFICATION
+// Subsystem: /src/politics/tags/tag_registry.lang
+// =========================================================================
+
+module GameEngine.Politics.Tags.TagRegistry {
+
+    enum GovernmentForm {
+        Feudal_Monarchy,
+        Anatolian_Beylik,
+        Free_Imperial_City,
+        Ecclesiastical_Bishopric,
+        Maritime_Thalassocracy,
+        Balkan_Tsardom
+    }
+
+    struct CountryTagEntity {
+        numeric_id: u16,
+        tag: string,
+        name: string,
+        government: GovernmentForm,
+        primary_culture: string,
+        state_religion: string,
+        capital_location_id: u32,
+        owned_location_ids: array<u32>,
+        color_hex: string,
+        is_hre_member: bool,
+        regional_cluster: string
+    }
+
+    // Fast O(1) Tag Lookup & Array Ingestion
+    fn RegisterCountryTag(
+        numeric_id: u16,
+        tag: string,
+        name: string,
+        regional_cluster: string
+    ) -> CountryTagEntity {
+        return CountryTagEntity {
+            numeric_id: numeric_id,
+            tag: tag,
+            name: name,
+            government: GovernmentForm.Anatolian_Beylik,
+            primary_culture: "Turkish",
+            state_religion: "Sunni",
+            capital_location_id: 101,
+            owned_location_ids: [101],
+            color_hex: "#347844",
+            is_hre_member: false,
+            regional_cluster: regional_cluster
+        };
+    }
+}
