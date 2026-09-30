@@ -1,0 +1,56 @@
+// =========================================================================
+// ASYNCHRONOUS DYNAMIC ANTI-HEGEMON AI COALITION WEAVER SPECIFICATION
+// Subsystem: /src/ai/coalition_core.lang
+// =========================================================================
+
+module GameEngine.AI.CoalitionCore {
+
+    struct AggressiveExpansionRecord {
+        hegemon_tag: string,
+        victim_tag: string,
+        accumulated_ae: f32, // Critical threshold: > 50.0
+        culture_proximity_multiplier: f32,
+        religious_proximity_multiplier: f32
+    }
+
+    struct CoalitionNetworkPact {
+        network_id: string,
+        hegemon_tag: string,
+        member_tags: array<string>,
+        is_active: bool,
+        combined_levy_size: u32,
+        synchronized_defense_grid: bool
+    }
+
+    // Aggressive Expansion Generation:
+    // Scaled by cultural and religious proximity
+    fn ComputeAEPenalty(
+        base_ae: f32,
+        same_culture_group: bool,
+        same_religion: bool
+    ) -> f32 {
+        let culture_mult = same_culture_group ? 1.50 : 1.0;
+        let religion_mult = same_religion ? 1.25 : 0.75;
+        return base_ae * culture_mult * religion_mult;
+    }
+
+    // Automated Coalition Matrix Pass:
+    // If accumulated AE > 50.0 across adjacent tags, trigger Coalition Formation Sequencer
+    fn EvaluateCoalitionWeave(
+        hegemon_tag: string,
+        threatened_neighbors: array<string>,
+        accumulated_ae_map: map<string, f32>
+    ) -> (bool, array<string>) {
+        let mut coalition_members: array<string> = [];
+
+        for neighbor in threatened_neighbors {
+            let ae = accumulated_ae_map[neighbor];
+            if ae >= 50.0 {
+                coalition_members.push(neighbor);
+            }
+        }
+
+        let can_form = coalition_members.len() >= 2;
+        return (can_form, coalition_members);
+    }
+}

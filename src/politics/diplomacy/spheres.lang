@@ -1,0 +1,48 @@
+// =========================================================================
+// GREAT POWER SPHERES OF INFLUENCE & SOFT POWER ENFORCEMENT SPECIFICATION
+// Subsystem: /src/politics/diplomacy/spheres.lang
+// =========================================================================
+
+module GameEngine.Politics.Diplomacy.Spheres {
+
+    struct GreatPowerEntry {
+        country_tag: string,
+        rank: u8, // 1 to 8
+        total_locations: u32,
+        net_monthly_income: f32,
+        standing_manpower: u32,
+        hegemon_score: f32
+    }
+
+    struct SphereNodeRelationship {
+        great_power_tag: string,
+        target_minor_tag: string,
+        influence_float: f32, // 0.0 to 100.0
+        is_locked_in_sphere: bool,
+        enforce_peace_available: bool,
+        claim_fabrication_penalty_factor: f32 // 3.0x when locked
+    }
+
+    // Hegemon Power Projection Value:
+    // Great_Power_Rank = Total_Locations_Owned + Net_Monthly_Income + (Total_Standing_Army_Manpower / 1000)
+    fn CalculateGreatPowerScore(
+        locations: u32,
+        net_income: f32,
+        standing_manpower: u32
+    ) -> f32 {
+        let manpower_scaled = (standing_manpower as f32) / 1000.0;
+        return (locations as f32) + net_income + manpower_scaled;
+    }
+
+    // Soft Power Penetration Tick:
+    // Builds influence until 100%, locking the node into the Sphere of Influence
+    fn AdvanceDiplomaticInfluence(
+        current_influence: f32,
+        diplomat_skill: f32
+    ) -> (f32, bool) {
+        let delta = 2.5 * diplomat_skill;
+        let next_val = clamp(current_influence + delta, 0.0, 100.0);
+        let is_locked = next_val >= 100.0;
+        return (next_val, is_locked);
+    }
+}

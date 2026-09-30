@@ -1,0 +1,55 @@
+// =========================================================================
+// MULTI-TIER SUBJECT STATE & VASSALAGE MANAGEMENT LEDGER SPECIFICATION
+// Subsystem: /src/politics/diplomacy/subjects.lang
+// =========================================================================
+
+module GameEngine.Politics.Diplomacy.Subjects {
+
+    enum SubjectType {
+        Feudal_Vassal,
+        March,
+        Thalassocracy_Client
+    }
+
+    struct SubjectState {
+        subject_tag: string,
+        liege_tag: string,
+        subject_type: SubjectType,
+        tax_skimming_rate: f32, // 0.15 for Feudal Vassal, 0.0 for March
+        army_morale_bonus: f32,  // +0.25 for March
+        fort_defense_bonus: f32, // +0.15 for March
+        trade_volume_share: f32, // 0.50 for Thalassocracy Client
+        subject_army_size: u32,
+        liege_army_size: u32,
+        unrest_militancy: f32,
+        liege_prestige: f32,
+        liberty_desire: f32,     // 0.0 to 100.0
+        refuses_offensive_wars: bool,
+        has_independence_cb: bool
+    }
+
+    // Monthly Liberty Desire Evaluation Tick:
+    // Liberty_Desire = (Subject_Army_Size / Liege_Army_Size * 50) + Unrest - (Liege_Prestige * 0.25)
+    fn CalculateLibertyDesire(
+        subject_army: u32,
+        liege_army: u32,
+        unrest: f32,
+        liege_prestige: f32
+    ) -> f32 {
+        let safe_liege = max(100.0, liege_army as f32);
+        let military_ratio = ((subject_army as f32) / safe_liege) * 50.0;
+        let prestige_factor = liege_prestige * 0.25;
+
+        let total = military_ratio + unrest - prestige_factor;
+        return clamp(total, 0.0, 100.0);
+    }
+
+    // Dynamic Diplomatic Action Thresholds:
+    // > 50% -> Refuse offensive war calls
+    // > 80% -> Unlock War_Of_Independence Casus Belli
+    fn EvaluateSubjectDisobedience(liberty_desire: f32) -> (bool, bool) {
+        let refuses_offensive = liberty_desire > 50.0;
+        let unlocks_independence_cb = liberty_desire > 80.0;
+        return (refuses_offensive, unlocks_independence_cb);
+    }
+}
