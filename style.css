@@ -683,3 +683,541 @@ body {
   display: none;
   z-index: 999;
 }
+
+/* TOPBAR WINDOW NAVIGATION DOCK */
+.window-nav-dock {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.nav-dock-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-primary);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-dock-btn:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: var(--border-gold);
+  transform: translateY(-1px);
+}
+
+.nav-dock-btn.active {
+  background: var(--accent-gold);
+  color: #000;
+  border-color: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* MODULAR FLOATING WINDOW SYSTEM */
+.floating-window-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.floating-window-frame {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-gold);
+  border-radius: 8px;
+  width: 860px;
+  max-width: 94vw;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(212, 175, 55, 0.05);
+  overflow: hidden;
+  animation: windowPopIn 0.2s ease-out;
+}
+
+@keyframes windowPopIn {
+  from { opacity: 0; transform: scale(0.97) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.floating-window-titlebar {
+  background: linear-gradient(90deg, #1e2433 0%, #0f172a 100%);
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.floating-window-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.floating-window-close:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.floating-window-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* WINDOW INTERNAL TABS & CONTENT */
+.window-tab-bar {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 4px 12px 0 12px;
+}
+
+.win-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.win-tab-btn:hover {
+  color: #ffd700;
+}
+
+.win-tab-btn.active {
+  color: #ffd700;
+  border-bottom-color: #ffd700;
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.window-body-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* CABINET GRID */
+.cabinet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.cabinet-grid.compact {
+  grid-template-columns: 1fr;
+}
+
+.cabinet-slot-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cabinet-slot-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cabinet-avatar {
+  width: 36px;
+  height: 36px;
+  background: #1e293b;
+  border: 1px solid var(--border-gold);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.cabinet-title {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.cabinet-name {
+  font-size: 12px;
+  font-weight: bold;
+  color: #f1f5f9;
+}
+
+.cabinet-attr-pill {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cabinet-action-box {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 11px;
+}
+
+.action-progress-bar {
+  height: 6px;
+  background: #1e293b;
+  border-radius: 3px;
+  margin: 6px 0;
+  overflow: hidden;
+}
+
+.action-progress-fill {
+  height: 100%;
+  background: var(--accent-gold);
+}
+
+/* ESTATES HUD */
+.estates-hud-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.estate-hud-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.estate-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.estate-badge-icon {
+  font-size: 20px;
+}
+
+.estate-wealth-tag {
+  margin-left: auto;
+  font-size: 11px;
+  color: #fbbf24;
+  font-weight: bold;
+}
+
+.privilege-row-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.priv-toggle-btn {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-revoke {
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #f87171;
+}
+
+.btn-grant {
+  background: #10b981;
+  border: 1px solid #059669;
+  color: #000;
+}
+
+/* DEMOGRAPHICS & POP VIRTUALLIST */
+.demo-summary-deck {
+  display: flex;
+  gap: 12px;
+}
+
+.demo-metric-badge {
+  flex: 1;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  padding: 10px 14px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-val {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.strata-bars-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pop-ledger-header, .pop-ledger-row {
+  display: grid;
+  grid-template-columns: 100px 140px 90px 160px 120px 110px;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+.pop-ledger-header {
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: bold;
+  color: var(--text-muted);
+}
+
+.pop-ledger-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pop-ledger-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.need-slider {
+  height: 5px;
+  background: #1e293b;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.need-slider .need-fill {
+  height: 100%;
+}
+
+/* ECONOMY SPLIT LEDGER */
+.budget-summary-banner {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.split-ledger-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.ledger-box {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.ledger-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 12px;
+}
+
+.construction-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+
+/* TRADE VIRTUAL GRID */
+.hub-metric-deck {
+  display: flex;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.hub-metric-card {
+  flex: 1;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.trade-grid-header, .trade-grid-row {
+  display: grid;
+  grid-template-columns: 180px 120px 120px 140px 1fr;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+.trade-grid-header {
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: bold;
+}
+
+.trade-grid-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* DIPLOMACY PEACE MATRIX */
+.peace-two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.peace-col {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.peace-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 12px;
+}
+
+.peace-evaluation-footer {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 14px;
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* MILITARY COMBAT GRID */
+.combat-grid-container {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 14px;
+}
+
+.grid-tactical-tier {
+  margin: 12px 0;
+}
+
+.tier-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.grid-cards-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.combat-grid-card {
+  width: 140px;
+  background: #1e293b;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.combat-grid-card.flank {
+  border-color: #38bdf8;
+}
+
+.combat-grid-card.front {
+  border-color: #f87171;
+}
+
+.combat-grid-card.back {
+  border-color: #fbbf24;
+}
+
+.unit-strength-bar, .unit-morale-bar {
+  height: 4px;
+  background: #0f172a;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.unit-strength-bar .strength-fill {
+  height: 100%;
+  background: #38bdf8;
+}
+
+.unit-morale-bar .morale-fill {
+  height: 100%;
+  background: #34d399;
+}
+
+.unit-combat-vectors {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  margin-top: 4px;
+}
+

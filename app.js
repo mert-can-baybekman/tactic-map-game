@@ -714,4 +714,519 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateHUD();
   });
+
+  // =========================================================================
+  // MODULAR FRONTEND UI ECOSYSTEM (CLAUSEWITZ / JOMINI STANDARD)
+  // =========================================================================
+  let activeModularWindow = null;
+  let activeWindowTab = 'overview';
+
+  const modalBackdrop = document.getElementById('gsg-floating-modal');
+  const modalTitle = document.getElementById('floating-window-title');
+  const modalIcon = document.getElementById('floating-window-icon');
+  const modalBody = document.getElementById('floating-window-body');
+  const modalCloseBtn = document.getElementById('btn-floating-window-close');
+
+  function openModularWindow(type, tab = 'overview') {
+    activeModularWindow = type;
+    activeWindowTab = tab;
+    modalBackdrop.style.display = 'flex';
+    renderActiveModularWindow();
+  }
+
+  function closeModularWindow() {
+    activeModularWindow = null;
+    modalBackdrop.style.display = 'none';
+    document.querySelectorAll('.nav-dock-btn').forEach(b => b.classList.remove('active'));
+  }
+
+  modalCloseBtn.addEventListener('click', closeModularWindow);
+  modalBackdrop.addEventListener('click', (e) => {
+    if (e.target === modalBackdrop) closeModularWindow();
+  });
+
+  function renderActiveModularWindow() {
+    if (!activeModularWindow) return;
+
+    // Highlight dock button
+    document.querySelectorAll('.nav-dock-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.getElementById(`btn-dock-${activeModularWindow === 'demographics' ? 'demo' : activeModularWindow}`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    if (activeModularWindow === 'government') {
+      modalTitle.textContent = 'Royal Government & Privy Council';
+      modalIcon.textContent = '👑';
+      modalBody.innerHTML = `
+        <div class="window-tab-bar">
+          <button class="win-tab-btn ${activeWindowTab === 'overview' ? 'active' : ''}" data-tab="overview">Monarch & Succession</button>
+          <button class="win-tab-btn ${activeWindowTab === 'cabinet' ? 'active' : ''}" data-tab="cabinet">Privy Council (4 Seats)</button>
+        </div>
+        <div class="window-body-scroll">
+          ${activeWindowTab === 'cabinet' ? `
+            <div class="cabinet-grid">
+              <div class="cabinet-slot-card">
+                <div class="cabinet-slot-header">
+                  <div class="cabinet-avatar">📜</div>
+                  <div>
+                    <div class="cabinet-title">Lord High Chancellor</div>
+                    <div class="cabinet-name">William of Wykeham</div>
+                  </div>
+                  <div class="cabinet-attr-pill">Stewardship: <strong>74</strong></div>
+                </div>
+                <div class="cabinet-action-box">
+                  <span class="action-label">Active Mandate: <strong>Centralize Home Counties</strong></span>
+                  <p style="margin: 4px 0; color: var(--text-muted);">+0.15% monthly Crown Control across London and Dover trade corridor.</p>
+                  <div class="action-progress-bar"><div class="action-progress-fill" style="width: 62%;"></div></div>
+                  <small>Progress: 62.4% • ETA: 8 months</small>
+                </div>
+              </div>
+
+              <div class="cabinet-slot-card">
+                <div class="cabinet-slot-header">
+                  <div class="cabinet-avatar">⚔️</div>
+                  <div>
+                    <div class="cabinet-title">Grand Marshal</div>
+                    <div class="cabinet-name">Duke of Lancaster</div>
+                  </div>
+                  <div class="cabinet-attr-pill">Martial: <strong>88</strong></div>
+                </div>
+                <div class="cabinet-action-box">
+                  <span class="action-label">Active Mandate: <strong>Drill Continental Levies</strong></span>
+                  <p style="margin: 4px 0; color: var(--text-muted);">+10% army reinforcement recovery rate and +5.0 morale cap.</p>
+                  <div class="action-progress-bar"><div class="action-progress-fill" style="width: 45%;"></div></div>
+                  <small>Progress: 45.0% • ETA: 11 months</small>
+                </div>
+              </div>
+
+              <div class="cabinet-slot-card">
+                <div class="cabinet-slot-header">
+                  <div class="cabinet-avatar">🪙</div>
+                  <div>
+                    <div class="cabinet-title">High Treasurer</div>
+                    <div class="cabinet-name">Walter de Merton</div>
+                  </div>
+                  <div class="cabinet-attr-pill">Stewardship: <strong>81</strong></div>
+                </div>
+                <div class="cabinet-action-box">
+                  <span class="action-label">Active Mandate: <strong>Audit Wool Customs</strong></span>
+                  <p style="margin: 4px 0; color: var(--text-muted);">+8.5 Ducats monthly tariff extraction from Calais trade routes.</p>
+                  <div class="action-progress-bar"><div class="action-progress-fill" style="width: 80%;"></div></div>
+                  <small>Progress: 80.2% • ETA: 4 months</small>
+                </div>
+              </div>
+
+              <div class="cabinet-slot-card">
+                <div class="cabinet-slot-header">
+                  <div class="cabinet-avatar">🗡️</div>
+                  <div>
+                    <div class="cabinet-title">Lord Privy Seal</div>
+                    <div class="cabinet-name">John de Thoresby</div>
+                  </div>
+                  <div class="cabinet-attr-pill">Intrigue: <strong>70</strong></div>
+                </div>
+                <div class="cabinet-action-box">
+                  <span class="action-label">Active Mandate: <strong>Fabricate Diplomatic Claims</strong></span>
+                  <p style="margin: 4px 0; color: var(--text-muted);">Infiltrating Valois admiralty in Normandy coastal baronies.</p>
+                  <div class="action-progress-bar"><div class="action-progress-fill" style="width: 28%;"></div></div>
+                  <small>Progress: 28.5% • ETA: 16 months</small>
+                </div>
+              </div>
+            </div>
+          ` : `
+            <div style="background: var(--bg-tertiary); padding: 14px; border-radius: 6px; border: 1px solid var(--border-color);">
+              <h3 style="color: #ffd700; margin-bottom: 6px;">👑 Monarch: ${state.ruler.firstName} ${state.ruler.dynasty}</h3>
+              <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 12px;">Sovereign King of England, Lord of Ireland, and claimant to the Throne of France.</p>
+              <div style="display: flex; gap: 10px; font-size: 12px; margin-bottom: 14px;">
+                <span class="stat-pill">Martial: <strong>85</strong></span>
+                <span class="stat-pill">Diplo: <strong>79</strong></span>
+                <span class="stat-pill">Steward: <strong>65</strong></span>
+                <span class="stat-pill">Learn: <strong>50</strong></span>
+                <span class="stat-pill">Intrigue: <strong>68</strong></span>
+              </div>
+              <div style="border-top: 1px solid var(--border-color); padding-top: 12px;">
+                <h4 style="font-size: 12px; color: #fbbf24; text-transform: uppercase;">Dynastic Succession Matrix</h4>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                  <span style="font-size: 20px;">🗡️</span>
+                  <div>
+                    <strong>${state.heir.firstName}</strong>
+                    <div style="font-size: 11px; color: var(--text-muted);">Age: ${state.heir.age} • Claim: Strong (100) • Succession Rank: Primogeniture Line 1</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `}
+        </div>
+      `;
+    } else if (activeModularWindow === 'estates') {
+      modalTitle.textContent = 'Estates of the Realm & Parliament Floor';
+      modalIcon.textContent = '⚖️';
+      modalBody.innerHTML = `
+        <div class="window-tab-bar">
+          <button class="win-tab-btn ${activeWindowTab === 'overview' ? 'active' : ''}" data-tab="overview">Estates Leverage HUD</button>
+          <button class="win-tab-btn ${activeWindowTab === 'parliament' ? 'active' : ''}" data-tab="parliament">Parliament Floor & Laws</button>
+        </div>
+        <div class="window-body-scroll">
+          ${activeWindowTab === 'parliament' ? `
+            <div style="background: var(--bg-tertiary); padding: 16px; border-radius: 6px; border: 1px solid var(--border-color);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="color: #ffd700; font-size: 14px;">📜 Statute of Continental War Subsidies (1350)</h3>
+                <span class="charter-status-tag active">Pending Vote</span>
+              </div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+                Special wartime parliamentary grant levying extraordinary taxes on wool exports to sustain continental garrisons.
+              </p>
+              <div style="height: 14px; background: #1e293b; border-radius: 7px; overflow: hidden; display: flex; margin-bottom: 14px;">
+                <div style="width: 58%; background: #10b981; color: #000; font-size: 10px; font-weight: bold; text-align: center; line-height: 14px;">Ayes: 58%</div>
+                <div style="width: 42%; background: #ef4444; color: #fff; font-size: 10px; font-weight: bold; text-align: center; line-height: 14px;">Noes: 42%</div>
+              </div>
+              <button class="action-btn" id="btn-win-vote-bill" style="background: var(--accent-gold); color: #000; font-weight: bold; width: 100%; justify-content: center;">
+                ⚖️ Pass Statute Through Both Chambers
+              </button>
+            </div>
+          ` : `
+            <div class="estates-hud-grid">
+              ${state.estates.map(e => `
+                <div class="estate-hud-card">
+                  <div class="estate-card-head">
+                    <span class="estate-badge-icon">${e.type === 'Nobility' ? '🛡️' : e.type === 'Clergy' ? '⛪' : '🐑'}</span>
+                    <div>
+                      <strong>${e.type}</strong>
+                      <div style="font-size: 10px; color: var(--text-muted);">Estate Social Strata</div>
+                    </div>
+                    <span class="estate-wealth-tag">${e.wealth.toFixed(1)} D</span>
+                  </div>
+                  <div class="estate-bars-container">
+                    <div class="metric-meter">
+                      <div class="meter-label"><span>Power</span><strong>${e.power.toFixed(1)}%</strong></div>
+                      <div class="meter-track"><div class="meter-bar power" style="width: ${e.power}%;"></div></div>
+                    </div>
+                    <div class="metric-meter">
+                      <div class="meter-label"><span>Loyalty</span><strong style="color: ${e.loyalty >= 50 ? '#34d399' : '#f87171'};">${e.loyalty.toFixed(1)}%</strong></div>
+                      <div class="meter-track"><div class="meter-bar" style="width: ${e.loyalty}%; background: ${e.loyalty >= 50 ? '#10b981' : '#ef4444'};"></div></div>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      `;
+    } else if (activeModularWindow === 'demographics') {
+      modalTitle.textContent = 'Demographics & Granular Pop Strata';
+      modalIcon.textContent = '👥';
+      modalBody.innerHTML = `
+        <div class="window-tab-bar">
+          <button class="win-tab-btn active">Pop Census & Militancy Ledger</button>
+        </div>
+        <div class="window-body-scroll">
+          <div class="demo-summary-deck">
+            <div class="demo-metric-badge">
+              <span class="badge-title">Total Realm Census</span>
+              <span class="badge-val">${state.locations.reduce((acc, l) => acc + l.pops.reduce((s, p) => s + p.size, 0), 0).toLocaleString()}</span>
+            </div>
+            <div class="demo-metric-badge">
+              <span class="badge-title">Locations Surveyed</span>
+              <span class="badge-val">${state.locations.length} Metropolitan Hubs</span>
+            </div>
+            <div class="demo-metric-badge">
+              <span class="badge-title">Mean Realm Devastation</span>
+              <span class="badge-val" style="color: #34d399;">6.0%</span>
+            </div>
+          </div>
+
+          <div class="pop-ledger-container">
+            <div class="pop-ledger-header">
+              <span>Location</span>
+              <span>Class & Culture</span>
+              <span>Headcount</span>
+              <span>Basic & Lux Needs</span>
+              <span>Wealth</span>
+              <span>Unrest</span>
+            </div>
+            <div class="pop-virtual-scroll-area">
+              ${state.locations.flatMap(loc => loc.pops.map(p => `
+                <div class="pop-ledger-row">
+                  <div><strong>${loc.name}</strong></div>
+                  <div><span class="pop-class-pill ${p.estate.toLowerCase()}">${p.estate}</span> <small>${p.subCulture}</small></div>
+                  <div>${p.size.toLocaleString()}</div>
+                  <div>
+                    <div class="need-slider"><div class="need-fill" style="width: 88%; background: #10b981;"></div></div>
+                    <div class="need-slider"><div class="need-fill" style="width: 55%; background: #60a5fa;"></div></div>
+                  </div>
+                  <div>${p.wealth.toFixed(1)} D</div>
+                  <div style="color: ${p.unrest > 0.1 ? '#f87171' : '#34d399'}; font-weight: bold;">
+                    ${(p.unrest * 100).toFixed(1)}%
+                  </div>
+                </div>
+              `)).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (activeModularWindow === 'economy') {
+      modalTitle.textContent = 'Crown Exchequer, Budget & Construction Matrix';
+      modalIcon.textContent = '🪙';
+      modalBody.innerHTML = `
+        <div class="window-tab-bar">
+          <button class="win-tab-btn ${activeWindowTab === 'overview' ? 'active' : ''}" data-tab="overview">National Budget Balance Sheet</button>
+          <button class="win-tab-btn ${activeWindowTab === 'construction' ? 'active' : ''}" data-tab="construction">Construction Matrix</button>
+        </div>
+        <div class="window-body-scroll">
+          <div class="budget-summary-banner">
+            <div>
+              <span style="font-size: 11px; color: var(--text-muted);">Monthly Tax Income</span>
+              <div style="font-size: 18px; font-weight: bold; color: #34d399;">+${state.monthlyTaxIncome.toFixed(1)} D</div>
+            </div>
+            <div style="text-align: center;">
+              <span style="font-size: 11px; color: var(--text-muted);">Net Monthly Balance</span>
+              <div style="font-size: 20px; font-weight: bold; color: #34d399;">+${(state.monthlyTaxIncome - state.monthlyMaintenance).toFixed(1)} D</div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 11px; color: var(--text-muted);">Standing Maintenance</span>
+              <div style="font-size: 18px; font-weight: bold; color: #f87171;">-${state.monthlyMaintenance.toFixed(1)} D</div>
+            </div>
+          </div>
+
+          <div class="split-ledger-grid">
+            <div class="ledger-box">
+              <h4 style="color: #34d399; margin-bottom: 8px;">🟢 Revenue Streams</h4>
+              <div class="ledger-row"><span>Direct Pop Taxation</span><strong class="pos">+${(state.monthlyTaxIncome * 0.7).toFixed(1)} D</strong></div>
+              <div class="ledger-row"><span>Production & Workshops</span><strong class="pos">+${(state.monthlyTaxIncome * 0.2).toFixed(1)} D</strong></div>
+              <div class="ledger-row"><span>Maritime Trade Tariffs</span><strong class="pos">+${(state.monthlyTaxIncome * 0.1).toFixed(1)} D</strong></div>
+            </div>
+            <div class="ledger-box">
+              <h4 style="color: #f87171; margin-bottom: 8px;">🔴 Outlay Streams</h4>
+              <div class="ledger-row"><span>Standing Royal Vanguard</span><strong class="neg">-58.0 D</strong></div>
+              <div class="ledger-row"><span>Channel Battle Fleet</span><strong class="neg">-32.0 D</strong></div>
+              <div class="ledger-row"><span>Fort Garrisons & Upkeep</span><strong class="neg">-30.0 D</strong></div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (activeModularWindow === 'trade') {
+      modalTitle.textContent = 'Market Center & Trade Flow Graph';
+      modalIcon.textContent = '📦';
+      modalBody.innerHTML = `
+        <div class="window-tab-bar">
+          <button class="win-tab-btn active">London Channel Entrepôt</button>
+        </div>
+        <div class="window-body-scroll">
+          <div class="hub-metric-deck">
+            <div class="hub-metric-card">
+              <span style="font-size: 10px; color: var(--text-muted);">Market Trade Volume</span>
+              <strong style="font-size: 16px;">1,845.0 Ducats</strong>
+            </div>
+            <div class="hub-metric-card">
+              <span style="font-size: 10px; color: var(--text-muted);">Domestic Merchant Share</span>
+              <strong style="font-size: 16px; color: #34d399;">74.5%</strong>
+            </div>
+            <div class="hub-metric-card">
+              <span style="font-size: 10px; color: var(--text-muted);">Channel Blockade Interdiction</span>
+              <strong style="font-size: 16px; color: ${state.channelBlockaded ? '#ef4444' : '#34d399'};">
+                ${state.channelBlockaded ? '85.0% (SEVERED)' : '0.0% (CLEAR)'}
+              </strong>
+            </div>
+          </div>
+
+          <div class="trade-goods-table-container">
+            <div class="trade-grid-header">
+              <span>Commodity</span>
+              <span>Supply</span>
+              <span>Demand</span>
+              <span>Clearing Price</span>
+              <span>Balance</span>
+            </div>
+            <div class="trade-virtual-scroll">
+              ${Object.entries(state.market.goods).map(([key, g]) => `
+                <div class="trade-grid-row">
+                  <div><strong>${key.toUpperCase()}</strong></div>
+                  <div>${g.supply} units</div>
+                  <div>${g.demand} units</div>
+                  <div><strong>${g.price.toFixed(2)} D</strong></div>
+                  <div>
+                    <span class="${g.supply >= g.demand ? 'surplus-badge' : 'deficit-badge'}">
+                      ${g.supply >= g.demand ? `Surplus (+${g.supply - g.demand})` : `Deficit (-${g.demand - g.supply})`}
+                    </span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (activeModularWindow === 'diplomacy') {
+      modalTitle.textContent = 'Chancery of Foreign Affairs & Peace Negotiations';
+      modalIcon.textContent = '🕊️';
+      modalBody.innerHTML = `
+        <div class="window-tab-bar">
+          <button class="win-tab-btn active">Two-Sided Peace Deal Barter Matrix</button>
+        </div>
+        <div class="window-body-scroll">
+          <div class="target-nation-banner" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-tertiary); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 24px;">⚜️</span>
+              <div>
+                <strong>Kingdom of France (House Valois)</strong>
+                <div style="font-size: 11px; color: var(--text-muted);">Belligerent in Hundred Years War • War Score: +42%</div>
+              </div>
+            </div>
+            <span class="war-score-pill pos" style="font-weight: bold; color: #34d399; font-size: 14px;">+42% War Score</span>
+          </div>
+
+          <div class="peace-two-columns">
+            <div class="peace-col">
+              <h4>⚔️ English Demands (Attacker)</h4>
+              <div class="peace-item-row selected">
+                <span>✓ Cede Sovereignty of Calais & Pale</span>
+                <span class="peace-cost-badge">18% WS</span>
+              </div>
+              <div class="peace-item-row selected">
+                <span>✓ War Reparations (10% Income)</span>
+                <span class="peace-cost-badge">12% WS</span>
+              </div>
+              <div class="peace-item-row">
+                <span>☐ Cede Duchy of Normandy (Rouen)</span>
+                <span class="peace-cost-badge">26% WS</span>
+              </div>
+            </div>
+            <div class="peace-col">
+              <h4>🛡️ French Concessions & Offers</h4>
+              <div class="peace-item-row selected">
+                <span>✓ Disband Norman Channel Privateers</span>
+                <span class="peace-cost-badge">+8% WS</span>
+              </div>
+              <div class="peace-item-row">
+                <span>☐ 150 Ducats Lump Indemnity</span>
+                <span class="peace-cost-badge">+10% WS</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="peace-evaluation-footer">
+            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+              <span>Total Demands: <strong>30% War Score</strong> (Available: 42%)</span>
+              <strong style="color: #34d399;">AI Peace Desirability: +35 (WILL ACCEPT)</strong>
+            </div>
+            <button class="action-btn" id="btn-ratify-peace" style="background: var(--accent-gold); color: #000; font-weight: bold; width: 100%; justify-content: center;">
+              🕊️ Ratify Treaty & Dispatch Royal Emissary
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (activeModularWindow === 'military') {
+      modalTitle.textContent = 'Grand Army Headquarters & Tactical Combat Grid';
+      modalIcon.textContent = '⚔️';
+      modalBody.innerHTML = `
+        <div class="window-tab-bar">
+          <button class="win-tab-btn active">Tactical Combat Grid (Active Battle Array)</button>
+        </div>
+        <div class="window-body-scroll">
+          <div class="combat-grid-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div>
+                <strong>Royal Vanguard (8,500 Men)</strong>
+                <div style="font-size: 11px; color: var(--text-muted);">Commander: King Edward III (Valiant Warrior • 1.15x Shock)</div>
+              </div>
+              <span class="charter-status-tag active">✓ Supply Line Clear</span>
+            </div>
+
+            <div class="grid-tactical-tier">
+              <span class="tier-label">Front Row & Flanks:</span>
+              <div class="grid-cards-row">
+                <div class="combat-grid-card flank">
+                  <div style="display: flex; justify-content: space-between;"><strong>🐎 Heavy Cav</strong><small>Left Flank</small></div>
+                  <div class="unit-strength-bar"><div class="strength-fill" style="width: 95%;"></div></div>
+                  <div class="unit-combat-vectors"><span class="dmg-dealt">⚔️ +85</span><span class="dmg-taken">🩸 -15</span></div>
+                </div>
+                <div class="combat-grid-card front">
+                  <div style="display: flex; justify-content: space-between;"><strong>🛡️ Men-at-Arms</strong><small>Front</small></div>
+                  <div class="unit-strength-bar"><div class="strength-fill" style="width: 90%;"></div></div>
+                  <div class="unit-combat-vectors"><span class="dmg-dealt">⚔️ +52</span><span class="dmg-taken">🩸 -38</span></div>
+                </div>
+                <div class="combat-grid-card flank">
+                  <div style="display: flex; justify-content: space-between;"><strong>🐎 Heavy Cav</strong><small>Right Flank</small></div>
+                  <div class="unit-strength-bar"><div class="strength-fill" style="width: 100%;"></div></div>
+                  <div class="unit-combat-vectors"><span class="dmg-dealt">⚔️ +92</span><span class="dmg-taken">🩸 -12</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-tactical-tier">
+              <span class="tier-label">Back Row & Ranged Fire:</span>
+              <div class="grid-cards-row">
+                <div class="combat-grid-card back">
+                  <div style="display: flex; justify-content: space-between;"><strong>🏹 Longbowmen</strong><small>Center</small></div>
+                  <div class="unit-strength-bar"><div class="strength-fill" style="width: 100%;"></div></div>
+                  <div class="unit-combat-vectors"><span class="dmg-dealt">⚔️ +65</span><span class="dmg-taken">🩸 0</span></div>
+                </div>
+                <div class="combat-grid-card back">
+                  <div style="display: flex; justify-content: space-between;"><strong>💣 Bombard</strong><small>Siege Train</small></div>
+                  <div class="unit-strength-bar"><div class="strength-fill" style="width: 100%;"></div></div>
+                  <div class="unit-combat-vectors"><span class="dmg-dealt">⚔️ +110</span><span class="dmg-taken">🩸 0</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Attach internal tab listeners
+    modalBody.querySelectorAll('.win-tab-btn').forEach(tabBtn => {
+      tabBtn.addEventListener('click', () => {
+        activeWindowTab = tabBtn.dataset.tab;
+        renderActiveModularWindow();
+      });
+    });
+
+    // Special action listeners
+    const voteBtn = document.getElementById('btn-win-vote-bill');
+    if (voteBtn) {
+      voteBtn.addEventListener('click', () => {
+        showToast('⚖️ Statute of Continental War Subsidies PASSED! +20 Ducats monthly treasury bonus unlocked.');
+        closeModularWindow();
+      });
+    }
+
+    const peaceBtn = document.getElementById('btn-ratify-peace');
+    if (peaceBtn) {
+      peaceBtn.addEventListener('click', () => {
+        showToast('🕊️ Treaty of Calais Ratified! French Crown ceded sovereignty of Calais Pale and committed 10% war indemnities.');
+        closeModularWindow();
+      });
+    }
+  }
+
+  // Bind Dock Buttons
+  document.getElementById('btn-dock-gov').addEventListener('click', () => openModularWindow('government'));
+  document.getElementById('btn-dock-estates').addEventListener('click', () => openModularWindow('estates'));
+  document.getElementById('btn-dock-demo').addEventListener('click', () => openModularWindow('demographics'));
+  document.getElementById('btn-dock-economy').addEventListener('click', () => openModularWindow('economy'));
+  document.getElementById('btn-dock-trade').addEventListener('click', () => openModularWindow('trade'));
+  document.getElementById('btn-dock-diplo').addEventListener('click', () => openModularWindow('diplomacy'));
+  document.getElementById('btn-dock-military').addEventListener('click', () => openModularWindow('military'));
+
+  // Global Keyboard Shortcuts
+  window.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+    if (e.key === 'Escape') {
+      closeModularWindow();
+    } else if (e.key === 'g' || e.key === 'G') {
+      openModularWindow('government');
+    } else if (e.key === 'e' || e.key === 'E') {
+      openModularWindow('estates');
+    } else if (e.key === 'p' || e.key === 'P') {
+      openModularWindow('demographics');
+    } else if (e.key === 'b' || e.key === 'B') {
+      openModularWindow('economy');
+    } else if (e.key === 't' || e.key === 'T') {
+      openModularWindow('trade');
+    } else if (e.key === 'd' || e.key === 'D') {
+      openModularWindow('diplomacy');
+    } else if (e.key === 'm' || e.key === 'M') {
+      openModularWindow('military');
+    }
+  });
 });
+

@@ -61,6 +61,17 @@
       </div>
     </div>
 
+    <!-- CORE SYSTEM WINDOW DOCK -->
+    <div class="window-nav-dock">
+      <button class="nav-dock-btn" id="btn-dock-gov" title="Government & Cabinet (G)">👑</button>
+      <button class="nav-dock-btn" id="btn-dock-estates" title="Estates & Parliament (E)">⚖️</button>
+      <button class="nav-dock-btn" id="btn-dock-demo" title="Demographics & Pops (P)">👥</button>
+      <button class="nav-dock-btn" id="btn-dock-economy" title="Exchequer & Budget (B)">🪙</button>
+      <button class="nav-dock-btn" id="btn-dock-trade" title="Trade Hub & Graph (T)">📦</button>
+      <button class="nav-dock-btn" id="btn-dock-diplo" title="Foreign Affairs & Treaties (D)">🕊️</button>
+      <button class="nav-dock-btn" id="btn-dock-military" title="Army Logistics & Combat (M)">⚔️</button>
+    </div>
+
     <!-- DYNAMIC AGE OF RENAISSANCE BANNER -->
     <div class="age-banner">
       <span class="age-title" id="hud-age-title">Age of Renaissance</span>
@@ -429,6 +440,22 @@
       <div class="modal-footer">
         <button class="ctrl-btn" id="btn-modal-accept" style="background: #10b981; color: #000; font-weight: bold;">Accept Concession</button>
         <button class="ctrl-btn" id="btn-modal-decline" style="border-color: #ef4444; color: #f87171;">Decline & Suppress</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULAR FLOATING WINDOW CONTAINER -->
+  <div id="gsg-floating-modal" class="floating-window-backdrop" style="display: none;">
+    <div class="floating-window-frame" id="floating-window-frame">
+      <div class="floating-window-titlebar" id="floating-window-titlebar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span id="floating-window-icon" style="font-size: 16px;">📜</span>
+          <span id="floating-window-title" style="font-family: var(--font-serif); font-size: 14px; font-weight: bold; color: #ffd700;">Window Title</span>
+        </div>
+        <button class="floating-window-close" id="btn-floating-window-close">✕</button>
+      </div>
+      <div class="floating-window-body" id="floating-window-body">
+        <!-- Rendered modular window HTML dynamically injected here -->
       </div>
     </div>
   </div>
