@@ -300,6 +300,174 @@ const state = {
         { estate: 'Commoners', subCulture: 'Turkish', size: 40000, wealth: 16.0, unrest: 0.05 }
       ],
       buildings: ['Ertugrul Gazi Shrine', 'Nomadic Horsearcher Encampment']
+    },
+    {
+      id: 501,
+      name: 'Caffa',
+      country: 'GEN',
+      terrain: 'Coast',
+      devastation: 0.0,
+      infrastructure: 40.0,
+      control: 0.92,
+      tax_base: 85.0,
+      nobleDominated: false,
+      dominanceLabel: 'Burghers/Genoese Colony',
+      plague_infected: false,
+      pops: [
+        { estate: 'Burghers', subCulture: 'Genoese', size: 8500, wealth: 260.0, unrest: 0.05 },
+        { estate: 'Commoners', subCulture: 'Crimean Tatar & Greek', size: 18000, wealth: 20.0, unrest: 0.08 }
+      ],
+      buildings: ['Genoese Citadel & Port', 'Black Sea Grain EmBanking']
+    },
+    {
+      id: 520,
+      name: 'Kraków',
+      country: 'POL',
+      terrain: 'Farmland',
+      devastation: 0.0,
+      infrastructure: 42.0,
+      control: 0.94,
+      tax_base: 100.0,
+      nobleDominated: true,
+      dominanceLabel: 'Nobility/Szlachta',
+      plague_infected: false,
+      pops: [
+        { estate: 'Nobility', subCulture: 'Polish', size: 7000, wealth: 340.0, unrest: 0.03 },
+        { estate: 'Burghers', subCulture: 'Polish & German', size: 9000, wealth: 180.0, unrest: 0.06 },
+        { estate: 'Commoners', subCulture: 'Polish', size: 28000, wealth: 18.0, unrest: 0.05 }
+      ],
+      buildings: ['Wawel Royal Castle', 'Cloth Hall (Sukiennice)']
+    },
+    {
+      id: 523,
+      name: 'Moscow',
+      country: 'MOS',
+      terrain: 'Forest',
+      devastation: 0.02,
+      infrastructure: 38.0,
+      control: 0.95,
+      tax_base: 95.0,
+      nobleDominated: true,
+      dominanceLabel: 'Nobility/Boyars',
+      plague_infected: false,
+      pops: [
+        { estate: 'Nobility', subCulture: 'Muscovite', size: 6500, wealth: 310.0, unrest: 0.04 },
+        { estate: 'Clergy', subCulture: 'Orthodox Rus', size: 5000, wealth: 220.0, unrest: 0.02 },
+        { estate: 'Commoners', subCulture: 'Muscovite Rus', size: 32000, wealth: 15.0, unrest: 0.06 }
+      ],
+      buildings: ['Kremlin Oak Citadel', 'Dormition Cathedral']
+    },
+    {
+      id: 601,
+      name: 'Tabriz',
+      country: 'JAL',
+      terrain: 'Mountain',
+      devastation: 0.01,
+      infrastructure: 65.0,
+      control: 0.96,
+      tax_base: 175.0,
+      nobleDominated: false,
+      dominanceLabel: 'Burghers/Silk Caravanners',
+      plague_infected: false,
+      pops: [
+        { estate: 'Nobility', subCulture: 'Turco-Mongol', size: 8000, wealth: 480.0, unrest: 0.04 },
+        { estate: 'Burghers', subCulture: 'Persian & Armenian', size: 32000, wealth: 420.0, unrest: 0.06 },
+        { estate: 'Commoners', subCulture: 'Persian', size: 65000, wealth: 25.0, unrest: 0.09 }
+      ],
+      buildings: ['Grand Bazaar of Tabriz', 'Blue Mosque Complex', 'Silk Caravanserai Hub']
+    },
+    {
+      id: 610,
+      name: 'Mecca',
+      country: 'HJZ',
+      terrain: 'Desert',
+      devastation: 0.0,
+      infrastructure: 50.0,
+      control: 1.0,
+      tax_base: 130.0,
+      nobleDominated: false,
+      dominanceLabel: 'Clergy/Sharifate of Mecca',
+      plague_infected: false,
+      pops: [
+        { estate: 'Clergy', subCulture: 'Hejaz Arab', size: 14000, wealth: 460.0, unrest: 0.01 },
+        { estate: 'Burghers', subCulture: 'Arab Pilgrimage Guilds', size: 12000, wealth: 310.0, unrest: 0.03 },
+        { estate: 'Commoners', subCulture: 'Hejaz Arab', size: 24000, wealth: 20.0, unrest: 0.04 }
+      ],
+      buildings: ['Masjid al-Haram & Kaaba', 'Hajj Pilgrim Waystations']
+    },
+    {
+      id: 611,
+      name: 'Medina',
+      country: 'HJZ',
+      terrain: 'Desert',
+      devastation: 0.0,
+      infrastructure: 42.0,
+      control: 0.98,
+      tax_base: 90.0,
+      nobleDominated: false,
+      dominanceLabel: 'Clergy/Sanctuary Keepers',
+      plague_infected: false,
+      pops: [
+        { estate: 'Clergy', subCulture: 'Hejaz Arab', size: 9000, wealth: 340.0, unrest: 0.02 },
+        { estate: 'Commoners', subCulture: 'Hejaz Arab', size: 18000, wealth: 18.0, unrest: 0.04 }
+      ],
+      buildings: ['Al-Masjid an-Nabawi', 'Oasis Date Palm Plantations']
+    },
+    {
+      id: 614,
+      name: 'Aden',
+      country: 'ADE',
+      terrain: 'Coast',
+      devastation: 0.0,
+      infrastructure: 52.0,
+      control: 0.95,
+      tax_base: 120.0,
+      nobleDominated: false,
+      dominanceLabel: 'Burghers/Spice Fleet Masters',
+      plague_infected: false,
+      pops: [
+        { estate: 'Burghers', subCulture: 'Yemeni Arab', size: 16000, wealth: 380.0, unrest: 0.05 },
+        { estate: 'Commoners', subCulture: 'Yemeni Arab', size: 22000, wealth: 22.0, unrest: 0.07 }
+      ],
+      buildings: ['Aden Seaport & Docks', 'Cisterns of Tawila', 'Spice Fleet Anchorage']
+    },
+    {
+      id: 701,
+      name: 'Alexandria',
+      country: 'MAM',
+      terrain: 'Coast',
+      devastation: 0.02,
+      infrastructure: 58.0,
+      control: 0.93,
+      tax_base: 145.0,
+      nobleDominated: false,
+      dominanceLabel: 'Burghers/Levantine Traders',
+      plague_infected: false,
+      pops: [
+        { estate: 'Burghers', subCulture: 'Egyptian & Venetian/Genoese', size: 22000, wealth: 390.0, unrest: 0.06 },
+        { estate: 'Commoners', subCulture: 'Coptic & Arab', size: 45000, wealth: 20.0, unrest: 0.09 }
+      ],
+      buildings: ['Pharos Port Citadel', 'Alexandria Spice Customs Emporium']
+    },
+    {
+      id: 702,
+      name: 'Cairo',
+      country: 'MAM',
+      terrain: 'Farmland',
+      devastation: 0.01,
+      infrastructure: 70.0,
+      control: 0.97,
+      tax_base: 210.0,
+      nobleDominated: true,
+      dominanceLabel: 'Nobility/Mamluk Emirs',
+      plague_infected: false,
+      pops: [
+        { estate: 'Nobility', subCulture: 'Circassian/Kipchak Mamluks', size: 14000, wealth: 620.0, unrest: 0.05 },
+        { estate: 'Clergy', subCulture: 'Arab Sunni', size: 16000, wealth: 380.0, unrest: 0.02 },
+        { estate: 'Burghers', subCulture: 'Egyptian Arab', size: 38000, wealth: 310.0, unrest: 0.07 },
+        { estate: 'Commoners', subCulture: 'Egyptian Fellahin', size: 120000, wealth: 18.0, unrest: 0.11 }
+      ],
+      buildings: ['Citadel of Cairo', 'Al-Azhar University', 'Khan el-Khalili Grand Bazaar', 'Nile Irrigation Delta Grid']
     }
   ],
 
@@ -338,28 +506,8 @@ function recalculateControl() {
       loc.control = 1.0; 
       continue; 
     }
-    if (loc.id === 102) {
-      loc.control = 0.95;
-      continue;
-    }
-    if (loc.id === 101) {
-      loc.control = 1.0;
-      continue;
-    }
-    if (loc.id === 104) {
-      loc.control = 0.88;
-      continue;
-    }
-    if (loc.id === 110) {
-      loc.control = 0.82;
-      continue;
-    }
-    if (loc.id === 20) {
-      loc.control = 1.0;
-      continue;
-    }
-    if (loc.id === 23) {
-      loc.control = 0.95;
+    if (loc.country !== 'ENG') {
+      // Sovereign foreign entities retain their autonomous domestic control values
       continue;
     }
     let dist = 15.0;
@@ -428,8 +576,15 @@ function renderMapModes() {
       else if (loc.country === 'BYZ') fillColor = '#7e22ce';
       else if (loc.country === 'VEN') fillColor = '#0284c7';
       else if (loc.country === 'PAP') fillColor = '#ca8a04';
+      else if (loc.country === 'GEN') fillColor = '#0369a1';
+      else if (loc.country === 'POL') fillColor = '#991b1b';
+      else if (loc.country === 'MOS') fillColor = '#b91c1c';
+      else if (loc.country === 'JAL') fillColor = '#0e7490';
+      else if (loc.country === 'HJZ') fillColor = '#065f46';
+      else if (loc.country === 'ADE') fillColor = '#b45309';
+      else if (loc.country === 'MAM') fillColor = '#c2410c';
       nodeEl.setAttribute('fill', fillColor);
-      nodeEl.setAttribute('stroke', (loc.id === 1 || loc.id === 102 || loc.id === 104) ? '#ffd700' : '#ffffff');
+      nodeEl.setAttribute('stroke', (loc.id === 1 || loc.id === 102 || loc.id === 104 || loc.id === 601 || loc.id === 702 || loc.id === 610) ? '#ffd700' : '#ffffff');
     } else if (state.activeMapMode === 'control') {
       if (loc.control >= 0.90) {
         nodeEl.setAttribute('fill', '#ffd700');
@@ -442,7 +597,8 @@ function renderMapModes() {
         nodeEl.setAttribute('stroke', '#fca5a5');
       }
     } else if (state.activeMapMode === 'trade') {
-      nodeEl.setAttribute('fill', [1, 3, 20, 104, 102].includes(loc.id) ? '#f59e0b' : '#334155');
+      const isTradeHub = [1, 2, 3, 5, 20, 102, 104, 501, 520, 523, 601, 610, 614, 701, 702].includes(loc.id);
+      nodeEl.setAttribute('fill', isTradeHub ? '#f59e0b' : '#334155');
       nodeEl.setAttribute('stroke', (state.channelBlockaded || state.straitBlockaded) ? '#ef4444' : '#ffd700');
     } else if (state.activeMapMode === 'devastation') {
       const red = Math.floor(100 + 155 * loc.devastation);
@@ -453,6 +609,11 @@ function renderMapModes() {
       nodeEl.setAttribute('stroke', loc.plague_infected ? '#ff0000' : '#ffffff');
     }
   }
+
+  // Multi-System Trade Corridor & Blockade line updates
+  const silkRoadLine = document.getElementById('silk-road-corridor');
+  const redSeaLine = document.getElementById('red-sea-maritime-line');
+  const steppeLine = document.getElementById('steppe-supply-line');
 
   // Blockade line rendering
   const seaLine = document.getElementById('sea-trade-line');
@@ -497,6 +658,37 @@ function renderMapModes() {
     }
   }
 }
+
+// =========================================================================
+// MULTI-SYSTEM RENDER PIPELINE LOOP: ExecuteGlobalMapRefresh
+// =========================================================================
+function ExecuteGlobalMapRefresh() {
+  // 1. Recalculate spatial projections and control distribution
+  recalculateControl();
+
+  // 2. Refresh active map mode shaders across all Eurasian nodes
+  renderMapModes();
+
+  // 3. Re-bind raycasting/click listeners to all interactive nodes
+  document.querySelectorAll('.location-node').forEach(node => {
+    node.onclick = () => {
+      document.querySelectorAll('.location-node').forEach(n => n.classList.remove('selected'));
+      node.classList.add('selected');
+      const locId = parseInt(node.dataset.id, 10);
+      state.selectedLocationId = locId;
+      refreshLocationFooter(locId);
+    };
+  });
+
+  // 4. Update HUD and telemetry
+  updateHUD();
+
+  // 5. Update camera transform and LOD
+  if (typeof updateCameraTransform === 'function') {
+    updateCameraTransform();
+  }
+}
+window.ExecuteGlobalMapRefresh = ExecuteGlobalMapRefresh;
 
 // UPDATE TOPBAR HUD
 function updateHUD() {
@@ -695,6 +887,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   recalculateControl();
   updateHUD();
+  ExecuteGlobalMapRefresh();
 
   // Play / Pause Simulation Loop
   const playBtn = document.getElementById('btn-play-pause');
@@ -794,8 +987,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function focusOnCoordinates(targetX, targetY, targetZoom = 2.4) {
     cameraZoom = targetZoom;
-    cameraPanX = (1600 / 2) - targetX * cameraZoom;
-    cameraPanY = (900 / 2) - targetY * cameraZoom;
+    cameraPanX = (2000 / 2) - targetX * cameraZoom;
+    cameraPanY = (1100 / 2) - targetY * cameraZoom;
     updateCameraTransform();
   }
 
@@ -827,8 +1020,8 @@ document.addEventListener('DOMContentLoaded', () => {
     mapSvg.addEventListener('wheel', (e) => {
       e.preventDefault();
       const rect = mapSvg.getBoundingClientRect();
-      const mouseX = (e.clientX - rect.left) * (1600 / rect.width);
-      const mouseY = (e.clientY - rect.top) * (900 / rect.height);
+      const mouseX = (e.clientX - rect.left) * (2000 / rect.width);
+      const mouseY = (e.clientY - rect.top) * (1100 / rect.height);
       const delta = e.deltaY < 0 ? 0.25 : -0.25;
       setZoom(cameraZoom + delta, mouseX, mouseY);
     }, { passive: false });
@@ -836,10 +1029,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Navigation HUD Buttons
   const zoomInBtn = document.getElementById('btn-zoom-in');
-  if (zoomInBtn) zoomInBtn.addEventListener('click', () => setZoom(cameraZoom + 0.35, 800, 450));
+  if (zoomInBtn) zoomInBtn.addEventListener('click', () => setZoom(cameraZoom + 0.35, 1000, 550));
 
   const zoomOutBtn = document.getElementById('btn-zoom-out');
-  if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => setZoom(cameraZoom - 0.35, 800, 450));
+  if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => setZoom(cameraZoom - 0.35, 1000, 550));
 
   const zoomResetBtn = document.getElementById('btn-zoom-reset');
   if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => {
@@ -850,16 +1043,34 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const jumpLondonBtn = document.getElementById('btn-jump-london');
-  if (jumpLondonBtn) jumpLondonBtn.addEventListener('click', () => focusOnCoordinates(328, 243, 2.5));
+  if (jumpLondonBtn) jumpLondonBtn.addEventListener('click', () => focusOnCoordinates(354, 195, 2.4));
 
   const jumpParisBtn = document.getElementById('btn-jump-paris');
-  if (jumpParisBtn) jumpParisBtn.addEventListener('click', () => focusOnCoordinates(403, 343, 2.5));
+  if (jumpParisBtn) jumpParisBtn.addEventListener('click', () => focusOnCoordinates(428, 255, 2.4));
 
-  const jumpVeniceBtn = document.getElementById('btn-jump-venice');
-  if (jumpVeniceBtn) jumpVeniceBtn.addEventListener('click', () => focusOnCoordinates(704, 471, 2.5));
+  const jumpRomeBtn = document.getElementById('btn-jump-rome');
+  if (jumpRomeBtn) jumpRomeBtn.addEventListener('click', () => focusOnCoordinates(731, 415, 2.4));
+
+  const jumpConstantinopleBtn = document.getElementById('btn-jump-constantinople');
+  if (jumpConstantinopleBtn) jumpConstantinopleBtn.addEventListener('click', () => focusOnCoordinates(1223, 435, 2.4));
 
   const jumpBosphorusBtn = document.getElementById('btn-jump-bosphorus');
-  if (jumpBosphorusBtn) jumpBosphorusBtn.addEventListener('click', () => focusOnCoordinates(1207, 637, 2.6));
+  if (jumpBosphorusBtn) jumpBosphorusBtn.addEventListener('click', () => focusOnCoordinates(1223, 435, 2.4));
+
+  const jumpCaffaBtn = document.getElementById('btn-jump-caffa');
+  if (jumpCaffaBtn) jumpCaffaBtn.addEventListener('click', () => focusOnCoordinates(1414, 343, 2.5));
+
+  const jumpMoscowBtn = document.getElementById('btn-jump-moscow');
+  if (jumpMoscowBtn) jumpMoscowBtn.addEventListener('click', () => focusOnCoordinates(1481, 97, 2.2));
+
+  const jumpTabrizBtn = document.getElementById('btn-jump-tabriz');
+  if (jumpTabrizBtn) jumpTabrizBtn.addEventListener('click', () => focusOnCoordinates(1740, 502, 2.4));
+
+  const jumpCairoBtn = document.getElementById('btn-jump-cairo');
+  if (jumpCairoBtn) jumpCairoBtn.addEventListener('click', () => focusOnCoordinates(1290, 687, 2.4));
+
+  const jumpMeccaBtn = document.getElementById('btn-jump-mecca');
+  if (jumpMeccaBtn) jumpMeccaBtn.addEventListener('click', () => focusOnCoordinates(1547, 884, 2.4));
 
   // Sol Panel: Arrange Royal Marriage
   document.getElementById('btn-court-marriage').addEventListener('click', () => {

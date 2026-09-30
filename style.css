@@ -738,6 +738,37 @@ body {
   50% { stroke-opacity: 0.3; stroke-width: 2.5; }
 }
 
+/* INTERCONTINENTAL TRADE LINES */
+.line-silk-road {
+  stroke: #f59e0b;
+  stroke-width: 4.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
+  animation: silkPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes silkPulse {
+  0%, 100% { stroke-opacity: 1; stroke-width: 4.5px; }
+  50% { stroke-opacity: 0.55; stroke-width: 3.2px; }
+}
+
+.line-redsea-corridor {
+  stroke: #0284c7;
+  stroke-width: 4px;
+  stroke-dasharray: 9, 5;
+  animation: tradeDash 16s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.85));
+}
+
+.line-steppe-corridor {
+  stroke: #f8fafc;
+  stroke-width: 3px;
+  stroke-dasharray: 6, 6;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 4px rgba(248, 250, 252, 0.6));
+}
+
 /* RIGHT PANEL: OUTLINER (SAĞ PANEL) */
 .outliner-panel {
   background: var(--bg-secondary);
