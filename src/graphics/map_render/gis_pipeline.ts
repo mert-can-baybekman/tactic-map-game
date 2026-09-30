@@ -30,10 +30,10 @@ export interface HistoricalNodeGISData {
 
 export class GISProjectionPipeline {
   // Bounding box for pan-European & Near-East theater
-  public readonly minLon = -10.0; // Atlantic / Western Iberia
-  public readonly maxLon = 40.0;  // Anatolia / Levant
-  public readonly minLat = 34.0;  // Mediterranean Basin / North Africa
-  public readonly maxLat = 56.0;  // Scotland / Baltic
+  public readonly minLon = -11.0; // Atlantic / Western Ireland & Iberia
+  public readonly maxLon = 42.0;  // Eastern Anatolia & Caucasus / Black Sea
+  public readonly minLat = 34.0;  // Mediterranean Basin / North Africa / Cyprus
+  public readonly maxLat = 58.0;  // Scotland / Baltic Sea
 
   public readonly canvasWidth = 1600.0;
   public readonly canvasHeight = 900.0;

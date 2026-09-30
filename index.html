@@ -275,202 +275,209 @@
 
             <!-- 2. BATHYMETRIC DEPTH LAYERS (Continental Shelf & Shallow Coastal Waters) -->
             <!-- English Channel Shelf -->
-            <path d="M 120,80 Q 230,160 380,210 Q 420,290 320,280 Q 180,260 120,180 Z" fill="#0c2340" opacity="0.6" filter="url(#coastGlow)" />
+            <path d="M 280,230 Q 340,250 400,260 Q 380,290 320,280 Q 260,270 280,230 Z" fill="#0c2340" opacity="0.6" filter="url(#coastGlow)" />
             <!-- Mediterranean Deep Basin -->
-            <path d="M 280,680 Q 550,710 850,670 Q 1150,680 1480,640 L 1480,820 Q 850,860 280,800 Z" fill="#05152a" opacity="0.7" />
+            <path d="M 350,680 Q 650,660 900,680 Q 1200,690 1450,750 L 1450,880 Q 850,890 350,840 Z" fill="#05152a" opacity="0.7" />
             <!-- Black Sea Basin -->
-            <ellipse cx="1380" cy="350" rx="165" ry="85" fill="#041224" stroke="rgba(56, 189, 248, 0.18)" stroke-width="1.5" />
-            <text x="1380" y="355" fill="rgba(56, 189, 248, 0.28)" font-family="Cinzel" font-size="13" font-weight="bold" letter-spacing="4" text-anchor="middle">BLACK SEA</text>
+            <path d="M 1210,610 Q 1300,560 1420,560 Q 1550,570 1580,610 Q 1540,640 1400,610 Q 1260,630 1210,610 Z" fill="#041224" stroke="rgba(56, 189, 248, 0.18)" stroke-width="1.5" />
+            <text x="1380" y="585" fill="rgba(56, 189, 248, 0.28)" font-family="Cinzel" font-size="13" font-weight="bold" letter-spacing="4" text-anchor="middle">BLACK SEA</text>
 
-            <!-- 3. REAL-WORLD VECTOR COASTLINES & LANDMASSES (GIS PROJECTION) -->
+            <!-- 3. REAL-WORLD VECTOR COASTLINES & LANDMASSES (AUTHENTIC HIGH-RES GIS PROJECTION) -->
             <!-- Ireland -->
-            <path id="land-ireland" class="gis-coastline" d="M 80,140 Q 110,120 130,150 Q 140,210 110,240 Q 70,220 80,140 Z" fill="#15281b" stroke="#2a4d35" stroke-width="2" />
+            <path id="land-ireland" class="gis-coastline" d="M 151,176 L 163,131 L 136,105 L 91,101 L 75,131 L 30,142 L 24,225 L 45,244 L 91,236 L 142,217 L 151,176 Z" fill="#15281b" stroke="#2a4d35" stroke-width="2" />
             
             <!-- Great Britain (Scotland, England, Wales, Thames Estuary) -->
-            <path id="land-britain" class="gis-coastline" d="M 230,60 Q 260,50 280,90 Q 270,140 300,160 Q 325,190 315,245 Q 285,255 240,235 Q 190,250 190,200 Q 230,170 230,110 Z" fill="#182e1f" stroke="#31583d" stroke-width="2.2" />
+            <path id="land-britain" class="gis-coastline" d="M 371,259 L 347,270 L 317,274 L 287,274 L 257,277 L 226,289 L 175,300 L 160,296 L 196,270 L 235,248 L 196,240 L 172,233 L 196,195 L 196,176 L 242,173 L 242,150 L 226,120 L 187,113 L 166,83 L 151,45 L 181,-23 L 242,-23 L 226,15 L 272,34 L 257,67 L 242,75 L 287,113 L 329,150 L 338,165 L 341,191 L 386,206 L 371,233 L 356,244 L 374,251 L 371,259 Z" fill="#182e1f" stroke="#31583d" stroke-width="2.2" />
 
             <!-- Western & Central Continental Europe (France, Low Countries, Germany, Alps Basin) -->
-            <path id="land-europe" class="gis-coastline" d="M 330,240 Q 420,200 520,220 Q 640,210 740,260 Q 770,330 710,380 Q 620,390 490,410 Q 370,430 330,350 Q 315,280 330,240 Z" fill="#1a2535" stroke="#314768" stroke-width="2.2" />
+            <path id="land-france" class="gis-coastline" d="M 278,548 L 377,578 L 423,585 L 429,559 L 453,544 L 477,551 L 492,555 L 513,559 L 543,540 L 558,536 L 543,506 L 543,450 L 558,394 L 574,338 L 513,281 L 468,244 L 429,251 L 405,263 L 389,264 L 380,270 L 377,292 L 365,304 L 335,319 L 296,326 L 284,311 L 275,323 L 284,352 L 248,352 L 196,360 L 196,371 L 242,394 L 266,405 L 296,442 L 299,465 L 296,506 L 278,548 Z" fill="#1a2535" stroke="#314768" stroke-width="2.2" />
 
             <!-- Iberian Peninsula (Spain & Portugal, Bay of Biscay, Strait of Gibraltar) -->
-            <path id="land-iberia" class="gis-coastline" d="M 170,440 Q 310,430 340,510 Q 320,640 275,715 Q 170,705 130,630 Q 120,510 170,440 Z" fill="#22231c" stroke="#424537" stroke-width="2" />
+            <path id="land-iberia" class="gis-coastline" d="M 423,585 L 377,578 L 317,570 L 278,548 L 248,548 L 211,544 L 157,540 L 106,536 L 66,544 L 51,566 L 63,592 L 69,630 L 63,675 L 48,720 L 45,731 L 66,750 L 60,788 L 91,788 L 121,784 L 139,795 L 142,806 L 163,825 L 172,821 L 199,799 L 257,799 L 269,799 L 302,765 L 332,720 L 323,694 L 347,660 L 377,630 L 398,623 L 429,589 L 423,585 Z" fill="#22231c" stroke="#424537" stroke-width="2" />
 
-            <!-- Italian Peninsula (Alps Foothills, Po Valley, Rome/Latium, Calabria, Sicily) -->
-            <path id="land-italy" class="gis-coastline" d="M 670,380 Q 750,390 780,430 Q 810,520 835,615 Q 815,675 770,675 Q 745,615 725,545 Q 695,475 665,415 Z" fill="#1d2735" stroke="#354b68" stroke-width="2" />
-            <!-- Sicily Island -->
-            <path id="land-sicily" class="gis-coastline" d="M 740,690 Q 780,685 790,715 Q 750,735 730,710 Z" fill="#1e2938" stroke="#354b68" stroke-width="1.5" />
+            <!-- Italian Peninsula (Real Boot: Alps, Po Valley, Liguria, Rome, Apulia, Calabria) -->
+            <path id="land-italy" class="gis-coastline" d="M 543,487 L 558,458 L 589,442 L 634,431 L 679,420 L 709,431 L 740,442 L 743,461 L 725,461 L 706,469 L 703,476 L 703,495 L 706,510 L 712,525 L 740,540 L 755,570 L 767,585 L 785,604 L 815,604 L 821,608 L 812,615 L 821,626 L 842,634 L 872,653 L 891,671 L 888,683 L 875,679 L 857,660 L 839,664 L 833,683 L 848,713 L 833,739 L 803,750 L 803,742 L 815,713 L 809,675 L 785,664 L 776,653 L 761,645 L 755,638 L 734,626 L 712,619 L 700,608 L 688,596 L 670,585 L 649,566 L 643,544 L 640,536 L 631,521 L 604,510 L 583,517 L 562,533 L 543,517 L 537,495 Z" fill="#1d2735" stroke="#354b68" stroke-width="2" />
 
-            <!-- Balkan Peninsula & Greece (Peloponnese, Thrace, Aegean Coastline) -->
-            <path id="land-balkans" class="gis-coastline" d="M 840,320 Q 1040,310 1150,370 Q 1175,440 1135,530 Q 1070,630 1010,640 Q 930,560 900,470 Q 840,410 840,320 Z" fill="#1b2a24" stroke="#314f44" stroke-width="2.2" />
-            <!-- Peloponnese & Crete -->
-            <path id="land-peloponnese" class="gis-coastline" d="M 1020,645 Q 1050,640 1060,670 Q 1020,685 1015,660 Z" fill="#1b2a24" stroke="#314f44" stroke-width="1.5" />
-            <path id="land-crete" class="gis-coastline" d="M 1070,730 Q 1140,725 1150,740 Q 1080,750 1070,730 Z" fill="#1b2a24" stroke="#314f44" stroke-width="1.5" />
+            <!-- Authentic Mediterranean Islands -->
+            <!-- Sicily -->
+            <path id="land-sicily" class="gis-coastline" d="M 800,742 L 788,769 L 794,788 L 788,799 L 764,788 L 725,765 L 706,758 L 718,746 L 755,750 L 800,742 Z" fill="#1e2938" stroke="#354b68" stroke-width="1.5" />
+            <!-- Corsica & Sardinia -->
+            <path id="land-corsica" class="gis-coastline" d="M 616,563 L 619,600 L 610,623 L 592,604 L 598,578 L 616,563 Z" fill="#1e2938" stroke="#354b68" stroke-width="1.5" />
+            <path id="land-sardinia" class="gis-coastline" d="M 610,630 L 625,656 L 622,701 L 604,716 L 586,705 L 583,656 L 595,638 L 610,630 Z" fill="#1e2938" stroke="#354b68" stroke-width="1.5" />
+            <!-- Crete Island -->
+            <path id="land-crete" class="gis-coastline" d="M 1042,844 L 1072,848 L 1102,851 L 1126,855 L 1111,863 L 1072,859 L 1045,855 L 1042,844 Z" fill="#1b2a24" stroke="#314f44" stroke-width="1.5" />
+            <!-- Cyprus Island -->
+            <path id="land-cyprus" class="gis-coastline" d="M 1307,863 L 1343,851 L 1377,836 L 1355,866 L 1328,878 L 1307,863 Z" fill="#262218" stroke="#4f432a" stroke-width="1.5" />
 
-            <!-- Anatolia / Asia Minor (Bithynia, Pontus, Taurus, Central Plateau) -->
-            <path id="land-anatolia" class="gis-coastline" d="M 1250,440 Q 1410,410 1560,430 Q 1580,570 1510,645 Q 1370,665 1270,605 Q 1230,535 1250,440 Z" fill="#262218" stroke="#4f432a" stroke-width="2.2" />
+            <!-- Balkan Peninsula, Greece & Thrace (Authentic Coastlines & Bosphorus West Bank) -->
+            <path id="land-balkans" class="gis-coastline" d="M 1207,637 L 1209,631 L 1211,628 L 1192,619 L 1177,608 L 1171,596 L 1162,581 L 1174,555 L 1195,517 L 1223,487 L 1177,469 L 1117,487 L 1057,487 L 981,495 L 921,480 L 891,458 L 830,458 L 770,476 L 791,506 L 815,544 L 860,563 L 900,589 L 918,608 L 921,626 L 933,664 L 945,694 L 957,713 L 975,731 L 987,742 L 975,750 L 975,769 L 984,788 L 987,795 L 996,795 L 1002,788 L 1008,810 L 1011,803 L 1020,799 L 1032,810 L 1029,788 L 1035,773 L 1026,765 L 1029,754 L 1045,754 L 1057,761 L 1057,742 L 1038,720 L 1026,713 L 1029,694 L 1020,656 L 1023,653 L 1038,675 L 1051,667 L 1054,675 L 1063,664 L 1066,671 L 1057,653 L 1072,645 L 1102,641 L 1117,645 L 1123,656 L 1120,667 L 1129,667 L 1141,660 L 1162,641 L 1183,638 L 1202,638 L 1207,637 Z" fill="#1b2a24" stroke="#314f44" stroke-width="2.2" />
 
-            <!-- 4. REALISTIC GIS RIVER NETWORKS -->
+            <!-- Anatolia / Asia Minor (Authentic Peninsula, Marmara Sea, Bosphorus East Bank, Aegean & Pontus) -->
+            <path id="land-anatolia" class="gis-coastline" d="M 1209,632 L 1232,632 L 1253,634 L 1283,634 L 1298,623 L 1328,608 L 1358,604 L 1386,600 L 1395,596 L 1395,608 L 1413,619 L 1428,626 L 1449,634 L 1479,638 L 1509,638 L 1540,634 L 1585,623 L 1585,694 L 1570,750 L 1555,788 L 1494,795 L 1449,803 L 1425,803 L 1413,825 L 1413,799 L 1404,795 L 1383,799 L 1358,814 L 1343,821 L 1325,825 L 1307,817 L 1292,806 L 1268,795 L 1256,795 L 1250,817 L 1229,817 L 1217,814 L 1208,803 L 1186,799 L 1168,799 L 1159,799 L 1165,788 L 1153,788 L 1159,776 L 1153,769 L 1150,761 L 1156,754 L 1138,739 L 1126,739 L 1129,731 L 1141,735 L 1132,724 L 1141,724 L 1147,731 L 1147,720 L 1141,709 L 1141,694 L 1117,694 L 1120,683 L 1123,675 L 1129,671 L 1138,664 L 1147,660 L 1171,660 L 1174,656 L 1180,660 L 1192,660 L 1208,660 L 1211,660 L 1223,656 L 1217,653 L 1226,649 L 1235,649 L 1232,645 L 1217,645 L 1208,638 Z" fill="#262218" stroke="#4f432a" stroke-width="2.2" />
+
+            <!-- 4. REALISTIC GIS RIVER NETWORKS (Vector Paths on Exact Watersheds) -->
             <!-- River Thames (London) -->
-            <path class="gis-river" d="M 195,210 Q 215,212 240,210 Q 270,215 290,210" stroke-width="2.5" />
+            <path class="gis-river" d="M 296,236 L 317,244 L 328,244 L 347,244 L 362,244" stroke-width="2.5" />
             <!-- River Seine (Paris & Rouen to Channel) -->
-            <path class="gis-river" d="M 450,380 Q 420,365 370,340 Q 340,325 315,280" stroke-width="2.8" />
+            <path class="gis-river" d="M 438,383 L 423,360 L 403,343 L 365,321 L 335,321" stroke-width="2.8" />
             <!-- Rhine River (Central Europe) -->
-            <path class="gis-river" d="M 620,370 Q 560,320 520,270 Q 480,240 450,225" stroke-width="3" />
-            <!-- Danube River (Black Sea Conduit) -->
-            <path class="gis-river" d="M 640,350 Q 800,340 920,380 Q 1060,390 1200,375 Q 1300,370 1340,375" stroke-width="3.5" />
-            <!-- Po River (Venice Plain) -->
-            <path class="gis-river" d="M 650,415 Q 700,420 740,422" stroke-width="2.8" />
-            <!-- Maritsa (Meriç) River (Adrianople) -->
-            <path class="gis-river" d="M 1060,420 Q 1100,430 1125,445 Q 1135,490 1140,530" stroke-width="2.5" />
-            <!-- Sakarya & Nilüfer Rivers (Bursa & Söğüt) -->
-            <path class="gis-river" d="M 1410,540 Q 1370,525 1335,515 Q 1310,480 1290,470" stroke-width="2.2" />
+            <path class="gis-river" d="M 619,394 L 562,356 L 583,319 L 543,281 L 513,233 L 462,229" stroke-width="3" />
+            <!-- Danube River (Central Europe to Black Sea Delta) -->
+            <path class="gis-river" d="M 580,375 L 679,338 L 827,367 L 906,394 L 951,495 L 1011,502 L 1117,533 L 1177,480 L 1226,476" stroke-width="3.5" />
+            <!-- Po River (Venice Basin) -->
+            <path class="gis-river" d="M 543,499 L 610,484 L 664,487 L 703,491" stroke-width="2.8" />
+            <!-- Maritsa (Meriç) River (Adrianople / Thrace) -->
+            <path class="gis-river" d="M 1042,592 L 1102,596 L 1134,612 L 1129,630 L 1117,645" stroke-width="2.5" />
+            <!-- Sakarya River (Bithynia / Bursa & Söğüt) -->
+            <path class="gis-river" d="M 1283,694 L 1253,675 L 1250,656 L 1259,634" stroke-width="2.2" />
 
             <!-- 5. 2.5D SHADED RELIEF MOUNTAIN MESHES -->
             <!-- The Alps (Arc North of Italy) -->
             <g class="gis-mountain" filter="url(#mountainShadow)">
-              <polygon points="630,395 660,365 690,400 720,360 750,395 780,365 810,400 790,415 710,410 645,412" fill="#474136" stroke="#6b6252" stroke-width="1.5" />
-              <polyline points="660,365 675,385 720,360 735,385 780,365" stroke="#94a3b8" stroke-width="2" />
+              <polygon points="560,450 600,430 640,425 680,420 720,430 750,445 720,455 670,445 610,455 570,465" fill="#474136" stroke="#6b6252" stroke-width="1.5" />
+              <polyline points="600,430 620,445 680,420 700,440 720,430" stroke="#94a3b8" stroke-width="2" />
             </g>
-            <!-- The Pyrenees -->
+            <!-- The Pyrenees (Iberian-French Boundary) -->
             <g class="gis-mountain" filter="url(#mountainShadow)">
-              <polygon points="270,455 310,435 350,450 330,465 290,465" fill="#423e35" stroke="#5c5548" stroke-width="1.2" />
+              <polygon points="280,550 320,560 370,575 420,585 390,595 330,580 290,565" fill="#423e35" stroke="#5c5548" stroke-width="1.2" />
             </g>
             <!-- Balkan & Rhodope Mountains -->
             <g class="gis-mountain" filter="url(#mountainShadow)">
-              <polygon points="960,430 1000,400 1040,425 1080,395 1120,430 1090,445 1020,445" fill="#383d32" stroke="#4f5746" stroke-width="1.2" />
+              <polygon points="960,580 1000,560 1050,575 1100,565 1130,590 1080,605 1010,595" fill="#383d32" stroke="#4f5746" stroke-width="1.2" />
             </g>
             <!-- Uludağ & Anatolian Plateau Mountain Ranges -->
             <g class="gis-mountain" filter="url(#mountainShadow)">
-              <polygon points="1310,535 1340,505 1370,530 1420,495 1470,535 1430,555 1360,555" fill="#4d412d" stroke="#6e5d41" stroke-width="1.5" />
-              <polyline points="1340,505 1355,525 1420,495 1440,520" stroke="#cbd5e1" stroke-width="1.5" />
+              <polygon points="1220,685 1260,670 1310,695 1370,680 1420,710 1370,735 1280,720" fill="#4d412d" stroke="#6e5d41" stroke-width="1.5" />
+              <polyline points="1260,670 1280,690 1370,680 1390,705" stroke="#cbd5e1" stroke-width="1.5" />
             </g>
 
-            <!-- 6. POLITICAL SOVEREIGN TERRITORY SHADER WASHES (Anti-Aliased Territorial Tint) -->
+            <!-- 6. POLITICAL SOVEREIGN TERRITORY SHADER WASHES (Inside Authentic Boundaries) -->
             <g id="political-wash-layer">
-              <!-- England (Crimson Tint) -->
-              <path class="political-wash" d="M 230,60 Q 260,50 280,90 Q 270,140 300,160 Q 325,190 315,245 Q 285,255 240,235 Q 190,250 190,200 Q 230,170 230,110 Z" fill="#dc2626" fill-opacity="0.16" />
-              <!-- France (Royal Blue Tint) -->
-              <path class="political-wash" d="M 330,240 Q 420,200 520,220 Q 640,210 740,260 Q 770,330 710,380 Q 620,390 490,410 Q 370,430 330,350 Q 315,280 330,240 Z" fill="#2563eb" fill-opacity="0.16" />
-              <!-- Venice (Cyan / Azure Tint) -->
-              <circle class="political-wash" cx="740" cy="420" r="45" fill="#0284c7" fill-opacity="0.25" />
-              <!-- Papacy (Gold Tint) -->
-              <circle class="political-wash" cx="770" cy="560" r="40" fill="#eab308" fill-opacity="0.22" />
-              <!-- Byzantine Enclave (Imperial Purple Tint) -->
-              <circle class="political-wash" cx="1240" cy="460" r="38" fill="#9333ea" fill-opacity="0.28" />
-              <!-- Ottoman Beylik (Emerald Green Tint) -->
-              <path class="political-wash" d="M 1250,440 Q 1380,430 1450,470 Q 1440,560 1330,550 Q 1260,530 1250,440 Z" fill="#059669" fill-opacity="0.22" />
+              <!-- England (Crimson Tint over Britain) -->
+              <path class="political-wash" d="M 371,259 L 347,270 L 317,274 L 287,274 L 257,277 L 226,289 L 175,300 L 160,296 L 196,270 L 235,248 L 196,240 L 172,233 L 196,195 L 196,176 L 242,173 L 242,150 L 226,120 L 187,113 L 287,113 L 329,150 L 338,165 L 341,191 L 386,206 L 371,233 L 356,244 L 374,251 Z" fill="#dc2626" fill-opacity="0.16" />
+              <!-- France (Royal Blue Tint over France) -->
+              <path class="political-wash" d="M 278,548 L 377,578 L 423,585 L 429,559 L 453,544 L 477,551 L 492,555 L 513,559 L 543,540 L 558,536 L 543,506 L 543,450 L 558,394 L 574,338 L 513,281 L 468,244 L 429,251 L 405,263 L 389,264 L 380,270 L 377,292 L 365,304 L 335,319 L 296,326 L 284,311 L 275,323 L 284,352 L 248,352 L 196,360 L 196,371 L 242,394 L 266,405 L 296,442 L 299,465 L 296,506 Z" fill="#2563eb" fill-opacity="0.16" />
+              <!-- Venice (Cyan / Azure Tint in Adriatic / Po) -->
+              <circle class="political-wash" cx="704" cy="471" r="50" fill="#0284c7" fill-opacity="0.25" />
+              <!-- Papacy (Gold Tint in Central Italy) -->
+              <circle class="political-wash" cx="709" cy="604" r="45" fill="#eab308" fill-opacity="0.22" />
+              <!-- Byzantine Enclave (Imperial Purple Tint in Thrace / Constantinople) -->
+              <circle class="political-wash" cx="1207" cy="637" r="38" fill="#9333ea" fill-opacity="0.28" />
+              <!-- Ottoman Beylik (Emerald Green Tint in Northwestern Anatolia) -->
+              <path class="political-wash" d="M 1209,632 L 1253,634 L 1283,634 L 1283,694 L 1243,674 L 1209,668 L 1217,645 Z" fill="#059669" fill-opacity="0.25" />
             </g>
 
             <!-- 7. SEAS & CHOKE-POINT LABELS -->
-            <text x="750" y="740" fill="rgba(56, 189, 248, 0.3)" font-family="Cinzel" font-size="15" font-weight="bold" letter-spacing="6" text-anchor="middle">MEDITERRANEAN SEA</text>
-            <text x="890" y="500" fill="rgba(56, 189, 248, 0.25)" font-family="Cinzel" font-size="11" font-weight="bold" letter-spacing="3" text-anchor="middle">ADRIATIC</text>
-            <text x="1140" y="600" fill="rgba(56, 189, 248, 0.25)" font-family="Cinzel" font-size="11" font-weight="bold" letter-spacing="3" text-anchor="middle">AEGEAN</text>
-            <text x="270" y="760" fill="rgba(251, 191, 36, 0.4)" font-family="Cinzel" font-size="10" font-weight="bold" letter-spacing="1" text-anchor="middle">STRAIT OF GIBRALTAR</text>
+            <text x="750" y="770" fill="rgba(56, 189, 248, 0.3)" font-family="Cinzel" font-size="15" font-weight="bold" letter-spacing="6" text-anchor="middle">MEDITERRANEAN SEA</text>
+            <text x="830" y="550" fill="rgba(56, 189, 248, 0.25)" font-family="Cinzel" font-size="11" font-weight="bold" letter-spacing="3" text-anchor="middle">ADRIATIC</text>
+            <text x="1080" y="710" fill="rgba(56, 189, 248, 0.25)" font-family="Cinzel" font-size="11" font-weight="bold" letter-spacing="3" text-anchor="middle">AEGEAN</text>
+            <text x="1175" y="650" fill="rgba(56, 189, 248, 0.3)" font-family="Cinzel" font-size="9" font-weight="bold" letter-spacing="1" text-anchor="middle">MARMARA</text>
+            <text x="172" y="835" fill="rgba(251, 191, 36, 0.4)" font-family="Cinzel" font-size="10" font-weight="bold" letter-spacing="1" text-anchor="middle">STRAIT OF GIBRALTAR</text>
 
-            <!-- 8. LOGISTICS NETWORK LINES -->
+            <!-- 8. LOGISTICS NETWORK LINES (Follows Real Geography & Straits) -->
             <!-- 1. ORANGE CAPITAL LINK (London -> Dover) -->
-            <line id="london-dover-line" class="line-capital-link" x1="220" y1="210" x2="300" y2="240" />
+            <line id="london-dover-line" class="line-capital-link" x1="328" y1="243" x2="372" y2="258" />
 
             <!-- 2. BLUE SEA CORRIDOR (Dover -> Calais across English Channel) -->
-            <line id="dover-calais-line" class="line-sea-corridor" x1="300" y1="240" x2="350" y2="265" />
+            <line id="dover-calais-line" class="line-sea-corridor" x1="372" y1="258" x2="388" y2="264" />
 
             <!-- 3. WHITE DOTTED LAND LINES (Calais -> Rouen -> Paris) -->
-            <line id="calais-rouen-line" class="line-land-route" x1="350" y1="265" x2="330" y2="320" />
-            <line id="rouen-paris-line" class="line-land-route" x1="330" y1="320" x2="410" y2="360" />
+            <line id="calais-rouen-line" class="line-land-route" x1="388" y1="264" x2="365" y2="321" />
+            <line id="rouen-paris-line" class="line-land-route" x1="365" y1="321" x2="403" y2="343" />
 
-            <!-- 4. THE RUMELIA LAND CORRIDOR (Paris -> Venice -> Adrianople -> Constantinople -> Bursa/Söğüt) -->
-            <line id="rumelia-line-1" class="line-land-route line-rumelia-corridor" x1="410" y1="360" x2="740" y2="420" />
-            <line id="rumelia-line-2" class="line-land-route line-rumelia-corridor" x1="740" y1="420" x2="1120" y2="440" />
-            <line id="rumelia-line-3" class="line-land-route line-rumelia-corridor" x1="1120" y1="440" x2="1240" y2="460" />
-            <line id="rumelia-line-4" class="line-land-route line-rumelia-corridor" x1="1240" y1="460" x2="1320" y2="510" />
-            <line id="rumelia-line-5" class="line-land-route line-rumelia-corridor" x1="1320" y1="510" x2="1400" y2="530" />
+            <!-- 4. THE RUMELIA LAND CORRIDOR (Paris -> Venice -> Adrianople -> Constantinople -> Bursa -> Söğüt) -->
+            <line id="rumelia-line-1" class="line-land-route line-rumelia-corridor" x1="403" y1="343" x2="704" y2="471" />
+            <line id="rumelia-line-2" class="line-land-route line-rumelia-corridor" x1="704" y1="471" x2="1134" y2="612" />
+            <line id="rumelia-line-3" class="line-land-route line-rumelia-corridor" x1="1134" y1="612" x2="1207" y2="637" />
+            <line id="rumelia-line-4" class="line-land-route line-rumelia-corridor" x1="1207" y1="637" x2="1209" y2="668" />
+            <line id="rumelia-line-5" class="line-land-route line-rumelia-corridor" x1="1209" y1="668" x2="1243" y2="674" />
 
             <!-- 5. THE GIBRALTAR MARITIME LOOP -->
-            <path id="gibraltar-maritime-loop" class="line-gibraltar-loop" d="M 300,240 Q 200,280 150,440 T 140,640 Q 200,720 270,725 Q 450,740 600,680 T 740,420 Q 820,560 900,670 T 1140,610 Q 1230,560 1320,510" fill="none" />
-            <line id="sea-trade-line" class="line-sea-corridor" x1="740" y1="420" x2="770" y2="560" />
+            <path id="gibraltar-maritime-loop" class="line-gibraltar-loop" d="M 372,258 Q 300,280 200,380 T 110,540 Q 50,670 172,821 Q 300,790 500,780 T 704,471 Q 780,590 850,710 T 1080,750 Q 1160,710 1207,637" fill="none" />
+            <line id="sea-trade-line" class="line-sea-corridor" x1="704" y1="471" x2="709" y2="604" />
 
-            <!-- 6. THE BOSPHORUS MARITIME EDGE -->
-            <path id="bosphorus-strait-line" class="line-bosphorus-strait" d="M 1120,440 L 1240,460 L 1320,510" fill="none" />
-            <line id="bosphorus-choke-indicator" class="line-bosphorus-strait" x1="1240" y1="420" x2="1240" y2="480" />
+            <!-- 6. THE BOSPHORUS MARITIME EDGE & CHOKE -->
+            <path id="bosphorus-strait-line" class="line-bosphorus-strait" d="M 1134,612 L 1207,637 L 1209,668" fill="none" />
+            <line id="bosphorus-choke-indicator" class="line-bosphorus-strait" x1="1205" y1="634" x2="1211" y2="640" stroke="#00e5ff" stroke-width="4" />
 
-            <!-- 9. MAP LOCATION NODES (LOD Reactive) -->
+            <!-- 9. MAP LOCATION NODES (LOD Reactive & GIS Coordinate Anchored) -->
 
-            <!-- London (1 - Capital Hub) -->
-            <g class="location-node selected" id="node-1" data-id="1" transform="translate(220, 210)">
+            <!-- London (1 - Capital Hub: 51.5074° N, -0.1278° E -> 328, 243) -->
+            <g class="location-node selected" id="node-1" data-id="1" transform="translate(328, 243)">
               <circle class="loc-pulse" r="26" fill="rgba(245, 158, 11, 0.25)" />
               <circle class="loc-core" r="18" fill="#b91c1c" stroke="#ffd700" stroke-width="3.5" />
               <text y="-25" text-anchor="middle" fill="#ffd700" font-family="Cinzel" font-weight="bold" font-size="13">LONDON (Capital)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="12">🏰</text>
             </g>
 
-            <!-- Dover (2 - Naval Port) -->
-            <g class="location-node" id="node-2" data-id="2" transform="translate(300, 240)">
+            <!-- Dover (2 - Naval Port: 51.1279° N, 1.3134° E -> 372, 258) -->
+            <g class="location-node" id="node-2" data-id="2" transform="translate(372, 258)">
               <circle class="loc-core" r="14" fill="#991b1b" stroke="#38bdf8" stroke-width="2.5" />
               <text y="-20" text-anchor="middle" fill="#e2e8f0" font-weight="600" font-size="11" class="lod-micro">Dover (Port)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="10" class="lod-micro">⚓</text>
             </g>
 
-            <!-- Calais (3 - Continental Enclave) -->
-            <g class="location-node" id="node-3" data-id="3" transform="translate(350, 265)">
+            <!-- Calais (3 - Continental Enclave: 50.9513° N, 1.8587° E -> 388, 264) -->
+            <g class="location-node" id="node-3" data-id="3" transform="translate(388, 264)">
               <circle class="loc-core" r="15" fill="#b91c1c" stroke="#ef4444" stroke-width="2.5" />
               <text y="-20" text-anchor="middle" fill="#fca5a5" font-weight="bold" font-size="11" class="lod-micro">Calais (Enclave)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="10" class="lod-micro">🛡️</text>
             </g>
 
-            <!-- Rouen (4 - Manufacturing Foundry) -->
-            <g class="location-node" id="node-4" data-id="4" transform="translate(330, 320)">
+            <!-- Rouen (4 - Manufacturing Foundry: 49.4432° N, 1.0999° E -> 365, 321) -->
+            <g class="location-node" id="node-4" data-id="4" transform="translate(365, 321)">
               <circle class="loc-core" r="14" fill="#1e3a8a" stroke="#a855f7" stroke-width="2.5" />
               <text y="-20" text-anchor="middle" fill="#e2e8f0" font-weight="600" font-size="11" class="lod-micro">Rouen (Foundry)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="10" class="lod-micro">⚙️</text>
             </g>
 
-            <!-- Paris (5 - French Capital) -->
-            <g class="location-node" id="node-5" data-id="5" transform="translate(410, 360)">
+            <!-- Paris (5 - French Capital: 48.8566° N, 2.3522° E -> 403, 343) -->
+            <g class="location-node" id="node-5" data-id="5" transform="translate(403, 343)">
               <circle class="loc-core" r="18" fill="#1d4ed8" stroke="#38bdf8" stroke-width="3" />
               <text y="-25" text-anchor="middle" fill="#93c5fd" font-family="Cinzel" font-weight="bold" font-size="13">PARIS (France)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="12">⚜️</text>
             </g>
 
-            <!-- Venice (20 - Italian Maritime Hub) -->
-            <g class="location-node" id="node-20" data-id="20" transform="translate(740, 420)">
+            <!-- Venice (20 - Italian Maritime Hub: 45.4408° N, 12.3155° E -> 704, 471) -->
+            <g class="location-node" id="node-20" data-id="20" transform="translate(704, 471)">
               <circle class="loc-pulse" r="22" fill="rgba(2, 132, 199, 0.25)" />
               <circle class="loc-core" r="17" fill="#0284c7" stroke="#38bdf8" stroke-width="3" />
               <text y="-23" text-anchor="middle" fill="#bae6fd" font-family="Cinzel" font-weight="bold" font-size="12">VENICE (Republic)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="11">🦁</text>
             </g>
 
-            <!-- Rome (23 - Italian Maritime Hub & Holy See) -->
-            <g class="location-node" id="node-23" data-id="23" transform="translate(770, 560)">
+            <!-- Rome (23 - Italian Maritime Hub & Holy See: 41.9028° N, 12.4964° E -> 709, 604) -->
+            <g class="location-node" id="node-23" data-id="23" transform="translate(709, 604)">
               <circle class="loc-core" r="16" fill="#ca8a04" stroke="#facc15" stroke-width="3" />
               <text y="-22" text-anchor="middle" fill="#fef08a" font-family="Cinzel" font-weight="bold" font-size="12">ROME (Papacy)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="11">🗝️</text>
             </g>
 
-            <!-- Adrianople (110 - Balkan Hub / Edirne) -->
-            <g class="location-node" id="node-110" data-id="110" transform="translate(1120, 440)">
+            <!-- Adrianople (110 - Balkan Hub / Edirne: 41.6772° N, 26.5557° E -> 1134, 612) -->
+            <g class="location-node" id="node-110" data-id="110" transform="translate(1134, 612)">
               <circle class="loc-core" r="16" fill="#047857" stroke="#34d399" stroke-width="3" />
               <text y="-22" text-anchor="middle" fill="#a7f3d0" font-weight="bold" font-size="12" class="lod-micro">Adrianople (Edirne)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="11" class="lod-micro">🏹</text>
             </g>
 
-            <!-- Constantinople (104 - Byzantine Choke-point) -->
-            <g class="location-node" id="node-104" data-id="104" transform="translate(1240, 460)">
+            <!-- Constantinople (104 - Byzantine Choke-point: 41.0082° N, 28.9784° E -> 1207, 637) -->
+            <g class="location-node" id="node-104" data-id="104" transform="translate(1207, 637)">
               <circle class="loc-pulse" r="26" fill="rgba(168, 85, 247, 0.25)" />
               <circle class="loc-core" r="19" fill="#7e22ce" stroke="#ffd700" stroke-width="3.5" />
               <text y="-25" text-anchor="middle" fill="#ffd700" font-family="Cinzel" font-weight="bold" font-size="13">CONSTANTINOPLE (Choke)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="12">👑</text>
             </g>
 
-            <!-- Bursa (102 - Ottoman Capital Hub) -->
-            <g class="location-node" id="node-102" data-id="102" transform="translate(1320, 510)">
+            <!-- Bursa (102 - Ottoman Capital Hub: 40.1885° N, 29.0610° E -> 1209, 668) -->
+            <g class="location-node" id="node-102" data-id="102" transform="translate(1209, 668)">
               <circle class="loc-pulse" r="26" fill="rgba(16, 185, 129, 0.25)" />
               <circle class="loc-core" r="19" fill="#047857" stroke="#ffd700" stroke-width="3.5" />
               <text y="-25" text-anchor="middle" fill="#6ee7b7" font-family="Cinzel" font-weight="bold" font-size="13">BURSA (Ottoman Capital)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="12">🌙</text>
             </g>
 
-            <!-- Söğüt (101 - Ottoman Cradle Hub) -->
-            <g class="location-node" id="node-101" data-id="101" transform="translate(1400, 530)">
+            <!-- Söğüt (101 - Ottoman Cradle Hub: 40.0177° N, 30.1819° E -> 1243, 674) -->
+            <g class="location-node" id="node-101" data-id="101" transform="translate(1243, 674)">
               <circle class="loc-core" r="15" fill="#065f46" stroke="#34d399" stroke-width="2.5" />
               <text y="-20" text-anchor="middle" fill="#d1fae5" font-weight="600" font-size="11" class="lod-micro">Söğüt (Cradle)</text>
               <text y="5" text-anchor="middle" fill="#fff" font-size="10" class="lod-micro">⚔️</text>

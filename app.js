@@ -837,16 +837,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const jumpLondonBtn = document.getElementById('btn-jump-london');
-  if (jumpLondonBtn) jumpLondonBtn.addEventListener('click', () => focusOnCoordinates(220, 210, 2.5));
+  if (jumpLondonBtn) jumpLondonBtn.addEventListener('click', () => focusOnCoordinates(328, 243, 2.5));
 
   const jumpParisBtn = document.getElementById('btn-jump-paris');
-  if (jumpParisBtn) jumpParisBtn.addEventListener('click', () => focusOnCoordinates(410, 360, 2.5));
+  if (jumpParisBtn) jumpParisBtn.addEventListener('click', () => focusOnCoordinates(403, 343, 2.5));
 
   const jumpVeniceBtn = document.getElementById('btn-jump-venice');
-  if (jumpVeniceBtn) jumpVeniceBtn.addEventListener('click', () => focusOnCoordinates(740, 420, 2.5));
+  if (jumpVeniceBtn) jumpVeniceBtn.addEventListener('click', () => focusOnCoordinates(704, 471, 2.5));
 
   const jumpBosphorusBtn = document.getElementById('btn-jump-bosphorus');
-  if (jumpBosphorusBtn) jumpBosphorusBtn.addEventListener('click', () => focusOnCoordinates(1240, 460, 2.6));
+  if (jumpBosphorusBtn) jumpBosphorusBtn.addEventListener('click', () => focusOnCoordinates(1207, 637, 2.6));
 
   // Sol Panel: Arrange Royal Marriage
   document.getElementById('btn-court-marriage').addEventListener('click', () => {
