@@ -5,7 +5,7 @@
 
 // RELATIONAL SIMULATION STATE
 const state = {
-  calendar: { year: 1350, month: 4, day: 7 },
+  calendar: { year: 1350, month: 1, day: 1 },
   isRunning: false,
   timer: null,
   speedMs: 1000,
@@ -14,14 +14,35 @@ const state = {
   channelBlockaded: false,
   
   // HUD Telemetry
-  crownTreasury: 3880.0,
-  monthlyTaxIncome: 580.0,
+  crownTreasury: 2588.0,
+  monthlyTaxIncome: 288.8,
   monthlyMaintenance: 120.0,
-  manpower: 29500,
+  manpower: 28458,
   maxManpower: 35000,
   crownPower: 0.65,
   nationalTaxEfficiency: 1.0,
   activeAge: 'Age of Renaissance',
+
+  // Active Royal Charters & Decrees
+  charters: {
+    feudalTitheExemption: {
+      id: 'feudal_tithe_exemption',
+      name: 'Feudal Tithe Exemption',
+      targetEstate: 'Nobility',
+      active: true,
+      loyaltyFloor: 15.0,
+      taxSkimmingPenalty: 0.20 // -20% tax deduction on noble lands
+    },
+    woolExportMonopoly: {
+      id: 'wool_export_monopoly',
+      name: 'Wool Export Monopoly',
+      targetEstate: 'Burghers',
+      active: true,
+      loyaltyBonus: 10.0,
+      wealthAccumulationRate: 0.25, // +25% monthly wealth index
+      crownControlPenalty: 0.10 // -10% Crown Control across Dover-Calais trade graph
+    }
+  },
 
   // Ruler & Dynastic Court
   ruler: {
@@ -39,13 +60,17 @@ const state = {
     traits: [
       { id: 'valiant_warrior', name: 'Valiant Warrior', shockBonus: 0.15 },
       { id: 'feudal_sovereign', name: 'Feudal Sovereign', nobilityLoyaltyBonus: 10.0 },
-      { id: 'gout_afflicted', name: 'Gout Afflicted', healthPenalty: 1.8 }
+      { id: 'gout_afflicted', name: 'Gout Afflicted', healthPenalty: 5.0 }
     ],
     isMarried: false,
     spouseName: null,
     isGeneral: false,
-    isCabinetAdvisor: false
+    combatShockModifier: 1.0,
+    isCabinetAdvisor: false,
+    cabinetRole: null
   },
+
+  diplomaticMarriageRelation: null,
 
   heir: {
     id: 2,
@@ -69,7 +94,7 @@ const state = {
       { id: 'burghers', title: 'Burgher Guild Petition', desc: 'Merchant guilds demand monopoly charters over wool exports in Calais.' }
     ],
     armies: [
-      { id: 'royal_vanguard', name: 'Royal Vanguard', size: 8500, commander: 'King Edward III', location: 'Calais', morale: 95.0 },
+      { id: 'royal_vanguard', name: 'Royal Vanguard', size: 8500, commander: 'King Edward III', location: 'Calais', morale: 95.0, shockBonus: 0.0 },
       { id: 'channel_fleet', name: 'Channel Battle Fleet', size: 14, commander: 'Lord Admiral', location: 'Dover Straits', morale: 100.0 }
     ]
   },
@@ -85,6 +110,7 @@ const state = {
       infrastructure: 35.0,
       control: 1.0,
       tax_base: 120.0,
+      nobleDominated: true,
       plague_infected: false,
       pops: [
         { estate: 'Nobility', subCulture: 'Anglo-Norman', size: 3500, wealth: 450.0, unrest: 0.05 },
@@ -103,6 +129,7 @@ const state = {
       infrastructure: 20.0,
       control: 0.93,
       tax_base: 65.0,
+      nobleDominated: false,
       plague_infected: false,
       pops: [
         { estate: 'Burghers', subCulture: 'English', size: 4200, wealth: 85.0, unrest: 0.08 },
@@ -119,6 +146,7 @@ const state = {
       infrastructure: 15.0,
       control: 0.96,
       tax_base: 80.0,
+      nobleDominated: true,
       plague_infected: false,
       pops: [
         { estate: 'Nobility', subCulture: 'Anglo-Norman', size: 1200, wealth: 190.0, unrest: 0.06 },
@@ -136,6 +164,7 @@ const state = {
       infrastructure: 25.0,
       control: 0.73,
       tax_base: 75.0,
+      nobleDominated: true,
       plague_infected: false,
       pops: [
         { estate: 'Nobility', subCulture: 'Norman French', size: 2500, wealth: 320.0, unrest: 0.15 },
@@ -152,6 +181,7 @@ const state = {
       infrastructure: 40.0,
       control: 0.59,
       tax_base: 150.0,
+      nobleDominated: true,
       plague_infected: false,
       pops: [
         { estate: 'Nobility', subCulture: 'Francien', size: 6000, wealth: 850.0, unrest: 0.10 },
@@ -190,10 +220,13 @@ function showToast(message) {
   }, 4000);
 }
 
-// CONTROL RECALCULATION WITH EXPONENTIAL PATHFINDING
+// CONTROL RECALCULATION WITH EXPONENTIAL PATHFINDING & CHARTER PENALTIES
 function recalculateControl() {
   for (const loc of state.locations) {
-    if (loc.id === 1) { loc.control = 1.0; continue; }
+    if (loc.id === 1) { 
+      loc.control = 1.0; 
+      continue; 
+    }
     let dist = 15.0;
     if (loc.id === 2) dist = 12.0;
     if (loc.id === 3) dist = state.channelBlockaded ? 120.0 : 14.0;
@@ -202,7 +235,14 @@ function recalculateControl() {
 
     const devastationFactor = 1.0 + Math.pow(loc.devastation, 1.5) * 3.0;
     // Base formula: Control = 1.0 * e^(-0.018 * Distance * Devastation)
-    loc.control = Math.max(0.01, Math.min(1.0, Math.exp(-0.018 * dist * devastationFactor)));
+    let rawControl = Math.max(0.01, Math.min(1.0, Math.exp(-0.018 * dist * devastationFactor)));
+
+    // Charter Penalty: Wool Export Monopoly applies global -10% Crown Control across Dover & Calais trade graph
+    if (state.charters.woolExportMonopoly.active && (loc.id === 2 || loc.id === 3)) {
+      rawControl = Math.max(0.05, rawControl - state.charters.woolExportMonopoly.crownControlPenalty);
+    }
+
+    loc.control = rawControl;
   }
 }
 
@@ -217,7 +257,7 @@ function refreshLocationFooter(locationId) {
 
   if (nameEl) nameEl.textContent = `${loc.name} (${loc.terrain})`;
   if (statsEl) {
-    statsEl.textContent = `Control: ${(loc.control * 100).toFixed(1)}% • Devastation: ${(loc.devastation * 100).toFixed(1)}% • Pops: ${totalPop.toLocaleString()}`;
+    statsEl.textContent = `Control: ${(loc.control * 100).toFixed(1)}% • Devastation: ${(loc.devastation * 100).toFixed(1)}% • Pops: ${totalPop.toLocaleString()} • Dominance: ${loc.nobleDominated ? 'Nobility' : 'Burghers/Commoners'}`;
   }
 }
 
@@ -228,15 +268,13 @@ function renderMapModes() {
     if (!nodeEl) continue;
 
     if (state.activeMapMode === 'political') {
-      // Sovereign colors
       nodeEl.setAttribute('fill', loc.country === 'ENG' ? '#b91c1c' : '#1d4ed8');
       nodeEl.setAttribute('stroke', loc.id === 1 ? '#ffd700' : '#ffffff');
     } else if (state.activeMapMode === 'control') {
-      // Dynamic spectrum: 100% control = gold/white (#ffd700), reduced = striped/reddish
-      if (loc.control >= 0.95) {
+      if (loc.control >= 0.90) {
         nodeEl.setAttribute('fill', '#ffd700');
         nodeEl.setAttribute('stroke', '#ffffff');
-      } else if (loc.control >= 0.70) {
+      } else if (loc.control >= 0.65) {
         nodeEl.setAttribute('fill', '#f59e0b');
         nodeEl.setAttribute('stroke', '#b45309');
       } else {
@@ -244,7 +282,6 @@ function renderMapModes() {
         nodeEl.setAttribute('stroke', '#fca5a5');
       }
     } else if (state.activeMapMode === 'trade') {
-      // Flow lines
       nodeEl.setAttribute('fill', loc.id === 1 || loc.id === 3 ? '#f59e0b' : '#334155');
       nodeEl.setAttribute('stroke', state.channelBlockaded ? '#ef4444' : '#ffd700');
     } else if (state.activeMapMode === 'devastation') {
@@ -287,6 +324,8 @@ function updateHUD() {
   // Outliner Updates
   document.getElementById('task-normandy-val').textContent = `${state.outliner.normandyIntegration.toFixed(1)}%`;
   document.getElementById('task-normandy-bar').style.width = `${state.outliner.normandyIntegration}%`;
+  document.getElementById('task-calais-val').textContent = `${state.outliner.calaisBastion.toFixed(1)}%`;
+  document.getElementById('task-calais-bar').style.width = `${state.outliner.calaisBastion}%`;
 
   // Outliner Estates
   document.getElementById('out-nobility-loyalty').textContent = `Loyalty: ${state.estates[0].loyalty.toFixed(1)}%`;
@@ -301,9 +340,8 @@ function updateHUD() {
 function executeDayTick() {
   state.calendar.day++;
 
-  // Daily supply line check & health wear
+  // Daily supply line check & minor random health wear
   if (state.ruler.isAlive && Math.random() < 0.005) {
-    // Gout check pass
     state.ruler.health = Math.max(0, state.ruler.health - 0.2);
   }
 
@@ -331,7 +369,7 @@ function processMonthEndTick() {
   const stewardshipDiscount = (state.ruler.attributes.stewardship / 100.0) * 0.25;
   const speedMultiplier = 1.0 + stewardshipDiscount;
 
-  // 2. Fractional Outliner Task Additions
+  // 2. Fractional Outliner Construction & Integration Task Additions
   state.outliner.normandyIntegration = Math.min(100.0, state.outliner.normandyIntegration + (0.35 * speedMultiplier));
   state.outliner.calaisBastion = Math.min(100.0, state.outliner.calaisBastion + (1.20 * speedMultiplier));
 
@@ -343,7 +381,13 @@ function processMonthEndTick() {
   for (const loc of state.locations) {
     const potentialTax = loc.tax_base * 0.15 * state.nationalTaxEfficiency;
     const collected = potentialTax * loc.control;
-    const skimmed = potentialTax * (1.0 - loc.control);
+    let skimmed = potentialTax * (1.0 - loc.control);
+
+    // CHARTER: Feudal Tithe Exemption
+    // Deducts a flat -20% from all tax skimming computations running on Locations where Nobility pops hold dominance
+    if (state.charters.feudalTitheExemption.active && loc.nobleDominated) {
+      skimmed *= (1.0 - state.charters.feudalTitheExemption.taxSkimmingPenalty); // Flat -20% deduction
+    }
 
     crownTaxSum += collected;
     nobilitySkimSum += skimmed * 0.70;
@@ -355,17 +399,29 @@ function processMonthEndTick() {
     }
   }
 
+  // CHARTER: Wool Export Monopoly
+  // Increments Burgher Wealth Accumulation Index by +25% monthly
+  if (state.charters.woolExportMonopoly.active) {
+    burgherSkimSum *= (1.0 + state.charters.woolExportMonopoly.wealthAccumulationRate);
+    state.estates[2].loyalty = Math.min(100.0, state.estates[2].loyalty + 0.3);
+  }
+
+  // CHARTER: Feudal Tithe Exemption loyalty floor
+  // Locks Nobility Loyalty to a fixed minimum floor of +15%
+  if (state.charters.feudalTitheExemption.active) {
+    state.estates[0].loyalty = Math.max(state.charters.feudalTitheExemption.loyaltyFloor, state.estates[0].loyalty);
+  }
+
   state.crownTreasury += crownTaxSum;
+  state.monthlyTaxIncome = crownTaxSum;
   state.estates[0].wealth += nobilitySkimSum;
   state.estates[2].wealth += burgherSkimSum;
 
   // 4. Manpower Monthly Conscription (+350/mo)
   state.manpower = Math.min(state.maxManpower, state.manpower + 350);
 
-  // 5. Value Chain & Price Updates (Bastion of Calais Supply Lookup)
+  // 5. Value Chain & Price Updates
   if (state.channelBlockaded) {
-    // Path to London is severed! Timber and stone input prices scale exponentially:
-    // Price = Base * (Demand / Supply)^Elasticity
     state.market.goods.timber.price = 4.0 * Math.pow(90 / 15, 0.70); // Spike to ~14.0 Ducats
     state.market.goods.weapons.price = 18.0 * Math.pow(60 / 10, 0.40); // Spike to ~36.0 Ducats
   } else {
@@ -379,13 +435,13 @@ function processMonthEndTick() {
 // YEAR-END PASS: DYNASTIC GOUT CHECK & SUCCESSION
 function executeYearEndPass() {
   if (state.ruler.isAlive) {
-    const goutPenalty = 1.8;
-    state.ruler.health -= goutPenalty * 5.0;
+    // Gout Afflicted: -5 Health annual reduction pass
+    state.ruler.health -= 5.0;
 
-    if (state.ruler.health <= 0 || Math.random() < 0.08) {
+    if (state.ruler.health <= 0) {
       // King Edward III dies of gout!
       state.ruler.isAlive = false;
-      // Elevate Black Prince
+      // Elevate designated heir (Black Prince)
       state.ruler.firstName = state.heir.firstName;
       state.ruler.age = state.heir.age;
       state.ruler.attributes.martial = state.heir.martial;
@@ -395,11 +451,21 @@ function executeYearEndPass() {
       state.ruler.isAlive = true;
 
       // Update UI Ruler display
-      document.getElementById('ruler-name').textContent = `King Edward IV (The Black Prince)`;
-      document.getElementById('attr-martial').textContent = '95';
-      document.getElementById('attr-steward').textContent = '60';
+      const nameEl = document.getElementById('ruler-name');
+      if (nameEl) nameEl.textContent = `King Edward IV (The Black Prince)`;
+      const martialEl = document.getElementById('attr-martial');
+      if (martialEl) martialEl.textContent = '95';
+      const stewardEl = document.getElementById('attr-steward');
+      if (stewardEl) stewardEl.textContent = '60';
 
-      showToast('👑 KING EDWARD III HAS DIED! Edward of Woodstock (Black Prince) ascends the English Throne!');
+      const goutBadge = document.getElementById('trait-gout-afflicted');
+      if (goutBadge) {
+        goutBadge.textContent = '👑 Crowned Victorious';
+        goutBadge.style.borderColor = '#10b981';
+        goutBadge.style.color = '#6ee7b7';
+      }
+
+      showToast('👑 KING EDWARD III HAS SUCCUMBED TO GOUT! Edward of Woodstock (Black Prince) ascends the English Throne!');
     }
   }
 }
@@ -409,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
   recalculateControl();
   updateHUD();
 
-  // Play / Pause
+  // Play / Pause Simulation Loop
   const playBtn = document.getElementById('btn-play-pause');
   playBtn.addEventListener('click', () => {
     state.isRunning = !state.isRunning;
@@ -424,11 +490,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Step Day (+1)
   document.getElementById('btn-step-day').addEventListener('click', executeDayTick);
+
+  // Step Month (+1)
   document.getElementById('btn-step-month').addEventListener('click', () => {
     for (let i = 0; i < 30; i++) executeDayTick();
   });
 
+  // Speed Selector
   document.getElementById('speed-select').addEventListener('change', (e) => {
     state.speedMs = parseInt(e.target.value, 10);
     if (state.isRunning) {
@@ -462,18 +532,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!state.ruler.isMarried) {
       state.ruler.isMarried = true;
       state.ruler.spouseName = 'Duchess Margaret of Flanders';
+      state.diplomaticMarriageRelation = {
+        initiatorCountryId: 1,
+        targetCountryId: 2,
+        foreignSpouseName: 'Duchess Margaret of Flanders',
+        dynasticClaimStrength: 1.0,
+        activeTreaty: true,
+        personalUnionPotential: true
+      };
       state.outliner.alerts = state.outliner.alerts.filter(a => a.id !== 'flanders');
-      document.getElementById('alert-item-1').style.display = 'none';
-      document.getElementById('alert-count-badge').textContent = '1';
-      showToast('💍 Royal Marriage validated with Duchess Margaret of Flanders! Personal Union claim active.');
+      const flandersAlert = document.getElementById('alert-item-1');
+      if (flandersAlert) flandersAlert.style.display = 'none';
+      const badge = document.getElementById('alert-count-badge');
+      if (badge) badge.textContent = '1';
+      showToast('💍 Diplomatic_Marriage_Relation struct forged with Flanders! Personal Union claim established.');
     } else {
-      showToast('The sovereign is already married to ' + state.ruler.spouseName);
+      showToast('The sovereign is already bound in holy matrimony to ' + state.ruler.spouseName);
     }
   });
 
   // Sol Panel: Appoint as Field General (Hooks into Royal Vanguard)
   document.getElementById('btn-court-general').addEventListener('click', () => {
     state.ruler.isGeneral = true;
+    state.ruler.combatShockModifier = 1.15; // 1.15 float modifier to front-row combat grid damage ticks
     const armyRow = document.getElementById('outliner-army-1');
     if (armyRow) {
       armyRow.innerHTML = `
@@ -481,17 +562,18 @@ document.addEventListener('DOMContentLoaded', () => {
           <strong>Royal Vanguard</strong>
           <span style="color: #fbbf24;">8,500 Men (+15% Shock)</span>
         </div>
-        <span style="font-size: 10px; color: #34d399;">Commander: King Edward III (Valiant Warrior) • Calais</span>
+        <span style="font-size: 10px; color: #34d399;">Commander: King Edward III (Valiant Warrior • 1.15x Shock) • Calais</span>
       `;
     }
-    showToast('⚔️ King Edward III unassigned from court and bound as primary general to Royal Vanguard (+15% Shock Damage)!');
+    showToast('⚔️ King Edward III detached from court and assigned pointer to Royal Vanguard! (Valiant Warrior: 1.15x combat shock applied)');
   });
 
-  // Sol Panel: Appoint Cabinet Advisor
+  // Sol Panel: Appoint Cabinet Advisor (Registers into Lord High Chancellor slot)
   document.getElementById('btn-court-advisor').addEventListener('click', () => {
     state.ruler.isCabinetAdvisor = true;
+    state.ruler.cabinetRole = 'Lord High Chancellor';
     state.monthlyTaxIncome += 20.0;
-    showToast('📜 Lord High Chancellor appointed! Monthly tax extraction expanded.');
+    showToast('📜 King Edward III registered into the active Lord High Chancellor execution slot (+20.0 D/mo tax extraction)!');
     updateHUD();
   });
 
@@ -499,6 +581,48 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-court-explorer').addEventListener('click', () => {
     showToast('🧭 Atlantic Expedition chartered under Renaissance patronage! Exploration fleet dispatched.');
   });
+
+  // Interactive Royal Charters Toggles
+  const titheCard = document.getElementById('charter-feudal-tithe');
+  const titheTag = document.getElementById('tag-tithe-status');
+  if (titheCard && titheTag) {
+    titheCard.addEventListener('click', () => {
+      state.charters.feudalTitheExemption.active = !state.charters.feudalTitheExemption.active;
+      if (state.charters.feudalTitheExemption.active) {
+        titheCard.classList.add('active');
+        titheTag.className = 'charter-status-tag active';
+        titheTag.textContent = 'Active';
+        showToast('📜 Feudal Tithe Exemption ratified: Nobility loyalty floor set to +15%, -20% tax skim on noble lands.');
+      } else {
+        titheCard.classList.remove('active');
+        titheTag.className = 'charter-status-tag inactive';
+        titheTag.textContent = 'Suspended';
+        showToast('⚠️ Feudal Tithe Exemption suspended: Tax skimming restored, nobility unrest increases.');
+      }
+      processMonthEndTick();
+    });
+  }
+
+  const woolCard = document.getElementById('charter-wool-monopoly');
+  const woolTag = document.getElementById('tag-wool-status');
+  if (woolCard && woolTag) {
+    woolCard.addEventListener('click', () => {
+      state.charters.woolExportMonopoly.active = !state.charters.woolExportMonopoly.active;
+      if (state.charters.woolExportMonopoly.active) {
+        woolCard.classList.add('active');
+        woolTag.className = 'charter-status-tag active';
+        woolTag.textContent = 'Active';
+        showToast('🐑 Wool Export Monopoly ratified: Burgher wealth rate +25%/mo, -10% Crown Control across Dover-Calais.');
+      } else {
+        woolCard.classList.remove('active');
+        woolTag.className = 'charter-status-tag inactive';
+        woolTag.textContent = 'Suspended';
+        showToast('⚠️ Wool Export Monopoly revoked: Crown Control restored across Dover-Calais trade graph.');
+      }
+      recalculateControl();
+      processMonthEndTick();
+    });
+  }
 
   // Outliner Action: Burgher Guild Petition Modal Interaction
   const petitionAlert = document.getElementById('alert-item-2');
@@ -522,9 +646,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-modal-accept').addEventListener('click', () => {
       petitionModal.style.display = 'none';
       petitionAlert.style.display = 'none';
-      document.getElementById('alert-count-badge').textContent = '0';
+      const badge = document.getElementById('alert-count-badge');
+      if (badge) badge.textContent = '0';
 
-      // Accept: +10% Burgher Loyalty, +25.0 Ducats, -15% Calais Crown Control
       state.estates[2].loyalty += 10.0;
       state.crownTreasury += 25.0;
       const calaisLoc = state.locations.find(l => l.id === 3);
@@ -538,7 +662,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-modal-decline').addEventListener('click', () => {
       petitionModal.style.display = 'none';
       petitionAlert.style.display = 'none';
-      document.getElementById('alert-count-badge').textContent = '0';
+      const badge = document.getElementById('alert-count-badge');
+      if (badge) badge.textContent = '0';
 
       state.estates[2].loyalty -= 15.0;
       showToast('Suppressed Burgher Petition: Burgher estate loyalty dropped by -15.0%!');
