@@ -1,0 +1,50 @@
+// =========================================================================
+// MINOR TAG DIPLOMATIC ABSORPTION & ANNEXATION CORE SPECIFICATION
+// Subsystem: /src/politics/diplomacy/annexation.lang
+// =========================================================================
+
+module GameEngine.Politics.Diplomacy.Annexation {
+
+    struct AnnexationTask {
+        task_id: string,
+        liege_tag: string,
+        subject_tag: string,
+        monthly_diplomatic_cost: f32, // Gold or Diplomatic capacity
+        progress_percentage: f32,     // 0.0 to 100.0%
+        is_completed: bool,
+        absorbed_location_ids: array<u32>
+    }
+
+    struct AbsorptionMemoryPayload {
+        liege_tag: string,
+        annexed_subject_tag: string,
+        absorbed_locations_count: u32,
+        initial_autonomy_floor: f32, // Fixed 0.60 floor
+        purged_from_active_ai: bool
+    }
+
+    // Annexation Eligibility Check:
+    // Requires subject Liberty_Desire < 30.0%
+    fn CanInitiateAnnexation(
+        liberty_desire: f32,
+        relations: f32
+    ) -> bool {
+        return liberty_desire < 30.0 && relations >= 100.0;
+    }
+
+    // Monthly Progress Tick:
+    // Rate scales with Diplomatic Reputation and low Liberty Desire
+    fn AdvanceAnnexationTick(
+        current_progress: f32,
+        diplomatic_reputation: f32,
+        liberty_desire: f32
+    ) -> (f32, bool) {
+        if liberty_desire >= 50.0 {
+            return (current_progress, false); // Paused due to high disloyalty
+        }
+        let speed = 1.5 * diplomatic_reputation * (1.0 - (liberty_desire / 100.0));
+        let next_progress = clamp(current_progress + speed, 0.0, 100.0);
+        let completed = next_progress >= 100.0;
+        return (next_progress, completed);
+    }
+}

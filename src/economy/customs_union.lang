@@ -1,0 +1,39 @@
+// =========================================================================
+// MULTI-STATE CUSTOMS UNIONS & MARKET ACCESS NETWORKS SPECIFICATION
+// Subsystem: /src/economy/customs_union.lang
+// =========================================================================
+
+module GameEngine.Economy.CustomsUnion {
+
+    struct CustomsUnionPact {
+        union_id: string,
+        leader_country_tag: string,
+        central_market_hub_id: u32,
+        member_tags: array<string>,
+        shared_strategic_goods: array<string>, // iron, timber, naval supplies
+        tariff_penalty_modifier: f32,          // 1.0 (Zero Tariff)
+        leader_transaction_skim_rate: f32,     // 0.10 (10% skim)
+        aggregate_monthly_volume: f32
+    }
+
+    // Tariff Removal Transport Cost:
+    // Local_Goods_Transport_Cost = Base_Cost * 1.0 (Zero transit tariff penalties)
+    fn CalculateInternalTransportCost(
+        base_cost: f32,
+        is_customs_union_member: bool
+    ) -> f32 {
+        if is_customs_union_member {
+            return base_cost * 1.0;
+        }
+        return base_cost * 2.5; // Standard inter-state border tariff penalty
+    }
+
+    // Leader Commercial Revenue Skim:
+    // Leader skims 10% of total member transaction throughput
+    fn CalculateUnionLeaderRevenue(
+        total_trade_volume: f32,
+        skim_rate: f32
+    ) -> f32 {
+        return total_trade_volume * skim_rate;
+    }
+}

@@ -17,3 +17,5 @@ export * from './dynasty_core.ts';
 export * from './diplomacy/subjects.ts';
 export * from './diplomacy/spheres.ts';
 export * from './tags/index.ts';
+export * from './formation.ts';
+export * from './diplomacy/annexation.ts';

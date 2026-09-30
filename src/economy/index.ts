@@ -6,3 +6,4 @@ export * from './interdiction.ts';
 export * from './market_clearing.ts';
 export * from './crisis.ts';
 export * from './colonization.ts';
+export * from './customs_union.ts';

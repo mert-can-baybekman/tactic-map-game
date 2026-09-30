@@ -1,0 +1,68 @@
+// =========================================================================
+// PROCEDURAL NATION FORMATION & TAG EVOLUTION ENGINE SPECIFICATION
+// Subsystem: /src/politics/formation.lang
+// =========================================================================
+
+module GameEngine.Politics.Formation {
+
+    struct FormableNationRequirement {
+        target_tag: string,
+        target_name: string,
+        required_prestige: f32,
+        required_location_ids: array<u32>,
+        allowed_source_tags: array<string>,
+        new_primary_culture: string,
+        new_government_rank: string,
+        permanent_claims_region: string
+    }
+
+    struct FormationExecutionPayload {
+        previous_tag: string,
+        new_tag: string,
+        new_country_name: string,
+        gained_core_location_ids: array<u32>,
+        prestige_bonus: f32,
+        legitimacy_bonus: f32,
+        unlocked_ideas_group: string
+    }
+
+    // Formation Eligibility Checker:
+    // Requires: Sovereign owns/controls required locations and has Prestige >= threshold
+    fn CheckFormationEligibility(
+        current_tag: string,
+        current_prestige: f32,
+        owned_location_ids: array<u32>,
+        req: FormableNationRequirement
+    ) -> bool {
+        if current_prestige < req.required_prestige {
+            return false;
+        }
+
+        let is_allowed_source = false;
+        for src_tag in req.allowed_source_tags {
+            if src_tag == current_tag {
+                is_allowed_source = true;
+                break;
+            }
+        }
+        if !is_allowed_source {
+            return false;
+        }
+
+        // Verify all required locations are controlled
+        for req_loc in req.required_location_ids {
+            let mut found = false;
+            for owned_loc in owned_location_ids {
+                if owned_loc == req_loc {
+                    found = true;
+                    break;
+                }
+            }
+            if !found {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
