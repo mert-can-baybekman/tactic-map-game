@@ -1,300 +1,354 @@
 /**
- * Micro-Unrest, Rebel Factions & Civil War Simulator
- * Handles unrest accumulation, faction mobilization, and structural nation fracturing.
+ * Macro-Unrest Accumulation & Structural Civil War Fracture Engine
+ * Implements virtualized unrest aggregation, physical army stack instantiation,
+ * and the 45% Total State Civil War Fracture Protocol.
  */
 
 import type { PopEntity } from '../demographics/pop.ts';
 import { EstateType } from '../core/types.ts';
 
-export type RebelFactionType = 'NobilityCoup' | 'PeasantRevolt' | 'ReligiousHeretics' | 'Separatist';
+export type RebelFactionTypeEnum =
+  | 'Peasant_Revolt'
+  | 'Nobles_Coup'
+  | 'Heretic_Uprising'
+  | 'Pretender_Claim';
 
-export interface RebelFaction {
+export interface GeneralCharacter {
   id: string;
   name: string;
-  type: RebelFactionType;
-  estateOrigin?: EstateType;
-  cultureOrigin?: string;
-  religionOrigin?: string;
-  enlistedPopCount: number;
-  totalManpowerPool: number;
-  aggregateUnrest: number; // 0.0 to 1.0
-  insurgencyProgress: number; // 0.0 to 100.0
-  demands: string;
-  isActive: boolean;
+  loyalty: number; // 0 to 100
+  assignedArmyId?: string;
+  isRebelSympathizer?: boolean;
+}
+
+export interface ArmyStackEntity {
+  id: string;
+  name: string;
+  countryTag: string;
+  locationId: number;
+  locationName: string;
+  size: number; // Manpower count
+  isRebelStack: boolean;
+  commander?: GeneralCharacter;
+  morale: number; // 0 to 100
+}
+
+export interface RebelFaction {
+  factionId: string;
+  name: string;
+  factionType: RebelFactionTypeEnum;
+  totalEnlistedPopsCount: number;
+  accumulatedRadicalism: number; // 0.0 to 1.0 (Hits 1.0 -> Spawns Army Stack)
+  financierEstatePointer: EstateType;
   targetLocationIds: number[];
+  spawnedArmyStacks: ArmyStackEntity[];
+  isActive: boolean;
 }
 
-export interface CivilWarCrisisState {
-  isCivilWarActive: boolean;
-  rebelTag: string;
-  rebelCapitalLocationId: number;
-  secededLocationIds: number[];
-  defectedArmyManpower: number;
-  retainedCrownManpower: number;
-  crisisAlertMessage: string;
-  outlinerCrisisMode: boolean;
-}
-
-export interface UnrestLocationSnapshot {
+export interface UnrestLocationData {
   id: number;
   name: string;
   country: string;
   control: number; // 0.0 to 1.0
   devastation: number;
+  dominantEstate?: EstateType;
+  dominantEstatePower?: number; // 0.0 to 1.0
 }
 
-export class InternalRebellionEngine {
-  private activeFactions: Map<string, RebelFaction> = new Map();
-  private civilWarState: CivilWarCrisisState = {
-    isCivilWarActive: false,
-    rebelTag: '',
-    rebelCapitalLocationId: 0,
-    secededLocationIds: [],
-    defectedArmyManpower: 0,
-    retainedCrownManpower: 0,
-    crisisAlertMessage: '',
-    outlinerCrisisMode: false
-  };
+export interface TotalFractureResult {
+  isCivilWarActive: boolean;
+  rebelTag: string;
+  rebelCapitalLocationId: number;
+  secededLocations: UnrestLocationData[];
+  defectedArmies: ArmyStackEntity[];
+  retainedCrownArmies: ArmyStackEntity[];
+  totalRebelCombatants: number;
+  outlinerCrisisMode: boolean;
+  crisisAlert: string;
+}
 
-  public getActiveFactions(): RebelFaction[] {
-    return Array.from(this.activeFactions.values());
+export class MacroUnrestEngine {
+  private factions: Map<string, RebelFaction> = new Map();
+  private spawnedRebelArmies: ArmyStackEntity[] = [];
+  private activeCivilWar: TotalFractureResult | null = null;
+
+  public conscriptionFactor: number = 0.08; // 8% of enlisted radical pops form armed stacks
+
+  public getFactions(): RebelFaction[] {
+    return Array.from(this.factions.values());
   }
 
-  public getCivilWarState(): CivilWarCrisisState {
-    return { ...this.civilWarState };
+  public getCivilWarState(): TotalFractureResult | null {
+    return this.activeCivilWar;
+  }
+
+  public getSpawnedRebelArmies(): ArmyStackEntity[] {
+    return [...this.spawnedRebelArmies];
   }
 
   /**
-   * Unrest Aggregation Pass:
-   * Increments Pop militancy unrest dynamically:
-   * 1. Basic needs starvation (satisfaction < 0.50)
-   * 2. Heavy taxation without Crown Control (taxRate > 0.15 AND control < 0.40)
+   * Virtualized Unrest Aggregation Network:
+   * Aggregates micro-unrest variables across pops based on:
+   * 1. Basic food needs starvation (basic_needs_satisfaction < 0.50)
+   * 2. High tax burden without Crown Control protection (taxRate > 0.15 AND control < 0.40)
+   * 3. Cultural discrimination (pop.culture_id !== stateCulture)
    */
-  public updatePopUnrest(
+  public aggregatePopUnrestPass(
     pops: PopEntity[],
-    locationsMap: Map<number, UnrestLocationSnapshot>,
-    nationalTaxRate: number = 0.20
+    locationsMap: Map<number, UnrestLocationData>,
+    nationalTaxRate: number = 0.20,
+    stateCulture: string = 'english'
   ): void {
     for (const pop of pops) {
       const loc = locationsMap.get(pop.location_id);
       const control = loc ? loc.control : 0.50;
 
-      let unrestDelta = 0.0;
+      let deltaUnrest = 0.0;
 
-      // 1. Basic needs starvation penalty
+      // 1. Food starvation penalty
       if (pop.basic_needs_satisfaction < 0.50) {
-        unrestDelta += (0.50 - pop.basic_needs_satisfaction) * 0.04;
+        deltaUnrest += (0.50 - pop.basic_needs_satisfaction) * 0.05;
       }
 
-      // 2. High taxation without Crown Control protection penalty
+      // 2. High tax burden without Crown Control
       if (nationalTaxRate > 0.15 && control < 0.40) {
-        const taxationExaction = (nationalTaxRate - 0.15) * 1.5;
-        const lowControlVulnerability = (0.40 - control) * 2.0;
-        unrestDelta += taxationExaction * lowControlVulnerability * 0.05;
+        deltaUnrest += (nationalTaxRate - 0.15) * (0.40 - control) * 0.15;
       }
 
-      // Natural pacification if needs are met and control is high
-      if (pop.basic_needs_satisfaction >= 0.70 && control >= 0.60) {
-        unrestDelta -= 0.015;
+      // 3. Cultural discrimination penalty
+      if (pop.culture_id !== stateCulture) {
+        deltaUnrest += 0.015;
       }
 
-      pop.militancy_unrest = Math.max(0.0, Math.min(1.0, pop.militancy_unrest + unrestDelta));
+      // Natural pacification if needs are met and control is solid
+      if (pop.basic_needs_satisfaction >= 0.75 && control >= 0.70 && pop.culture_id === stateCulture) {
+        deltaUnrest -= 0.02;
+      }
+
+      pop.militancy_unrest = Math.max(0.0, Math.min(1.0, pop.militancy_unrest + deltaUnrest));
     }
   }
 
   /**
-   * Rebel Faction Aggregation & Mobilization Loop:
-   * Scans Pop groups (Peasants/Commoners, Nobility, Heretics, Separatists).
-   * Spawns formal Rebel_Faction when group aggregate unrest breaks 70% (0.70).
+   * Monthly Faction Radicalism Progression & Aggregation Check:
+   * Compiles individual unrest into centralized state-wide Rebel_Faction data containers.
    */
-  public evaluateRebelFactionProgress(
+  public evaluateFactionsProgression(
     pops: PopEntity[],
-    totalStateMilitaryForce: number,
-    statePrimaryCulture: string = 'english',
-    statePrimaryReligion: string = 'catholic'
-  ): { spawnedFactions: RebelFaction[]; civilWarTriggered: boolean } {
-    const spawned: RebelFaction[] = [];
-
-    // Group pops into faction categories
-    const groups: Record<RebelFactionType, { pops: PopEntity[]; totalMilitancy: number; totalSize: number }> = {
-      PeasantRevolt: { pops: [], totalMilitancy: 0, totalSize: 0 },
-      NobilityCoup: { pops: [], totalMilitancy: 0, totalSize: 0 },
-      ReligiousHeretics: { pops: [], totalMilitancy: 0, totalSize: 0 },
-      Separatist: { pops: [], totalMilitancy: 0, totalSize: 0 }
+    stateReligion: string = 'catholic'
+  ): RebelFaction[] {
+    // Categorize pops into faction buckets
+    const categories: Record<RebelFactionTypeEnum, {
+      pops: PopEntity[];
+      totalRadicalism: number;
+      totalSize: number;
+      financier: EstateType;
+    }> = {
+      Peasant_Revolt: { pops: [], totalRadicalism: 0, totalSize: 0, financier: EstateType.Commoners },
+      Nobles_Coup: { pops: [], totalRadicalism: 0, totalSize: 0, financier: EstateType.Nobility },
+      Heretic_Uprising: { pops: [], totalRadicalism: 0, totalSize: 0, financier: EstateType.Clergy },
+      Pretender_Claim: { pops: [], totalRadicalism: 0, totalSize: 0, financier: EstateType.Nobility }
     };
 
     for (const pop of pops) {
       if (pop.estate_type === EstateType.Commoners || pop.estate_type === EstateType.Tribes) {
-        groups.PeasantRevolt.pops.push(pop);
-        groups.PeasantRevolt.totalMilitancy += pop.militancy_unrest * pop.size;
-        groups.PeasantRevolt.totalSize += pop.size;
+        categories.Peasant_Revolt.pops.push(pop);
+        categories.Peasant_Revolt.totalRadicalism += pop.militancy_unrest * pop.size;
+        categories.Peasant_Revolt.totalSize += pop.size;
       } else if (pop.estate_type === EstateType.Nobility) {
-        groups.NobilityCoup.pops.push(pop);
-        groups.NobilityCoup.totalMilitancy += pop.militancy_unrest * pop.size;
-        groups.NobilityCoup.totalSize += pop.size;
+        // High unrest nobles can back Coups or Pretenders
+        if (pop.militancy_unrest > 0.65) {
+          categories.Pretender_Claim.pops.push(pop);
+          categories.Pretender_Claim.totalRadicalism += pop.militancy_unrest * pop.size;
+          categories.Pretender_Claim.totalSize += pop.size;
+        } else {
+          categories.Nobles_Coup.pops.push(pop);
+          categories.Nobles_Coup.totalRadicalism += pop.militancy_unrest * pop.size;
+          categories.Nobles_Coup.totalSize += pop.size;
+        }
       }
 
-      if (pop.religion_id !== statePrimaryReligion) {
-        groups.ReligiousHeretics.pops.push(pop);
-        groups.ReligiousHeretics.totalMilitancy += pop.militancy_unrest * pop.size;
-        groups.ReligiousHeretics.totalSize += pop.size;
-      }
-
-      if (pop.culture_id !== statePrimaryCulture) {
-        groups.Separatist.pops.push(pop);
-        groups.Separatist.totalMilitancy += pop.militancy_unrest * pop.size;
-        groups.Separatist.totalSize += pop.size;
+      if (pop.religion_id !== stateReligion || pop.religion_distribution?.religious_heretics) {
+        categories.Heretic_Uprising.pops.push(pop);
+        categories.Heretic_Uprising.totalRadicalism += pop.militancy_unrest * pop.size;
+        categories.Heretic_Uprising.totalSize += pop.size;
       }
     }
 
-    // Evaluate each faction category against the 0.70 unrest threshold
-    for (const [typeKey, group] of Object.entries(groups)) {
-      const type = typeKey as RebelFactionType;
-      if (group.totalSize === 0) continue;
+    const updatedFactions: RebelFaction[] = [];
 
-      const aggregateUnrest = group.totalMilitancy / group.totalSize;
-      const factionId = `faction_${type.toLowerCase()}`;
+    for (const [key, cat] of Object.entries(categories)) {
+      const factionType = key as RebelFactionTypeEnum;
+      if (cat.totalSize === 0) continue;
 
-      if (aggregateUnrest >= 0.70) {
-        // Enlisted pops with active militancy >= 0.60
-        const radicalPops = group.pops.filter(p => p.militancy_unrest >= 0.60);
+      const avgRadicalism = cat.totalRadicalism / cat.totalSize;
+      const factionId = `faction_${factionType.toLowerCase()}`;
+
+      // Only manifest when average radicalism exceeds 0.50
+      if (avgRadicalism >= 0.50) {
+        const radicalPops = cat.pops.filter(p => p.militancy_unrest >= 0.60);
         const enlistedCount = radicalPops.reduce((sum, p) => sum + p.size, 0);
-
-        // Manpower muster rate: 5% of enlisted radical population can bear arms
-        const musteredManpower = Math.round(enlistedCount * 0.05);
-
         const targetLocs = Array.from(new Set(radicalPops.map(p => p.location_id)));
 
-        let faction = this.activeFactions.get(factionId);
+        let faction = this.factions.get(factionId);
         if (!faction) {
           faction = {
-            id: factionId,
-            name: this.generateFactionName(type),
-            type,
-            enlistedPopCount: enlistedCount,
-            totalManpowerPool: musteredManpower,
-            aggregateUnrest,
-            insurgencyProgress: 15.0,
-            demands: this.getFactionDemands(type),
-            isActive: true,
-            targetLocationIds: targetLocs
+            factionId,
+            name: this.generateFactionTitle(factionType),
+            factionType,
+            totalEnlistedPopsCount: enlistedCount,
+            accumulatedRadicalism: Math.min(1.0, avgRadicalism),
+            financierEstatePointer: cat.financier,
+            targetLocationIds: targetLocs,
+            spawnedArmyStacks: [],
+            isActive: true
           };
-          this.activeFactions.set(factionId, faction);
-          spawned.push(faction);
+          this.factions.set(factionId, faction);
         } else {
-          faction.enlistedPopCount = enlistedCount;
-          faction.totalManpowerPool = musteredManpower;
-          faction.aggregateUnrest = aggregateUnrest;
+          faction.totalEnlistedPopsCount = enlistedCount;
           faction.targetLocationIds = targetLocs;
-          // Progress advances towards full civil war
-          faction.insurgencyProgress = Math.min(100.0, faction.insurgencyProgress + (aggregateUnrest - 0.50) * 20.0);
+          // Radicalism builds up each month
+          const growth = (avgRadicalism - 0.40) * 0.25;
+          faction.accumulatedRadicalism = Math.min(1.0, faction.accumulatedRadicalism + growth);
         }
+        updatedFactions.push(faction);
       } else {
-        // Decaying faction if unrest drops below threshold
-        const existing = this.activeFactions.get(factionId);
+        const existing = this.factions.get(factionId);
         if (existing) {
-          existing.insurgencyProgress = Math.max(0.0, existing.insurgencyProgress - 10.0);
-          if (existing.insurgencyProgress <= 0.0) {
+          existing.accumulatedRadicalism = Math.max(0.0, existing.accumulatedRadicalism - 0.10);
+          if (existing.accumulatedRadicalism <= 0.0) {
             existing.isActive = false;
-            this.activeFactions.delete(factionId);
+            this.factions.delete(factionId);
           }
         }
       }
     }
 
-    // Check Civil War Threshold:
-    // If ANY Rebel Faction's manpower pool >= 40% of the state's military force OR insurgencyProgress reaches 100%
-    let civilWarTriggered = false;
-    for (const faction of this.activeFactions.values()) {
-      const manpowerThresholdMet = totalStateMilitaryForce > 0 &&
-        (faction.totalManpowerPool >= 0.40 * totalStateMilitaryForce);
-
-      if ((manpowerThresholdMet || faction.insurgencyProgress >= 100.0) && !this.civilWarState.isCivilWarActive) {
-        civilWarTriggered = true;
-        break;
-      }
-    }
-
-    return { spawnedFactions: spawned, civilWarTriggered };
+    return updatedFactions;
   }
 
   /**
-   * The Civil War Protocol:
-   * Automatically fractures the nation graph, allocates low-control locations to a newly generated rebel tag,
-   * splits standing armies based on estate loyalty metrics, and switches the outliner HUD into crisis survival state.
+   * Physical Rebellion Spawning & Map Interception:
+   * When Accumulated_Radicalism == 1.0:
+   * Instantiates an Army_Stack entity directly on those Location coordinates.
+   * Army_Manpower = Enlisted_Pop_Size * Conscription_Factor
    */
-  public triggerCivilWarProtocol(
-    primaryFaction: RebelFaction,
-    liveLocations: Array<{ id: number; name: string; country: string; control: number }>,
-    liveArmies: Array<{ id: string; name: string; size: number; location: string }>,
-    nobilityLoyalty: number,
-    totalStateMilitaryForce: number
-  ): CivilWarCrisisState {
-    const rebelTag = `REB_${liveLocations[0]?.country || 'ENG'}`;
-    const secededLocationIds: number[] = [];
+  public checkAndSpawnPhysicalRebellions(
+    locationsMap: Map<number, UnrestLocationData>
+  ): ArmyStackEntity[] {
+    const newlySpawned: ArmyStackEntity[] = [];
 
-    // 1. Fracture nation graph: Allocate low-control locations (Control < 0.40) to the rebel tag
-    for (const loc of liveLocations) {
-      if (loc.control < 0.40 || primaryFaction.targetLocationIds.includes(loc.id)) {
-        loc.country = rebelTag;
-        loc.control = 0.60; // Rebel faction asserts provisional control
-        secededLocationIds.push(loc.id);
+    for (const faction of this.factions.values()) {
+      if (faction.accumulatedRadicalism >= 1.0 && faction.spawnedArmyStacks.length === 0) {
+        // Calculate army size directly out of enlisted pop count numbers
+        const totalManpower = Math.max(1000, Math.round(faction.totalEnlistedPopsCount * this.conscriptionFactor));
+        const spawnLocId = faction.targetLocationIds[0] || 1;
+        const loc = locationsMap.get(spawnLocId);
+        const locName = loc ? loc.name : `Location_${spawnLocId}`;
+
+        const armyStack: ArmyStackEntity = {
+          id: `rebel_stack_${faction.factionId}_${Date.now()}`,
+          name: `${faction.name} Insurgent Host`,
+          countryTag: 'REB_ENG',
+          locationId: spawnLocId,
+          locationName: locName,
+          size: totalManpower,
+          isRebelStack: true,
+          morale: 85
+        };
+
+        faction.spawnedArmyStacks.push(armyStack);
+        this.spawnedRebelArmies.push(armyStack);
+        newlySpawned.push(armyStack);
       }
     }
 
-    // If no low-control location existed, seize at least one target location
-    if (secededLocationIds.length === 0 && liveLocations.length > 0) {
-      const seized = liveLocations[liveLocations.length - 1];
-      seized.country = rebelTag;
-      secededLocationIds.push(seized.id);
+    return newlySpawned;
+  }
+
+  /**
+   * The Total State Civil War Fracture Algorithm:
+   * If a Rebel Faction's calculated aggregate manpower exceeds 45% of the Crown's standing professional forces + levies:
+   * 1. Instantiates a dynamic civil war counter-tag (e.g. REB_ENG)
+   * 2. Scans all map nodes: Any location with Crown Control < 50% OR dominant localized estate backing rebellion has high power (> 0.35) secedes
+   * 3. Splits standing armies: Low loyalty generals (loyalty < 40) immediately defect
+   */
+  public evaluateTotalFractureProtocol(
+    primaryFaction: RebelFaction,
+    locations: UnrestLocationData[],
+    standingArmies: ArmyStackEntity[],
+    generals: GeneralCharacter[],
+    crownTotalMilitaryForce: number
+  ): TotalFractureResult | null {
+    const rebelManpower = Math.round(primaryFaction.totalEnlistedPopsCount * this.conscriptionFactor);
+
+    // 45% Threshold check
+    const civilWarThreshold = crownTotalMilitaryForce * 0.45;
+    if (rebelManpower < civilWarThreshold && primaryFaction.accumulatedRadicalism < 1.0) {
+      return null;
     }
 
-    const rebelCapital = secededLocationIds[0] || liveLocations[0]?.id || 1;
+    const rebelTag = `REB_${locations[0]?.country || 'ENG'}`;
+    const secededLocations: UnrestLocationData[] = [];
 
-    // 2. Split standing armies based on estate loyalty metrics
-    let defectedManpower = 0;
-    let retainedManpower = 0;
+    // Map node scanning sequence:
+    // Any Location with Crown Control < 50% OR dominant localized estate backing rebellion with high power (> 0.35)
+    for (const loc of locations) {
+      const lowControl = loc.control < 0.50;
+      const estateBacking = loc.dominantEstate === primaryFaction.financierEstatePointer && (loc.dominantEstatePower || 0) >= 0.35;
 
-    // If Nobility Loyalty < 35%, 50% of the military defects to the rebellion
-    const defectionRatio = nobilityLoyalty < 35.0 ? 0.50 : 0.25;
-
-    for (const army of liveArmies) {
-      const defectingCount = Math.round(army.size * defectionRatio);
-      defectedManpower += defectingCount;
-      army.size -= defectingCount;
-      retainedManpower += army.size;
+      if (lowControl || estateBacking || primaryFaction.targetLocationIds.includes(loc.id)) {
+        loc.country = rebelTag;
+        loc.control = 0.55; // Rebel faction asserts provisional garrisons
+        secededLocations.push(loc);
+      }
     }
 
-    // 3. Switch Outliner HUD into crisis survival mode
-    this.civilWarState = {
+    if (secededLocations.length === 0 && locations.length > 0) {
+      const fallback = locations[locations.length - 1];
+      fallback.country = rebelTag;
+      secededLocations.push(fallback);
+    }
+
+    // Split standing armies: Generals with loyalty < 40 defect with their entire army
+    const defectedArmies: ArmyStackEntity[] = [];
+    const retainedCrownArmies: ArmyStackEntity[] = [];
+
+    for (const army of standingArmies) {
+      const general = generals.find(g => g.assignedArmyId === army.id);
+      if (general && general.loyalty < 40) {
+        army.countryTag = rebelTag;
+        army.isRebelStack = true;
+        defectedArmies.push(army);
+      } else {
+        retainedCrownArmies.push(army);
+      }
+    }
+
+    const defectedManpower = defectedArmies.reduce((sum, a) => sum + a.size, 0);
+
+    const result: TotalFractureResult = {
       isCivilWarActive: true,
       rebelTag,
-      rebelCapitalLocationId: rebelCapital,
-      secededLocationIds,
-      defectedArmyManpower: defectedManpower,
-      retainedCrownManpower: retainedManpower,
-      crisisAlertMessage: `CRITICAL ALERT: Civil War broke out! ${primaryFaction.name} has formed ${rebelTag} with ${defectedManpower + primaryFaction.totalManpowerPool} combatants.`,
-      outlinerCrisisMode: true
+      rebelCapitalLocationId: secededLocations[0]?.id || 1,
+      secededLocations,
+      defectedArmies,
+      retainedCrownArmies,
+      totalRebelCombatants: rebelManpower + defectedManpower,
+      outlinerCrisisMode: true,
+      crisisAlert: `CIVIL WAR: ${primaryFaction.name} triggered Total State Fracture! ${secededLocations.length} locations seceded to ${rebelTag}.`
     };
 
-    return this.civilWarState;
+    this.activeCivilWar = result;
+    return result;
   }
 
-  private generateFactionName(type: RebelFactionType): string {
+  private generateFactionTitle(type: RebelFactionTypeEnum): string {
     switch (type) {
-      case 'PeasantRevolt': return "Great Peasant Jacquerie";
-      case 'NobilityCoup': return "Baronial League of Reform";
-      case 'ReligiousHeretics': return "Lollard Heretic Communion";
-      case 'Separatist': return "Regional Separatist Front";
-    }
-  }
-
-  private getFactionDemands(type: RebelFactionType): string {
-    switch (type) {
-      case 'PeasantRevolt': return "Abolition of Serfdom & Capitation Tax Skimming";
-      case 'NobilityCoup': return "Restoration of Feudal Autonomy & Sovereign Limitation";
-      case 'ReligiousHeretics': return "Confiscation of Clerical Tithes & Vernacular Scripture";
-      case 'Separatist': return "Complete Recognition of Enclave Sovereignty";
+      case 'Peasant_Revolt': return "Great Peasant Jacquerie";
+      case 'Nobles_Coup': return "Baronial League of Defense";
+      case 'Heretic_Uprising': return "Lollard Heretic Communion";
+      case 'Pretender_Claim': return "House of Lancaster Pretenders";
     }
   }
 }
