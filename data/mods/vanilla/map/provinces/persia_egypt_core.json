@@ -1,0 +1,108 @@
+{
+  "dataset": "persia_egypt_black_sea_core_anchors",
+  "version": "1.0.0",
+  "historical_date": "1350-04-01",
+  "theater": "Intercontinental Core Trade & Cultural Metropolises",
+  "anchor_locations": [
+    {
+      "location_id": 601,
+      "name": "Tabriz",
+      "historical_owner_tag": "JAL",
+      "controller_tag": "JAL",
+      "culture": "Azeri_Turkic",
+      "religion": "Sunni",
+      "coordinates": { "longitude": 46.29, "latitude": 38.08 },
+      "terrain": "Highland_Basin",
+      "is_coastal": false,
+      "is_market_hub": true,
+      "tax_autonomy": 0.12,
+      "total_population": 95000,
+      "pop_breakdown": {
+        "nobles": 5500,
+        "clergy": 7000,
+        "burghers": 42500,
+        "commoners": 40000
+      },
+      "primary_rgo": "silk",
+      "secondary_rgo": "carpets",
+      "annual_material_output": 1250.0,
+      "fort_level": 4,
+      "strategic_role": "Intercontinental Silk Road Apex & Jalayirid Royal Seat"
+    },
+    {
+      "location_id": 702,
+      "name": "Cairo (Al-Qahirah)",
+      "historical_owner_tag": "MAM",
+      "controller_tag": "MAM",
+      "culture": "Egyptian_Arabic",
+      "religion": "Sunni",
+      "coordinates": { "longitude": 31.23, "latitude": 30.04 },
+      "terrain": "River_Metropolis",
+      "is_coastal": false,
+      "is_market_hub": true,
+      "tax_autonomy": 0.05,
+      "total_population": 250000,
+      "pop_breakdown": {
+        "nobles": 18000,
+        "clergy": 22000,
+        "burghers": 95000,
+        "commoners": 115000
+      },
+      "primary_rgo": "cloth",
+      "secondary_rgo": "sugar",
+      "annual_material_output": 2800.0,
+      "fort_level": 4,
+      "strategic_role": "Mamluk Imperial Seat, Caliphal Throne & Nile River Economic Core"
+    },
+    {
+      "location_id": 610,
+      "name": "Mecca (Bakkah)",
+      "historical_owner_tag": "HJZ",
+      "controller_tag": "HJZ",
+      "culture": "Hijazi_Arab",
+      "religion": "Sunni",
+      "coordinates": { "longitude": 39.82, "latitude": 21.42 },
+      "terrain": "Rocky_Valley",
+      "is_coastal": false,
+      "is_market_hub": true,
+      "tax_autonomy": 0.05,
+      "total_population": 40000,
+      "pop_breakdown": {
+        "nobles": 2800,
+        "clergy": 9200,
+        "burghers": 14000,
+        "commoners": 14000
+      },
+      "primary_rgo": "incense",
+      "secondary_rgo": "dates",
+      "annual_material_output": 620.0,
+      "fort_level": 2,
+      "strategic_role": "Global Islamic Holy Sanctuary & Hajj Intercontinental Pilgrim Hub"
+    },
+    {
+      "location_id": 501,
+      "name": "Caffa (Feodosia)",
+      "historical_owner_tag": "GEN",
+      "controller_tag": "GEN",
+      "culture": "Ligurian",
+      "religion": "Catholic",
+      "coordinates": { "longitude": 35.38, "latitude": 45.03 },
+      "terrain": "Coastal_Hills",
+      "is_coastal": true,
+      "is_market_hub": true,
+      "tax_autonomy": 0.15,
+      "total_population": 42000,
+      "pop_breakdown": {
+        "nobles": 1800,
+        "clergy": 2200,
+        "burghers": 18000,
+        "commoners": 20000
+      },
+      "primary_rgo": "silk",
+      "secondary_rgo": "grain",
+      "annual_material_output": 520.0,
+      "fort_level": 3,
+      "strategic_role": "Genoese Gazaria Headquarters, Black Sea Slave Market & Steppe Interface"
+    }
+  ]
+}

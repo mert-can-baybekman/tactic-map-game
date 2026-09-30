@@ -1,0 +1,73 @@
+// =========================================================================
+// INTERCONTINENTAL TRADE CHOKEPOINTS & CARAVAN CORRIDOR ENGINE SPECIFICATION
+// Subsystem: /src/economy/chokepoints.lang
+// =========================================================================
+
+module GameEngine.Economy.Chokepoints {
+
+    enum ChokepointTier {
+        GLOBAL_MARITIME_GATE,
+        CONTINENTAL_CARAVAN_PASS,
+        REGIONAL_INLAND_STRAIT
+    }
+
+    struct StrategicChokepoint {
+        id: string,
+        name: string,
+        tier: ChokepointTier,
+        controlling_tag: string,
+        sea_zone_id: u32,
+        flanking_node_a: u32,
+        flanking_node_b: u32,
+        is_blockaded: bool = false,
+        toll_tariff_rate: f32 = 0.05,            // 5% standard transit toll
+        blockade_interdiction_rate: f32 = 0.0,    // 0.0 to 1.0
+        overland_reroute_cost_multiplier: f32 = 2.5
+    }
+
+    struct CaravanRouteSegment {
+        segment_id: string,
+        origin_node_id: u32,
+        destination_node_id: u32,
+        base_travel_days: u32,
+        base_transport_cost: f32,
+        banditry_attrition_risk: f32,
+        is_active: bool = true
+    }
+
+    struct IntercontinentalTradePacket {
+        packet_id: string,
+        good_id: string,
+        origin_hub_id: u32,          // e.g. 601 (Tabriz)
+        destination_hub_id: u32,     // e.g. 1 (London)
+        cargo_units: f32,
+        base_unit_value: f32,
+        accumulated_transit_cost: f32 = 0.0,
+        transit_days: u32 = 0,
+        chokepoints_crossed: vector<string>,
+        is_diverted_overland: bool = false,
+        is_intercepted: bool = false
+    }
+
+    // Evaluates transit through a bottleneck. Returns (toll_amount, cost_multiplier, is_blocked)
+    fn EvaluateChokepointTransit(cp: ref StrategicChokepoint, packet: ref IntercontinentalTradePacket) -> (f32, f32, bool) {
+        if cp.is_blockaded && cp.blockade_interdiction_rate >= 0.80 {
+            // Severe blockade: packet must divert overland at massive transit cost multiplier
+            packet.is_diverted_overland = true;
+            let cost_multiplier = cp.overland_reroute_cost_multiplier;
+            let toll = 0.0;
+            return (toll, cost_multiplier, true);
+        }
+
+        let toll = packet.cargo_units * packet.base_unit_value * cp.toll_tariff_rate;
+        let cost_mult = 1.0 + (cp.blockade_interdiction_rate * 1.5);
+        return (toll, cost_mult, false);
+    }
+
+    // Resolves intercontinental packet delivery and computes final London market price
+    fn ResolvePacketDelivery(packet: ref IntercontinentalTradePacket, clearing_markup: f32) -> f32 {
+        let delivered_value = (packet.cargo_units * packet.base_unit_value) + packet.accumulated_transit_cost;
+        let final_unit_clearing_price = (delivered_value / packet.cargo_units) * (1.0 + clearing_markup);
+        return final_unit_clearing_price;
+    }
+}

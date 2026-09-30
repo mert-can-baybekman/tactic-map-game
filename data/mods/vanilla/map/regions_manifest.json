@@ -1,20 +1,34 @@
 {
-  "manifest_version": "1.0.0",
-  "active_world_grid": "europe_mediterranean_near_east",
+  "manifest_version": "2.0.0",
+  "active_world_grid": "eurasia_north_africa_grand_grid",
+  "bounds": {
+    "west_longitude": -12.0,
+    "east_longitude": 62.0,
+    "south_latitude": 10.0,
+    "north_latitude": 62.0
+  },
   "region_files": [
     "data/mods/vanilla/map/near_east.json",
-    "data/mods/vanilla/map/europe.json"
+    "data/mods/vanilla/map/europe.json",
+    "data/mods/vanilla/map/provinces/near_east_dense.json",
+    "data/mods/vanilla/map/provinces/pontic_east_europe.json",
+    "data/mods/vanilla/map/provinces/persia_red_sea.json",
+    "data/mods/vanilla/map/provinces/north_africa.json",
+    "data/mods/vanilla/map/provinces/persia_egypt_core.json"
   ],
   "chokepoints_file": "data/mods/vanilla/map/strait_chokepoints.json",
-  "total_indexed_locations": 45,
+  "total_indexed_locations": 92,
   "major_theaters": [
-    "Anatolia",
+    "The Greater Black Sea, Caucasus & Eastern European Grid",
+    "The Iranian Plateau, Persian Gulf & Red Sea Axis",
+    "The Southern Mediterranean, Nile Delta & North African Rim",
+    "Anatolia & Aegean",
     "Rumelia & Balkans",
-    "Levant & Egypt",
+    "Levant & Holy Land",
     "Western Europe & Low Countries",
-    "Italian Peninsula",
-    "Iberian Peninsula",
-    "Eastern Europe & Rus",
-    "Mediterranean Maritime Corridors"
+    "Italian Peninsula & Adriatic",
+    "Iberian Peninsula & Straits of Gibraltar",
+    "Mediterranean Maritime Corridors",
+    "Indian Ocean & Persian Gulf Trade Gates"
   ]
 }
