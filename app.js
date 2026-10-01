@@ -13,6 +13,7 @@ const state = {
   selectedLocationId: 1,
   channelBlockaded: false,
   straitBlockaded: false,
+  showBlueRoutes: true, // Collective toggle state for blue city connection lines
   
   // HUD Telemetry
   crownTreasury: 2588.0,
@@ -659,10 +660,47 @@ function renderMapModes() {
   }
 }
 
+// COLLECTIVE TOGGLE PROTOCOL: BLUE MARITIME & CITY CONNECTION ROUTES
+function toggleBlueRoutes(forceState) {
+  if (forceState !== undefined) {
+    state.showBlueRoutes = Boolean(forceState);
+  } else {
+    state.showBlueRoutes = !state.showBlueRoutes;
+  }
+  const mapSvg = document.getElementById('tactical-map-svg');
+  const toggleBtn = document.getElementById('btn-toggle-blue-routes');
+  if (mapSvg) {
+    if (state.showBlueRoutes) {
+      mapSvg.classList.remove('hide-blue-routes');
+    } else {
+      mapSvg.classList.add('hide-blue-routes');
+    }
+  }
+  if (toggleBtn) {
+    if (state.showBlueRoutes) {
+      toggleBtn.classList.remove('inactive');
+      toggleBtn.classList.add('active');
+      toggleBtn.textContent = '🌊 Mavi Çizgiler: Açık';
+      toggleBtn.title = 'Mavi Şehir Bağlantı ve Deniz Hatlarını Gizle (Kısayol: B)';
+    } else {
+      toggleBtn.classList.remove('active');
+      toggleBtn.classList.add('inactive');
+      toggleBtn.textContent = '🌊 Mavi Çizgiler: Kapalı';
+      toggleBtn.title = 'Mavi Şehir Bağlantı ve Deniz Hatlarını Göster (Kısayol: B)';
+    }
+  }
+}
+window.toggleBlueRoutes = toggleBlueRoutes;
+
 // =========================================================================
 // MULTI-SYSTEM RENDER PIPELINE LOOP: ExecuteGlobalMapRefresh
 // =========================================================================
 function ExecuteGlobalMapRefresh() {
+  // Sync blue routes visibility state
+  const mapSvg = document.getElementById('tactical-map-svg');
+  if (mapSvg) {
+    mapSvg.classList.toggle('hide-blue-routes', !state.showBlueRoutes);
+  }
   // 1. Recalculate spatial projections and control distribution
   recalculateControl();
 
@@ -1074,6 +1112,20 @@ document.addEventListener('DOMContentLoaded', () => {
     cameraPanX = 0;
     cameraPanY = 0;
     updateCameraTransform();
+  });
+
+  // Toggle Blue City Connection Lines Button
+  const toggleBlueRoutesBtn = document.getElementById('btn-toggle-blue-routes');
+  if (toggleBlueRoutesBtn) {
+    toggleBlueRoutesBtn.addEventListener('click', () => toggleBlueRoutes());
+  }
+
+  // Keyboard shortcut: Press 'b' or 'B' to toggle blue routes
+  window.addEventListener('keydown', (e) => {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if (e.key === 'b' || e.key === 'B') {
+      toggleBlueRoutes();
+    }
   });
 
   const jumpLondonBtn = document.getElementById('btn-jump-london');

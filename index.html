@@ -234,6 +234,8 @@
           <button class="map-nav-btn" id="btn-zoom-out" title="Zoom Out">−</button>
           <button class="map-nav-btn" id="btn-zoom-reset" title="Reset View">⟲</button>
           <div class="nav-divider"></div>
+          <button class="map-nav-btn toggle-routes-btn active" id="btn-toggle-blue-routes" title="Mavi Şehir Bağlantı ve Deniz Hatlarını Aç/Kapat (Kısayol: B)">🌊 Mavi Çizgiler: Açık</button>
+          <div class="nav-divider"></div>
           <button class="map-nav-btn jump-btn" id="btn-jump-london" title="Focus London">🏴󠁧󠁢󠁥󠁮󠁧󠁿 London</button>
           <button class="map-nav-btn jump-btn" id="btn-jump-paris" title="Focus Paris">⚜️ Paris</button>
           <button class="map-nav-btn jump-btn" id="btn-jump-venice" title="Focus Venice">🦁 Venice</button>
@@ -354,26 +356,28 @@
             <path id="land-north-africa" class="gis-coastline" d="M 195,558 L 260,580 L 350,605 L 460,612 L 580,610 L 680,578 L 735,578 L 765,618 L 830,655 L 940,675 L 1050,668 L 1150,658 L 1251,660 L 1240,730 L 1090,750 L 930,750 L 730,735 L 480,725 L 290,720 L 180,675 L 150,615 L 195,558 Z" fill="#211e17" stroke="#413c2d" stroke-width="2.0" />
 
             <!-- 4. REALISTIC GIS RIVER NETWORKS (Vector Paths on Exact Watersheds) -->
-            <!-- River Thames (London) -->
-            <path class="gis-river" d="M 320,195 L 340,193 L 354,195 L 370,198 L 385,200" stroke-width="2.5" />
-            <!-- River Seine (Paris & Rouen to Channel) -->
-            <path class="gis-river" d="M 460,280 L 445,268 L 428,255 L 410,240 L 395,230" stroke-width="2.5" />
-            <!-- Rhine River (Central Europe) -->
-            <path class="gis-river" d="M 605,310 L 570,265 L 530,225" stroke-width="2.8" />
-            <!-- Danube River (Central Europe to Black Sea Delta) -->
-            <path class="gis-river" d="M 650,310 L 750,325 L 880,335 L 1020,345 L 1140,375 L 1200,400 L 1235,365" stroke-width="3.2" />
-            <!-- Po River (Venice Basin) -->
-            <path class="gis-river" d="M 571,331 L 633,347 L 685,350 L 726,334" stroke-width="2.8" />
-            <!-- Maritsa (Meriç) River (Adrianople / Thrace) -->
-            <path class="gis-river" d="M 1085,420 L 1120,418 L 1151,420 L 1160,446" stroke-width="2.5" />
-            <!-- Sakarya River (Bithynia / Bursa & Söğüt) -->
-            <path class="gis-river" d="M 1289,556 L 1267,510 L 1250,465 L 1235,445" stroke-width="2.2" />
-            <!-- Nile River (Branching Delta: Alexandria & Damietta -> Cairo -> Luxor) -->
-            <path class="gis-river" d="M 1251,660 L 1275,675 L 1290,687 L 1310,660 L 1315,650 M 1290,687 L 1290,750 L 1285,820 L 1295,890 L 1300,920" stroke-width="3.5" />
-            <!-- Tigris & Euphrates (Mesopotamia -> Persian Gulf) -->
-            <path class="gis-river" d="M 1460,500 L 1530,540 L 1620,590 L 1700,650 L 1735,675 M 1480,480 L 1560,520 L 1650,570 L 1720,630 L 1740,660" stroke-width="2.8" />
-            <!-- Volga & Don (Steppes into Caspian & Azov) -->
-            <path class="gis-river" d="M 1510,110 L 1545,180 L 1520,270 L 1480,315 L 1445,335 M 1640,80 L 1675,170 L 1715,270 L 1745,330 L 1750,370" stroke-width="3.0" />
+            <g id="gis-rivers-layer" class="blue-routes-layer">
+              <!-- River Thames (London) -->
+              <path class="gis-river blue-connection-line" d="M 320,195 L 340,193 L 354,195 L 370,198 L 385,200" stroke-width="2.5" />
+              <!-- River Seine (Paris & Rouen to Channel) -->
+              <path class="gis-river blue-connection-line" d="M 460,280 L 445,268 L 428,255 L 410,240 L 395,230" stroke-width="2.5" />
+              <!-- Rhine River (Central Europe) -->
+              <path class="gis-river blue-connection-line" d="M 605,310 L 570,265 L 530,225" stroke-width="2.8" />
+              <!-- Danube River (Central Europe to Black Sea Delta) -->
+              <path class="gis-river blue-connection-line" d="M 650,310 L 750,325 L 880,335 L 1020,345 L 1140,375 L 1200,400 L 1235,365" stroke-width="3.2" />
+              <!-- Po River (Venice Basin) -->
+              <path class="gis-river blue-connection-line" d="M 571,331 L 633,347 L 685,350 L 726,334" stroke-width="2.8" />
+              <!-- Maritsa (Meriç) River (Adrianople / Thrace) -->
+              <path class="gis-river blue-connection-line" d="M 1085,420 L 1120,418 L 1151,420 L 1160,446" stroke-width="2.5" />
+              <!-- Sakarya River (Bithynia / Bursa & Söğüt) -->
+              <path class="gis-river blue-connection-line" d="M 1289,556 L 1267,510 L 1250,465 L 1235,445" stroke-width="2.2" />
+              <!-- Nile River (Branching Delta: Alexandria & Damietta -> Cairo -> Luxor) -->
+              <path class="gis-river blue-connection-line" d="M 1251,660 L 1275,675 L 1290,687 L 1310,660 L 1315,650 M 1290,687 L 1290,750 L 1285,820 L 1295,890 L 1300,920" stroke-width="3.5" />
+              <!-- Tigris & Euphrates (Mesopotamia -> Persian Gulf) -->
+              <path class="gis-river blue-connection-line" d="M 1460,500 L 1530,540 L 1620,590 L 1700,650 L 1735,675 M 1480,480 L 1560,520 L 1650,570 L 1720,630 L 1740,660" stroke-width="2.8" />
+              <!-- Volga & Don (Steppes into Caspian & Azov) -->
+              <path class="gis-river blue-connection-line" d="M 1510,110 L 1545,180 L 1520,270 L 1480,315 L 1445,335 M 1640,80 L 1675,170 L 1715,270 L 1745,330 L 1750,370" stroke-width="3.0" />
+            </g>
 
             <!-- 5. 2.5D SHADED RELIEF MOUNTAIN MESHES (With Crisp Highlight Ridgelines) -->
             <!-- The Alps (Arc North of Italy) -->
@@ -454,9 +458,6 @@
             <!-- 1. ORANGE CAPITAL LINK (London -> Dover) -->
             <line id="london-dover-line" class="line-capital-link" x1="354" y1="195" x2="385" y2="205" />
 
-            <!-- 2. BLUE SEA CORRIDOR (Dover -> Calais across English Channel) -->
-            <line id="dover-calais-line" class="line-sea-corridor" x1="385" y1="205" x2="398" y2="210" />
-
             <!-- 3. WHITE DOTTED LAND LINES (Calais -> Paris) -->
             <line id="calais-rouen-line" class="line-land-route" x1="398" y1="210" x2="428" y2="255" />
 
@@ -468,20 +469,28 @@
             <line id="rumelia-line-5" class="line-land-route line-rumelia-corridor" x1="1226" y1="454" x2="1250" y2="465" />
             <line id="rumelia-corridor-line" class="line-land-route line-rumelia-corridor" x1="1151" y1="420" x2="1223" y2="435" />
 
-            <!-- 5. THE GIBRALTAR MARITIME LOOP -->
-            <path id="gibraltar-maritime-loop" class="line-gibraltar-loop" d="M 385,205 Q 310,240 220,340 T 145,460 Q 110,530 195,558 Q 300,560 500,550 T 726,334 Q 820,440 920,530 T 1150,550 Q 1200,480 1223,435" fill="none" />
-            <line id="sea-trade-line" class="line-sea-corridor" x1="726" y1="334" x2="731" y2="415" />
-
-            <!-- 6. THE BOSPHORUS MARITIME EDGE & CHOKE -->
-            <path id="bosphorus-strait-line" class="line-bosphorus-strait" d="M 1151,420 L 1223,435 L 1226,454" fill="none" />
-            <line id="bosphorus-choke-indicator" class="line-bosphorus-strait" x1="1221" y1="433" x2="1225" y2="437" stroke="#00e5ff" stroke-width="4" />
-
-            <!-- 7. MACRO TRADE ROUTES -->
+            <!-- 7. OVERLAND TRADE ROUTES -->
             <path id="route-silk-road" class="line-silk-road" d="M 1740,502 C 1680,488 1590,478 1520,472 C 1440,465 1360,458 1280,456 C 1250,455 1235,455 1226,454 C 1224,446 1223,439 1223,435" fill="none" />
-            <path id="route-redsea-corridor" class="line-redsea-corridor" d="M 1702,1082 C 1675,1050 1640,1020 1605,975 C 1570,925 1555,895 1547,884 C 1510,830 1465,775 1400,730 C 1355,700 1315,690 1290,687 C 1275,684 1262,672 1251,660" fill="none" />
             <path id="route-steppe-corridor" class="line-steppe-corridor" d="M 1481,97 C 1515,145 1530,215 1518,275 C 1505,310 1460,330 1414,343 C 1355,365 1285,400 1223,435" fill="none" />
-            <path id="route-mediterranean-lane" class="line-sea-corridor" d="M 1223,435 C 1130,510 990,480 870,440 C 780,410 740,360 726,334 C 670,420 540,540 400,580 C 310,600 240,580 195,558" fill="none" />
-            <path id="route-atlantic-lane" class="line-gibraltar-loop" d="M 195,558 C 145,520 135,460 170,420 C 240,370 330,270 354,195" fill="none" />
+
+            <!-- BLUE MARITIME & CITY CONNECTION NETWORK LAYER (COLLECTIVELY TOGGLEABLE) -->
+            <g id="blue-routes-layer" class="blue-routes-layer">
+              <!-- 2. BLUE SEA CORRIDOR (Dover -> Calais across English Channel) -->
+              <line id="dover-calais-line" class="line-sea-corridor" x1="385" y1="205" x2="398" y2="210" />
+
+              <!-- 5. THE GIBRALTAR MARITIME LOOP -->
+              <path id="gibraltar-maritime-loop" class="line-gibraltar-loop" d="M 385,205 Q 310,240 220,340 T 145,460 Q 110,530 195,558 Q 300,560 500,550 T 726,334 Q 820,440 920,530 T 1150,550 Q 1200,480 1223,435" fill="none" />
+              <line id="sea-trade-line" class="line-sea-corridor" x1="726" y1="334" x2="731" y2="415" />
+
+              <!-- 6. THE BOSPHORUS MARITIME EDGE & CHOKE -->
+              <path id="bosphorus-strait-line" class="line-bosphorus-strait" d="M 1151,420 L 1223,435 L 1226,454" fill="none" />
+              <line id="bosphorus-choke-indicator" class="line-bosphorus-strait" x1="1221" y1="433" x2="1225" y2="437" stroke="#00e5ff" stroke-width="4" />
+
+              <!-- 7. MACRO SEA TRADE ROUTES -->
+              <path id="route-redsea-corridor" class="line-redsea-corridor" d="M 1702,1082 C 1675,1050 1640,1020 1605,975 C 1570,925 1555,895 1547,884 C 1510,830 1465,775 1400,730 C 1355,700 1315,690 1290,687 C 1275,684 1262,672 1251,660" fill="none" />
+              <path id="route-mediterranean-lane" class="line-sea-corridor" d="M 1223,435 C 1130,510 990,480 870,440 C 780,410 740,360 726,334 C 670,420 540,540 400,580 C 310,600 240,580 195,558" fill="none" />
+              <path id="route-atlantic-lane" class="line-gibraltar-loop" d="M 195,558 C 145,520 135,460 170,420 C 240,370 330,270 354,195" fill="none" />
+            </g>
 
             <!-- 9. MASTER REGIONAL NODES (True WGS84 Coords Transformed into Canvas Geometry) -->
 
