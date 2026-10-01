@@ -667,26 +667,62 @@ function toggleBlueRoutes(forceState) {
   } else {
     state.showBlueRoutes = !state.showBlueRoutes;
   }
+  const isVisible = state.showBlueRoutes;
+
+  // 1. Toggle SVG root class
   const mapSvg = document.getElementById('tactical-map-svg');
-  const toggleBtn = document.getElementById('btn-toggle-blue-routes');
   if (mapSvg) {
-    if (state.showBlueRoutes) {
-      mapSvg.classList.remove('hide-blue-routes');
-    } else {
-      mapSvg.classList.add('hide-blue-routes');
-    }
+    mapSvg.classList.toggle('hide-blue-routes', !isVisible);
   }
+
+  // 2. Direct style display manipulation for 100% fail-proof SVG rendering
+  const blueRoutesLayer = document.getElementById('blue-routes-layer');
+  if (blueRoutesLayer) {
+    blueRoutesLayer.style.display = isVisible ? '' : 'none';
+    blueRoutesLayer.setAttribute('display', isVisible ? 'inline' : 'none');
+    blueRoutesLayer.style.visibility = isVisible ? 'visible' : 'hidden';
+  }
+
+  const riversLayer = document.getElementById('gis-rivers-layer');
+  if (riversLayer) {
+    riversLayer.style.display = isVisible ? '' : 'none';
+    riversLayer.setAttribute('display', isVisible ? 'inline' : 'none');
+    riversLayer.style.visibility = isVisible ? 'visible' : 'hidden';
+  }
+
+  // 3. Directly toggle all blue connection lines and waterways
+  const targetSelectors = [
+    '#dover-calais-line',
+    '#gibraltar-maritime-loop',
+    '#sea-trade-line',
+    '#bosphorus-strait-line',
+    '#bosphorus-choke-indicator',
+    '#route-redsea-corridor',
+    '#route-mediterranean-lane',
+    '#route-atlantic-lane',
+    '.line-sea-corridor',
+    '.line-gibraltar-loop',
+    '.line-bosphorus-strait',
+    '.line-redsea-corridor',
+    '.gis-river'
+  ];
+  document.querySelectorAll(targetSelectors.join(', ')).forEach(el => {
+    el.style.display = isVisible ? '' : 'none';
+    el.style.visibility = isVisible ? 'visible' : 'hidden';
+  });
+
+  // 4. Update Button Appearance (Emoji only, never inject text!)
+  const toggleBtn = document.getElementById('btn-toggle-blue-routes');
   if (toggleBtn) {
-    if (state.showBlueRoutes) {
+    toggleBtn.textContent = '🌊';
+    if (isVisible) {
       toggleBtn.classList.remove('inactive');
       toggleBtn.classList.add('active');
-      toggleBtn.textContent = '🌊 Mavi Çizgiler: Açık';
-      toggleBtn.title = 'Mavi Şehir Bağlantı ve Deniz Hatlarını Gizle (Kısayol: B)';
+      toggleBtn.title = 'Mavi Çizgiler: Açık (Gizlemek için tıkla / Kısayol: B)';
     } else {
       toggleBtn.classList.remove('active');
       toggleBtn.classList.add('inactive');
-      toggleBtn.textContent = '🌊 Mavi Çizgiler: Kapalı';
-      toggleBtn.title = 'Mavi Şehir Bağlantı ve Deniz Hatlarını Göster (Kısayol: B)';
+      toggleBtn.title = 'Mavi Çizgiler: Kapalı (Göstermek için tıkla / Kısayol: B)';
     }
   }
 }
@@ -697,9 +733,23 @@ window.toggleBlueRoutes = toggleBlueRoutes;
 // =========================================================================
 function ExecuteGlobalMapRefresh() {
   // Sync blue routes visibility state
-  const mapSvg = document.getElementById('tactical-map-svg');
-  if (mapSvg) {
-    mapSvg.classList.toggle('hide-blue-routes', !state.showBlueRoutes);
+  if (state.showBlueRoutes !== undefined) {
+    const isVisible = state.showBlueRoutes;
+    const mapSvg = document.getElementById('tactical-map-svg');
+    if (mapSvg) mapSvg.classList.toggle('hide-blue-routes', !isVisible);
+    const blueRoutesLayer = document.getElementById('blue-routes-layer');
+    if (blueRoutesLayer) {
+      blueRoutesLayer.style.display = isVisible ? '' : 'none';
+      blueRoutesLayer.setAttribute('display', isVisible ? 'inline' : 'none');
+    }
+    const riversLayer = document.getElementById('gis-rivers-layer');
+    if (riversLayer) {
+      riversLayer.style.display = isVisible ? '' : 'none';
+      riversLayer.setAttribute('display', isVisible ? 'inline' : 'none');
+    }
+    document.querySelectorAll('.line-sea-corridor, .line-gibraltar-loop, .line-bosphorus-strait, .line-redsea-corridor, .gis-river').forEach(el => {
+      el.style.display = isVisible ? '' : 'none';
+    });
   }
   // 1. Recalculate spatial projections and control distribution
   recalculateControl();
