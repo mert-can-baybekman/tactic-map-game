@@ -854,7 +854,69 @@ function updateHUD() {
 function executeDayTick() {
   state.calendar.day++;
 
-  // Daily supply line check & minor random health wear
+  // 1. Daily Logistical Supply Checking Pass:
+  // Continuous path tracing to friendly depots. If enemy fleet blockade cuts a maritime lane (English Channel or Bosphorus),
+  // trigger Supply_Starvation status array and apply mandatory daily manpower attrition ticks.
+  const vanguardArmy = state.outliner.armies[0];
+  if (vanguardArmy) {
+    if (state.channelBlockaded) {
+      vanguardArmy.isStarving = true;
+      vanguardArmy.daysStarving = (vanguardArmy.daysStarving || 0) + 1;
+
+      // Exponential 5% daily attrition
+      const attritionRate = Math.min(0.50, 0.05 * Math.pow(1.05, vanguardArmy.daysStarving));
+      const dailyCasualties = Math.max(10, Math.floor(vanguardArmy.size * attritionRate));
+
+      vanguardArmy.size = Math.max(0, vanguardArmy.size - dailyCasualties);
+      state.manpower = Math.max(0, state.manpower - dailyCasualties);
+
+      // Permanently subtract casualties from origin location pop arrays (London Commoners)
+      if (state.locations[0] && state.locations[0].pops) {
+        const lp = state.locations[0].pops[state.locations[0].pops.length - 1];
+        if (lp) {
+          lp.size = Math.max(0, lp.size - dailyCasualties);
+          lp.unrest = Math.min(1.0, (lp.unrest || 0.05) + 0.005);
+        }
+      }
+
+      const armyRow = document.getElementById('outliner-army-1');
+      if (armyRow) {
+        armyRow.innerHTML = `
+          <div class="outliner-row-main">
+            <strong>Royal Vanguard</strong>
+            <span style="color: #ef4444; font-weight: bold;">${vanguardArmy.size.toLocaleString()} Men (⚠️ Supply Starvation: -5%/day)</span>
+          </div>
+          <span style="font-size: 10px; color: #f87171;">Logistical sea lane severed by Channel Blockade! Days Starving: ${vanguardArmy.daysStarving}</span>
+        `;
+      }
+    } else {
+      if (vanguardArmy.isStarving) {
+        vanguardArmy.isStarving = false;
+        vanguardArmy.daysStarving = 0;
+        const armyRow = document.getElementById('outliner-army-1');
+        if (armyRow) {
+          armyRow.innerHTML = `
+            <div class="outliner-row-main">
+              <strong>Royal Vanguard</strong>
+              <span style="color: #34d399;">${vanguardArmy.size.toLocaleString()} Men</span>
+            </div>
+            <span style="font-size: 10px; color: var(--text-muted);">Commander: King Edward III • Calais (Supplied)</span>
+          `;
+        }
+      }
+    }
+  }
+
+  // 2. Dynamic Estate Crisis Modal Check:
+  // If Crown Control drops below 50% in any newly annexed or active node, trigger interactive option modal
+  if (!state.estateCrisisTriggered) {
+    const lowControlNode = state.locations.find(l => l.control < 0.50 && l.nobleDominated);
+    if (lowControlNode) {
+      triggerEstateCrisisModal(lowControlNode);
+    }
+  }
+
+  // Minor random health wear
   if (state.ruler.isAlive && Math.random() < 0.005) {
     state.ruler.health = Math.max(0, state.ruler.health - 0.2);
   }
@@ -879,8 +941,10 @@ function executeDayTick() {
 function processMonthEndTick() {
   recalculateControl();
 
-  // 1. Stewardship Reduction Factor (65 Steward -> 16.25% speedup)
-  const stewardshipDiscount = (state.ruler.attributes.stewardship / 100.0) * 0.25;
+  // 1. The Cabinet Mandate Subsystem:
+  // Appointed Lord High Chancellor provides +25 Stewardship, slashing construction ticks of Bastion of Calais
+  const totalStewardship = state.ruler.attributes.stewardship + (state.cabinetAdvisorStewardship || 0);
+  const stewardshipDiscount = (totalStewardship / 100.0) * 0.35;
   const speedMultiplier = 1.0 + stewardshipDiscount;
 
   // 2. Fractional Outliner Construction & Integration Task Additions
@@ -943,6 +1007,7 @@ function processMonthEndTick() {
     state.market.goods.weapons.price = 18.0;
   }
 
+  // Monthly Budget Synchronization: Direct O(1) flush
   updateHUD();
 }
 
@@ -1267,14 +1332,36 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('⚔️ King Edward III detached from court and assigned pointer to Royal Vanguard! (Valiant Warrior: 1.15x combat shock applied)');
   });
 
-  // Sol Panel: Appoint Cabinet Advisor (Registers into Lord High Chancellor slot)
-  document.getElementById('btn-court-advisor').addEventListener('click', () => {
-    state.ruler.isCabinetAdvisor = true;
-    state.ruler.cabinetRole = 'Lord High Chancellor';
-    state.monthlyTaxIncome += 20.0;
-    showToast('📜 King Edward III registered into the active Lord High Chancellor execution slot (+20.0 D/mo tax extraction)!');
-    updateHUD();
-  });
+  // Sol Panel: Appoint Cabinet Advisor (The Cabinet Mandate Subsystem)
+  // Appointed Lord High Chancellor with high Stewardship dynamically slashes construction ticks of Bastion of Calais
+  const advisorBtn = document.getElementById('btn-court-advisor');
+  if (advisorBtn) {
+    advisorBtn.addEventListener('click', () => {
+      state.ruler.isCabinetAdvisor = !state.ruler.isCabinetAdvisor;
+      const subtitle = advisorBtn.querySelector('span:nth-child(2)');
+
+      if (state.ruler.isCabinetAdvisor) {
+        state.ruler.cabinetRole = 'Lord High Chancellor';
+        state.cabinetAdvisorStewardship = 25; // +25 Stewardship
+        state.monthlyTaxIncome += 20.0;
+        if (subtitle) {
+          subtitle.textContent = '✓ Lord High Chancellor (+25 Steward)';
+          subtitle.style.color = '#34d399';
+        }
+        showToast('📜 Cabinet Mandate Active: Lord High Chancellor appointed! (+25 Stewardship: Construction ticks of Bastion of Calais slashed by +35%!)');
+      } else {
+        state.ruler.cabinetRole = null;
+        state.cabinetAdvisorStewardship = 0;
+        state.monthlyTaxIncome = Math.max(0, state.monthlyTaxIncome - 20.0);
+        if (subtitle) {
+          subtitle.textContent = 'Lord High Chancellor';
+          subtitle.style.color = '#38bdf8';
+        }
+        showToast('📜 Cabinet Mandate Revoked: Lord High Chancellor dismissed.');
+      }
+      updateHUD();
+    });
+  }
 
   // Sol Panel: Commission Atlantic Explorer
   document.getElementById('btn-court-explorer').addEventListener('click', () => {
@@ -1367,6 +1454,65 @@ document.addEventListener('DOMContentLoaded', () => {
       state.estates[2].loyalty -= 15.0;
       showToast('Suppressed Burgher Petition: Burgher estate loyalty dropped by -15.0%!');
       updateHUD();
+    });
+  }
+
+  // Dynamic Estate Crisis Modal Loops:
+  // Fired when Crown Control falls below 50% in a newly annexed or contested node
+  function triggerEstateCrisisModal(loc) {
+    state.estateCrisisTriggered = true;
+    if (state.isRunning) {
+      state.isRunning = false;
+      clearInterval(state.timer);
+      const playBtn = document.getElementById('btn-play-pause');
+      if (playBtn) {
+        playBtn.textContent = '▶ Play';
+        playBtn.classList.remove('active');
+      }
+    }
+    const modal = document.getElementById('modal-estate-crisis');
+    const desc = document.getElementById('estate-crisis-desc');
+    if (desc) {
+      desc.innerHTML = `Crown Control has fallen to <strong>${(loc.control * 100).toFixed(1)}%</strong> in <strong>${loc.name}</strong>! The feudal nobility exploits royal weakness to demand an immediate <strong>Feudal Tithe Exemption</strong> charter.`;
+    }
+    if (modal) modal.style.display = 'flex';
+  }
+  window.triggerEstateCrisisModal = triggerEstateCrisisModal;
+
+  const crisisModal = document.getElementById('modal-estate-crisis');
+  const btnCrisisAccept = document.getElementById('btn-crisis-accept');
+  const btnCrisisReject = document.getElementById('btn-crisis-reject');
+
+  if (btnCrisisAccept && crisisModal) {
+    btnCrisisAccept.addEventListener('click', () => {
+      crisisModal.style.display = 'none';
+      state.charters.feudalTitheExemption.active = true;
+      const titheCard = document.getElementById('charter-feudal-tithe');
+      const titheTag = document.getElementById('tag-tithe-status');
+      if (titheCard && titheTag) {
+        titheCard.classList.add('active');
+        titheTag.className = 'charter-status-tag active';
+        titheTag.textContent = 'Active';
+      }
+      state.estates[0].loyalty = Math.min(100.0, state.estates[0].loyalty + 15.0);
+      showToast('📜 Feudal Tithe Exemption ratified: Nobility loyalty floor set to +15%, -20% tax skim penalty applied to noble lands.');
+      processMonthEndTick();
+    });
+  }
+
+  if (btnCrisisReject && crisisModal) {
+    btnCrisisReject.addEventListener('click', () => {
+      crisisModal.style.display = 'none';
+      state.estates[0].loyalty = Math.max(0.0, state.estates[0].loyalty - 15.0);
+      for (const loc of state.locations) {
+        if (loc.nobleDominated && loc.pops) {
+          for (const pop of loc.pops) {
+            pop.unrest = Math.min(1.0, (pop.unrest || 0.1) + 0.25);
+          }
+        }
+      }
+      showToast('⚠️ Demands rejected! Nobility loyalty plummets by -15%, pop militancy surges (+0.25).');
+      processMonthEndTick();
     });
   }
 
