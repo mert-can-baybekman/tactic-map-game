@@ -661,7 +661,14 @@ function renderMapModes() {
 }
 
 // COLLECTIVE TOGGLE PROTOCOL: BLUE MARITIME & CITY CONNECTION ROUTES
+let lastAppToggleTime = 0;
 function toggleBlueRoutes(forceState) {
+  const now = Date.now();
+  if (forceState === undefined && (now - lastAppToggleTime < 250)) {
+    return;
+  }
+  lastAppToggleTime = now;
+
   if (forceState !== undefined) {
     state.showBlueRoutes = Boolean(forceState);
   } else {
@@ -679,15 +686,27 @@ function toggleBlueRoutes(forceState) {
   const blueRoutesLayer = document.getElementById('blue-routes-layer');
   if (blueRoutesLayer) {
     blueRoutesLayer.style.display = isVisible ? '' : 'none';
-    blueRoutesLayer.setAttribute('display', isVisible ? 'inline' : 'none');
     blueRoutesLayer.style.visibility = isVisible ? 'visible' : 'hidden';
+    if (!isVisible) {
+      blueRoutesLayer.setAttribute('display', 'none');
+      blueRoutesLayer.setAttribute('visibility', 'hidden');
+    } else {
+      blueRoutesLayer.removeAttribute('display');
+      blueRoutesLayer.removeAttribute('visibility');
+    }
   }
 
   const riversLayer = document.getElementById('gis-rivers-layer');
   if (riversLayer) {
     riversLayer.style.display = isVisible ? '' : 'none';
-    riversLayer.setAttribute('display', isVisible ? 'inline' : 'none');
     riversLayer.style.visibility = isVisible ? 'visible' : 'hidden';
+    if (!isVisible) {
+      riversLayer.setAttribute('display', 'none');
+      riversLayer.setAttribute('visibility', 'hidden');
+    } else {
+      riversLayer.removeAttribute('display');
+      riversLayer.removeAttribute('visibility');
+    }
   }
 
   // 3. Directly toggle all blue connection lines and waterways
@@ -709,6 +728,13 @@ function toggleBlueRoutes(forceState) {
   document.querySelectorAll(targetSelectors.join(', ')).forEach(el => {
     el.style.display = isVisible ? '' : 'none';
     el.style.visibility = isVisible ? 'visible' : 'hidden';
+    if (!isVisible) {
+      el.setAttribute('display', 'none');
+      el.setAttribute('visibility', 'hidden');
+    } else {
+      el.removeAttribute('display');
+      el.removeAttribute('visibility');
+    }
   });
 
   // 4. Update Button Appearance (Emoji only, never inject text!)
@@ -1164,19 +1190,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCameraTransform();
   });
 
-  // Toggle Blue City Connection Lines Button
-  const toggleBlueRoutesBtn = document.getElementById('btn-toggle-blue-routes');
-  if (toggleBlueRoutesBtn) {
-    toggleBlueRoutesBtn.addEventListener('click', () => toggleBlueRoutes());
-  }
+  // Blue routes toggle is cleanly bound directly on the button in index.html to avoid duplicate event triggers
 
-  // Keyboard shortcut: Press 'b' or 'B' to toggle blue routes
-  window.addEventListener('keydown', (e) => {
-    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-    if (e.key === 'b' || e.key === 'B') {
-      toggleBlueRoutes();
-    }
-  });
 
   const jumpLondonBtn = document.getElementById('btn-jump-london');
   if (jumpLondonBtn) jumpLondonBtn.addEventListener('click', () => focusOnCoordinates(354, 195, 2.4));

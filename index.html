@@ -50,23 +50,35 @@
     }
   </style>
   <script>
+    var isBlueRoutesHidden = false;
+    var lastBlueRoutesToggleTime = 0;
+
     function toggleBlueRoutes(forceState) {
-      var mapSvg = document.getElementById('tactical-map-svg');
-      var btn = document.getElementById('btn-toggle-blue-routes');
-      if (!mapSvg) return;
+      var now = Date.now();
+      if (forceState === undefined && (now - lastBlueRoutesToggleTime < 250)) {
+        return;
+      }
+      lastBlueRoutesToggleTime = now;
 
-      var shouldHide = (forceState !== undefined) 
-        ? !forceState 
-        : !mapSvg.classList.contains('hide-blue-routes');
-
-      if (shouldHide) {
-        mapSvg.classList.add('hide-blue-routes');
+      if (forceState !== undefined) {
+        isBlueRoutesHidden = !forceState;
       } else {
-        mapSvg.classList.remove('hide-blue-routes');
+        isBlueRoutesHidden = !isBlueRoutesHidden;
       }
 
-      var displayVal = shouldHide ? 'none' : '';
-      var visibilityVal = shouldHide ? 'hidden' : 'visible';
+      var mapSvg = document.getElementById('tactical-map-svg');
+      var btn = document.getElementById('btn-toggle-blue-routes');
+
+      if (mapSvg) {
+        if (isBlueRoutesHidden) {
+          mapSvg.classList.add('hide-blue-routes');
+        } else {
+          mapSvg.classList.remove('hide-blue-routes');
+        }
+      }
+
+      var displayVal = isBlueRoutesHidden ? 'none' : '';
+      var visibilityVal = isBlueRoutesHidden ? 'hidden' : 'visible';
 
       var targetIds = [
         'blue-routes-layer',
@@ -85,7 +97,13 @@
         if (el) {
           el.style.display = displayVal;
           el.style.visibility = visibilityVal;
-          el.setAttribute('display', shouldHide ? 'none' : 'inline');
+          if (isBlueRoutesHidden) {
+            el.setAttribute('display', 'none');
+            el.setAttribute('visibility', 'hidden');
+          } else {
+            el.removeAttribute('display');
+            el.removeAttribute('visibility');
+          }
         }
       }
 
@@ -93,10 +111,17 @@
       for (var j = 0; j < lines.length; j++) {
         lines[j].style.display = displayVal;
         lines[j].style.visibility = visibilityVal;
+        if (isBlueRoutesHidden) {
+          lines[j].setAttribute('display', 'none');
+          lines[j].setAttribute('visibility', 'hidden');
+        } else {
+          lines[j].removeAttribute('display');
+          lines[j].removeAttribute('visibility');
+        }
       }
 
       if (btn) {
-        if (shouldHide) {
+        if (isBlueRoutesHidden) {
           btn.classList.remove('active');
           btn.classList.add('inactive');
           btn.title = 'Mavi Çizgiler: Kapalı (Açmak için tıkla / Kısayol: B)';
@@ -108,7 +133,7 @@
       }
 
       if (window.state) {
-        window.state.showBlueRoutes = !shouldHide;
+        window.state.showBlueRoutes = !isBlueRoutesHidden;
       }
     }
     window.toggleBlueRoutes = toggleBlueRoutes;
