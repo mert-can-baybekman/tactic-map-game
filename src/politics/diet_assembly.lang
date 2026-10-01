@@ -1,0 +1,118 @@
+// =========================================================================
+// DYNAMIC PARLIAMENTARY / DIET ASSEMBLY & ESTATE DEMANDS SPECIFICATION
+// Subsystem: /src/politics/diet_assembly.lang
+// =========================================================================
+
+module GameEngine.Politics.DietAssembly {
+
+    enum AssemblyType {
+        English_Parliament,
+        Ottoman_Divan,
+        Polish_Sejm,
+        Castilian_Cortes,
+        Imperial_Diet,
+        General_Estates
+    }
+
+    enum EstateDemandType {
+        Demand_Tax_Exemption,
+        Demand_Trade_Monopoly,
+        Demand_Clergy_Endowment,
+        Demand_Military_Autonomy,
+        Demand_Crown_Land_Concession
+    }
+
+    struct ProceduralEstateDemand {
+        id: string,
+        originating_estate: string, // Nobility, Clergy, Burghers, Commoners
+        demand_type: EstateDemandType,
+        prestige_cost: f32,
+        crown_power_drain: f32,
+        loyalty_reward: f32,
+        unrest_penalty_if_rejected: f32,
+        fulfilled: bool = false
+    }
+
+    struct ProposedBill {
+        id: string,
+        name: string,
+        category: string, // Peacetime_Tax, Land_Reform, Secularization, Army_Reform
+        target_estate_privilege_to_revoke: option<string>,
+        expected_crown_power_gain: f32,
+        stability_hit_on_failure: f32 = -1.0
+    }
+
+    struct EstateVoteBreakdown {
+        estate_name: string,
+        loyalty: f32,
+        power_ratio: f32,
+        ruler_diplomacy_modifier: f32,
+        approval_weight: f32,
+        voted_in_favor: bool
+    }
+
+    struct LegislativeVoteResult {
+        bill_id: string,
+        passed: bool,
+        net_approval_weight: f32,
+        breakdown: array<EstateVoteBreakdown>,
+        stability_delta: f32,
+        rebel_faction_spawn_triggered: bool,
+        disgruntled_estates: array<string>
+    }
+
+    // Mathematical Law of Legislative Approval:
+    // Approval_Weight = (Estate_Loyalty - 50.0) * (Estate_Power_Ratio) * Ruler_Diplomacy_Modifier
+    fn CalculateEstateVoteWeight(
+        estate_loyalty: f32,
+        estate_power_ratio: f32,
+        ruler_diplomacy: f32
+    ) -> f32 {
+        let diplomacy_mod: f32 = 1.0 + ((ruler_diplomacy - 50.0) / 100.0);
+        return (estate_loyalty - 50.0) * estate_power_ratio * diplomacy_mod;
+    }
+
+    fn EvaluateLegislativeSession(
+        bill: ProposedBill,
+        estate_loyalties: map<string, f32>,
+        estate_powers: map<string, f32>,
+        ruler_diplomacy: f32
+    ) -> LegislativeVoteResult {
+        let net_weight: f32 = 0.0;
+        let breakdowns: array<EstateVoteBreakdown> = [];
+        let disgruntled: array<string> = [];
+
+        for (estate, loyalty) in estate_loyalties {
+            let power_ratio: f32 = estate_powers.get(estate).unwrap_or(0.2);
+            let weight: f32 = CalculateEstateVoteWeight(loyalty, power_ratio, ruler_diplomacy);
+            net_weight += weight;
+
+            let in_favor: bool = weight >= 0.0;
+            if (!in_favor) {
+                disgruntled.push(estate);
+            }
+
+            breakdowns.push(EstateVoteBreakdown {
+                estate_name: estate,
+                loyalty: loyalty,
+                power_ratio: power_ratio,
+                ruler_diplomacy_modifier: 1.0 + ((ruler_diplomacy - 50.0) / 100.0),
+                approval_weight: weight,
+                voted_in_favor: in_favor
+            });
+        }
+
+        let bill_passed: bool = net_weight >= 0.0;
+        let stability_delta: f32 = bill_passed ? 0.0 : bill.stability_hit_on_failure;
+
+        return LegislativeVoteResult {
+            bill_id: bill.id,
+            passed: bill_passed,
+            net_approval_weight: net_weight,
+            breakdown: breakdowns,
+            stability_delta: stability_delta,
+            rebel_faction_spawn_triggered: !bill_passed && (net_weight < -15.0),
+            disgruntled_estates: disgruntled
+        };
+    }
+}

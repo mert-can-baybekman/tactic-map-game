@@ -1,0 +1,88 @@
+// =========================================================================
+// DOMESTIC AI DEMOGRAPHICS CONTROL & ASSIMILATION SPECIFICATION
+// Subsystem: /src/ai/demographics_governor.lang
+// =========================================================================
+
+module GameEngine.AI.DemographicsGovernor {
+
+    struct CapturedTerritoryContext {
+        location_id: u32,
+        country_tag: string,
+        is_core: bool,
+        is_primary_culture: bool,
+        is_state_religion: bool,
+        crown_control_pct: f32, // 0.0 to 1.0
+        pop_militancy: f32,     // 0.0 to 1.0
+        total_pop_count: u32
+    }
+
+    enum StabilityInterventionType {
+        Emergency_State_Budget_Grant,
+        Autonomous_Tax_Exemption,
+        Deploy_Missionary_Clergy,
+        Build_Religious_Sanctuary,
+        Passive_Integration
+    }
+
+    struct GovernorActionDecision {
+        location_id: u32,
+        action: StabilityInterventionType,
+        treasury_cost_ducats: f32,
+        militancy_reduction: f32,
+        conversion_rate_delta: f32,
+        rationale: string
+    }
+
+    fn EvaluateTerritorySecurity(
+        territory: CapturedTerritoryContext,
+        ruler_learning_attr: u32,
+        ruler_stewardship_attr: u32,
+        available_treasury: f32
+    ) -> GovernorActionDecision {
+        // 1. Unrest Mitigation Pipeline:
+        // If Crown Control < 40% (0.40) and Pop_Militancy > 0.60:
+        if territory.crown_control_pct < 0.40 && territory.pop_militancy > 0.60 {
+            if available_treasury >= 50.0 {
+                return GovernorActionDecision {
+                    location_id: territory.location_id,
+                    action: StabilityInterventionType.Emergency_State_Budget_Grant,
+                    treasury_cost_ducats: 50.0,
+                    militancy_reduction: 0.25,
+                    conversion_rate_delta: 0.0,
+                    rationale: "Critical unrest under low crown control: Emergency funds allocated to local magistrates."
+                };
+            } else {
+                return GovernorActionDecision {
+                    location_id: territory.location_id,
+                    action: StabilityInterventionType.Autonomous_Tax_Exemption,
+                    treasury_cost_ducats: 0.0,
+                    militancy_reduction: 0.20,
+                    conversion_rate_delta: 0.0,
+                    rationale: "Treasury insufficient: Granting temporary tax exemption charter to pacify populace."
+                };
+            }
+        }
+
+        // 2. Systematic Conversion Stance:
+        // If non-state religion and high ruler learning (>= 60), accelerate conversion
+        if !territory.is_state_religion && ruler_learning_attr >= 60 {
+            return GovernorActionDecision {
+                location_id: territory.location_id,
+                action: StabilityInterventionType.Deploy_Missionary_Clergy,
+                treasury_cost_ducats: 25.0,
+                militancy_reduction: 0.05,
+                conversion_rate_delta: 0.04,
+                rationale: "High Learning Ruler: Mobilizing Clergy Missionaries to accelerate local religious conversion."
+            };
+        }
+
+        return GovernorActionDecision {
+            location_id: territory.location_id,
+            action: StabilityInterventionType.Passive_Integration,
+            treasury_cost_ducats: 0.0,
+            militancy_reduction: 0.02,
+            conversion_rate_delta: 0.005,
+            rationale: "Territory stable; adhering to standard administrative integration."
+        };
+    }
+}

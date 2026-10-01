@@ -1,0 +1,94 @@
+// =========================================================================
+// MULTI-NODE LOGISTICAL SUPPLY RANGE & DEPOT NETWORK SPECIFICATION
+// Subsystem: /src/military/supply_range.lang
+// =========================================================================
+
+module GameEngine.Military.SupplyRange {
+
+    struct SupplyDepotNode {
+        depot_id: string,
+        location_id: u32,
+        base_efficiency: f32 = 1.0, // 100%
+        decay_rate: f32 = 0.08,      // Geographical distance decay
+        grain_stockpile: f32,
+        is_operational: bool
+    }
+
+    struct ArmyLogisticsStatus {
+        army_id: string,
+        location_id: u32,
+        origin_location_id: u32,
+        nearest_depot_id: option<string>,
+        logistical_distance: f32,
+        supply_efficiency: f32, // 0.0 to 1.0
+        is_supply_cut: bool,
+        days_in_starvation: u32,
+        daily_attrition_pct: f32,
+        permanent_pop_losses_daily: u32
+    }
+
+    // Mathematical Law of Geographic Supply Decay:
+    // Supply_Efficiency = Base_Efficiency * e^(-Decay_Rate * Logistical_Distance)
+    fn CalculateSupplyEfficiency(
+        base_efficiency: f32,
+        decay_rate: f32,
+        distance: f32
+    ) -> f32 {
+        if distance < 0.0 {
+            return 0.0;
+        }
+        let exponent: f32 = -(decay_rate * distance);
+        return base_efficiency * exp(exponent);
+    }
+
+    fn EvaluateArmyLogistics(
+        army_location_id: u32,
+        origin_location_id: u32,
+        army_manpower: u32,
+        days_starving: u32,
+        depot_nodes: array<SupplyDepotNode>,
+        path_distance: f32,
+        is_blockaded_by_fleet: bool,
+        is_intercepted_by_zoc: bool
+    ) -> ArmyLogisticsStatus {
+        // Immediate interdiction check
+        if is_blockaded_by_fleet || is_intercepted_by_zoc {
+            let next_days: u32 = days_starving + 1;
+            // 5% exponential daily attrition rate
+            let attrition_factor: f32 = 0.05 * pow(1.05, next_days as f32);
+            if attrition_factor > 0.50 {
+                attrition_factor = 0.50;
+            }
+            let casualties: u32 = (army_manpower as f32 * attrition_factor) as u32;
+
+            return ArmyLogisticsStatus {
+                army_id: "army_active",
+                location_id: army_location_id,
+                origin_location_id: origin_location_id,
+                nearest_depot_id: none,
+                logistical_distance: path_distance,
+                supply_efficiency: 0.0,
+                is_supply_cut: true,
+                days_in_starvation: next_days,
+                daily_attrition_pct: attrition_factor,
+                permanent_pop_losses_daily: casualties
+            };
+        }
+
+        // Trace to nearest operational depot
+        let efficiency: f32 = CalculateSupplyEfficiency(1.0, 0.08, path_distance);
+
+        return ArmyLogisticsStatus {
+            army_id: "army_active",
+            location_id: army_location_id,
+            origin_location_id: origin_location_id,
+            nearest_depot_id: some("depot_main"),
+            logistical_distance: path_distance,
+            supply_efficiency: efficiency,
+            is_supply_cut: false,
+            days_in_starvation: 0,
+            daily_attrition_pct: 0.0,
+            permanent_pop_losses_daily: 0
+        };
+    }
+}
