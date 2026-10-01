@@ -8,7 +8,118 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
+  <style>
+    /* IMMEDIATE FAIL-PROOF TOGGLE STYLES FOR BLUE MAP ROUTES */
+    #tactical-map-svg.hide-blue-routes #blue-routes-layer,
+    #tactical-map-svg.hide-blue-routes #gis-rivers-layer,
+    #tactical-map-svg.hide-blue-routes .blue-routes-layer,
+    #tactical-map-svg.hide-blue-routes .blue-connection-line,
+    #tactical-map-svg.hide-blue-routes .line-sea-corridor,
+    #tactical-map-svg.hide-blue-routes .line-gibraltar-loop,
+    #tactical-map-svg.hide-blue-routes .line-bosphorus-strait,
+    #tactical-map-svg.hide-blue-routes .line-redsea-corridor,
+    #tactical-map-svg.hide-blue-routes .gis-river {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    #btn-toggle-blue-routes {
+      width: 28px !important;
+      height: 28px !important;
+      padding: 0 !important;
+      font-size: 15px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+    }
+    #btn-toggle-blue-routes.active {
+      background: rgba(14, 165, 233, 0.45) !important;
+      border: 1px solid #38bdf8 !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6) !important;
+    }
+    #btn-toggle-blue-routes.inactive {
+      background: rgba(30, 41, 59, 0.75) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      opacity: 0.4 !important;
+      filter: grayscale(1) !important;
+      box-shadow: none !important;
+    }
+  </style>
+  <script>
+    function toggleBlueRoutes(forceState) {
+      var mapSvg = document.getElementById('tactical-map-svg');
+      var btn = document.getElementById('btn-toggle-blue-routes');
+      if (!mapSvg) return;
+
+      var shouldHide = (forceState !== undefined) 
+        ? !forceState 
+        : !mapSvg.classList.contains('hide-blue-routes');
+
+      if (shouldHide) {
+        mapSvg.classList.add('hide-blue-routes');
+      } else {
+        mapSvg.classList.remove('hide-blue-routes');
+      }
+
+      var displayVal = shouldHide ? 'none' : '';
+      var visibilityVal = shouldHide ? 'hidden' : 'visible';
+
+      var targetIds = [
+        'blue-routes-layer',
+        'gis-rivers-layer',
+        'gibraltar-maritime-loop',
+        'dover-calais-line',
+        'sea-trade-line',
+        'bosphorus-strait-line',
+        'bosphorus-choke-indicator',
+        'route-redsea-corridor',
+        'route-mediterranean-lane',
+        'route-atlantic-lane'
+      ];
+      for (var i = 0; i < targetIds.length; i++) {
+        var el = document.getElementById(targetIds[i]);
+        if (el) {
+          el.style.display = displayVal;
+          el.style.visibility = visibilityVal;
+          el.setAttribute('display', shouldHide ? 'none' : 'inline');
+        }
+      }
+
+      var lines = document.querySelectorAll('.line-sea-corridor, .line-gibraltar-loop, .line-bosphorus-strait, .line-redsea-corridor, .gis-river');
+      for (var j = 0; j < lines.length; j++) {
+        lines[j].style.display = displayVal;
+        lines[j].style.visibility = visibilityVal;
+      }
+
+      if (btn) {
+        if (shouldHide) {
+          btn.classList.remove('active');
+          btn.classList.add('inactive');
+          btn.title = 'Mavi Çizgiler: Kapalı (Açmak için tıkla / Kısayol: B)';
+        } else {
+          btn.classList.remove('inactive');
+          btn.classList.add('active');
+          btn.title = 'Mavi Çizgiler: Açık (Kapatmak için tıkla / Kısayol: B)';
+        }
+      }
+
+      if (window.state) {
+        window.state.showBlueRoutes = !shouldHide;
+      }
+    }
+    window.toggleBlueRoutes = toggleBlueRoutes;
+
+    window.addEventListener('keydown', function(e) {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      if (e.key === 'b' || e.key === 'B') {
+        toggleBlueRoutes();
+      }
+    });
+  </script>
 </head>
 <body>
 
@@ -234,7 +345,7 @@
           <button class="map-nav-btn" id="btn-zoom-out" title="Zoom Out">−</button>
           <button class="map-nav-btn" id="btn-zoom-reset" title="Reset View">⟲</button>
           <div class="nav-divider"></div>
-          <button class="map-nav-btn active" id="btn-toggle-blue-routes" onclick="if(window.toggleBlueRoutes)window.toggleBlueRoutes()" title="Mavi Şehir Bağlantı Çizgilerini Aç/Kapat (Kısayol: B)">🌊</button>
+          <button class="map-nav-btn active" id="btn-toggle-blue-routes" onclick="toggleBlueRoutes()" title="Mavi Şehir Bağlantı Çizgilerini Aç/Kapat (Kısayol: B)">🌊</button>
           <div class="nav-divider"></div>
           <button class="map-nav-btn jump-btn" id="btn-jump-london" title="Focus London">🏴󠁧󠁢󠁥󠁮󠁧󠁿 London</button>
           <button class="map-nav-btn jump-btn" id="btn-jump-paris" title="Focus Paris">⚜️ Paris</button>
@@ -806,6 +917,6 @@
 
   <div class="toast-msg" id="toast-notification">Notification</div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
